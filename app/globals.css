@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: #FFFFFF;
+  --foreground: #333333;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Brand Colors */
+  --color-primary: #0AC8DA;
+  --color-primary-dark: #089EAD;
+  --color-primary-light: #DDF8FB;
+
+  --color-white: #FFFFFF;
+  --color-off-white: #F7FAFB;
+  --color-black: #111111;
+  --color-dark-gray: #333333;
+  --color-light-gray: #E5E7EB;
+  --color-medium-gray: #6B7280;
+
+  /* Mappings for legacy colors to maintain layout integrity with new palette */
+  --color-brand-navy: #111111;
+  --color-brand-dark: #111111;
+  --color-brand-orange: #0AC8DA;
+  --color-brand-yellow: #DDF8FB;
+  --color-brand-teal: #0AC8DA;
+  --color-brand-teal-dark: #089EAD;
+  --color-brand-red: #089EAD;
+  --color-brand-red-dark: #111111;
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #0ac8da;
+  border-radius: 3px;
+}
+
+/* Embla carousel overflow fix */
+.embla {
+  overflow: hidden;
+}
+.embla__container {
+  display: flex;
+}
+.embla__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}

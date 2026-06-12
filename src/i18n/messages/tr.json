@@ -1,0 +1,74 @@
+{
+  "nav": {
+    "about": "HAKKIMIZDA",
+    "brands": "MARKALARIMIZ",
+    "news": "HABERLER",
+    "contact": "İLETİŞİM",
+    "career": "KARİYER",
+    "volunteer": "GÖNÜLLÜ OL",
+    "login": "GİRİŞ YAP"
+  },
+  "hero": {
+    "learnMore": "Daha Fazla Bilgi"
+  },
+  "brands": {
+    "title": "Markalarımız",
+    "subtitle": "Intechne Teknoloji olarak teknoloji tutkusunu ve inovasyon ruhunu tüm topluma aşılamak için çalışıyoruz.",
+    "learnMore": "Daha Fazla Bilgi"
+  },
+  "news": {
+    "title": "Haberler",
+    "readMore": "Devamını Gör",
+    "badge": "Intechne Haber"
+  },
+  "interactive": {
+    "title": "Intechne İnteraktif",
+    "all": "Tümü",
+    "viewAll": "Tümünü Gör"
+  },
+  "contact": {
+    "title": "Bizimle İletişime Geçin",
+    "subtitle": "Her türlü soru, öneri ve iş birliği talepleriniz için bizimle iletişime geçebilirsiniz.",
+    "email": "kurumsal@intechne.com.tr",
+    "phone": "0534 634 9058"
+  },
+  "testimonials": {
+    "title": "Hakkımızda Neler Söylediniz?",
+    "subtitle": "Intechne hakkındaki düşüncelerinizi, önerilerinizi ve deneyimlerinizi bizimle paylaşın.",
+    "writeYours": "Sen de Yaz",
+    "viewAll": "Tümünü Gör"
+  },
+  "stats": {
+    "title": "Sayılarla Biz",
+    "description": "Intechne; pek çok yenilikçi projesi, robotik ligleri ve teknoloji eğitimleriyle genç yetenekleri geleceğe hazırlamaktadır."
+  },
+  "footer": {
+    "newsletter": {
+      "description": "Aylık bültenimize abone olmak için e-posta adresinizi yazınız.",
+      "placeholder": "Mail Adresinizi Yazınız",
+      "submit": "Abone Ol"
+    },
+    "contact": {
+      "title": "İletişim",
+      "address": "İstanbul/Türkiye"
+    },
+    "quickLinks": {
+      "title": "Hızlı Linkler",
+      "home": "Anasayfa",
+      "about": "Hakkımızda",
+      "news": "Haberler",
+      "interactive": "Intechne İnteraktif"
+    },
+    "instagram": {
+      "title": "Instagram"
+    },
+    "copyright": "© 2026 INTECHNE TEKNOLOJİ",
+    "kvkk": "KVKK",
+    "electronicConsent": "Ticari Elektronik İleti Bilgilendirme Metni"
+  },
+  "placeholder": {
+    "comingSoon": "Bu Sayfa Yakında Hazır Olacak",
+    "description": "İçerik hazırlanıyor...",
+    "backHome": "Ana Sayfaya Dön"
+  }
+}

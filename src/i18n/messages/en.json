@@ -1,0 +1,74 @@
+{
+  "nav": {
+    "about": "ABOUT US",
+    "brands": "OUR BRANDS",
+    "news": "NEWS",
+    "contact": "CONTACT",
+    "career": "CAREER",
+    "volunteer": "VOLUNTEER",
+    "login": "LOGIN"
+  },
+  "hero": {
+    "learnMore": "Learn More"
+  },
+  "brands": {
+    "title": "Our Brands",
+    "subtitle": "As Intechne Technology, we work to instill technology passion and innovation spirit across the whole society.",
+    "learnMore": "Learn More"
+  },
+  "news": {
+    "title": "News",
+    "readMore": "Read More",
+    "badge": "Intechne News"
+  },
+  "interactive": {
+    "title": "Intechne Interactive",
+    "all": "All",
+    "viewAll": "View All"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "You can contact us for any questions, suggestions, and cooperation requests.",
+    "email": "kurumsal@intechne.com.tr",
+    "phone": "0534 634 9058"
+  },
+  "testimonials": {
+    "title": "What Did You Say About Us?",
+    "subtitle": "Share your thoughts, suggestions, and experiences about Intechne with us.",
+    "writeYours": "Write Yours",
+    "viewAll": "View All"
+  },
+  "stats": {
+    "title": "Intechne in Numbers",
+    "description": "Intechne prepares young talents for the future through its many innovative projects, robotics leagues, and hands-on technology trainings."
+  },
+  "footer": {
+    "newsletter": {
+      "description": "Enter your email address to subscribe to our monthly newsletter.",
+      "placeholder": "Enter Your Email Address",
+      "submit": "Subscribe"
+    },
+    "contact": {
+      "title": "Contact",
+      "address": "Istanbul/Turkey"
+    },
+    "quickLinks": {
+      "title": "Quick Links",
+      "home": "Home",
+      "about": "About Us",
+      "news": "News",
+      "interactive": "Intechne Interactive"
+    },
+    "instagram": {
+      "title": "Instagram"
+    },
+    "copyright": "© 2026 INTECHNE TECHNOLOGY",
+    "kvkk": "KVKK",
+    "electronicConsent": "Commercial Electronic Message Consent"
+  },
+  "placeholder": {
+    "comingSoon": "This Page Is Coming Soon",
+    "description": "Content is being prepared...",
+    "backHome": "Back to Home"
+  }
+}
