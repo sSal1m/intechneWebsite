@@ -1,17 +1,56 @@
 'use client';
 
 import { useState } from 'react';
-import { Send } from 'lucide-react';
-import { Link } from '@/src/i18n/navigation';
+import { Send, Loader2 } from 'lucide-react';
+import { submitContactForm } from '@/src/actions/messages';
 
 export function ContactForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+    kvkk: false,
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate form submission
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 5000);
+    if (!formData.kvkk) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await submitContactForm({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        kvkk_approved: formData.kvkk,
+      });
+
+      if (res.success) {
+        setIsSubmitted(true);
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: '',
+          kvkk: false,
+        });
+        setTimeout(() => setIsSubmitted(false), 5000);
+      } else {
+        setError(res.error || 'Bir hata oluştu. Lütfen tekrar deneyin.');
+      }
+    } catch (err: any) {
+      setError('Sistem hatası oluştu. Lütfen tekrar deneyin.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -44,10 +83,18 @@ export function ContactForm() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-600 text-sm font-semibold p-4 rounded-xl">
+                {error}
+              </div>
+            )}
+            
             <input
               type="text"
               placeholder="İsim Soyisim"
               required
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#15a3b0]/20 focus:border-[#15a3b0] transition-all"
             />
             
@@ -55,6 +102,8 @@ export function ContactForm() {
               type="email"
               placeholder="E-Posta Adresi"
               required
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#15a3b0]/20 focus:border-[#15a3b0] transition-all"
             />
 
@@ -62,6 +111,8 @@ export function ContactForm() {
               type="text"
               placeholder="Konu"
               required
+              value={formData.subject}
+              onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#15a3b0]/20 focus:border-[#15a3b0] transition-all"
             />
 
@@ -69,6 +120,8 @@ export function ContactForm() {
               placeholder="Mesajınız"
               required
               rows={4}
+              value={formData.message}
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#15a3b0]/20 focus:border-[#15a3b0] transition-all resize-none"
             ></textarea>
 
@@ -77,6 +130,8 @@ export function ContactForm() {
                 type="checkbox" 
                 id="kvkk" 
                 required 
+                checked={formData.kvkk}
+                onChange={(e) => setFormData({ ...formData, kvkk: e.target.checked })}
                 className="mt-1 w-4 h-4 rounded border-slate-300 text-[#15a3b0] focus:ring-[#15a3b0]"
               />
               <label htmlFor="kvkk" className="text-sm text-slate-600 font-medium leading-tight">
@@ -93,10 +148,20 @@ export function ContactForm() {
 
             <button 
               type="submit"
-              className="mt-4 w-full bg-[#15a3b0] hover:bg-[#128a95] text-white font-bold py-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 group"
+              disabled={loading}
+              className="mt-4 w-full bg-[#15a3b0] hover:bg-[#128a95] disabled:bg-slate-400 text-white font-bold py-4 rounded-xl shadow-md hover:shadow-lg disabled:hover:shadow-none transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer disabled:cursor-not-allowed"
             >
-              Mesajı Gönder
-              <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              {loading ? (
+                <>
+                  <span>Gönderiliyor...</span>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                </>
+              ) : (
+                <>
+                  <span>Mesajı Gönder</span>
+                  <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                </>
+              )}
             </button>
           </form>
         )}

@@ -7,10 +7,6 @@ import { Link } from '@/src/i18n/navigation';
 import { heroSlides } from '@/src/data/brands';
 import { useLocale } from 'next-intl';
 
-interface HeroSliderProps {
-  locale: string;
-}
-
 const statLabelTranslations: Record<string, string> = {
   'Paydaş Kurum': 'Partner Institution',
   'Yarışma': 'Competition',
@@ -66,10 +62,56 @@ const slideTranslationsEn: Record<string, { title: string; description: string }
   },
 };
 
-export function HeroSlider({ locale }: HeroSliderProps) {
+interface HeroSliderProps {
+  locale: string;
+  initialSliders?: any[];
+}
+
+export function HeroSlider({ locale, initialSliders = [] }: HeroSliderProps) {
   const isEn = locale === 'en';
+
+  const slides = (initialSliders && initialSliders.length > 0 ? initialSliders : heroSlides).map((slide) => {
+    const title = isEn 
+      ? (slide.title_en || slide.titleEn || slideTranslationsEn[slide.id]?.title || slide.title) 
+      : (slide.title_tr || slide.title);
+      
+    const description = isEn 
+      ? (slide.description_en || slide.descriptionEn || slideTranslationsEn[slide.id]?.description || slide.description) 
+      : (slide.description_tr || slide.description);
+
+    const buttonLabel = isEn 
+      ? (slide.button_label_en || slide.buttonLabelEn || slide.buttonLabel || 'Learn More') 
+      : (slide.button_label_tr || slide.buttonLabel || 'Daha Fazla Bilgi');
+
+    return {
+      id: slide.id,
+      title,
+      description,
+      buttonLabel,
+      href: slide.href,
+      image_url: slide.image_url || slide.imageUrl,
+      stats: (slide.stats || []).map((s: any) => {
+        // Resolve label from custom DB fields or static translation fallback
+        const rawLabel = s.label || '';
+        const displayLabel = isEn 
+          ? (s.labelEn || s.label_en || statLabelTranslations[rawLabel] || rawLabel) 
+          : (rawLabel);
+
+        const rawValue = s.value || '';
+        const displayValue = isEn 
+          ? (s.valueEn || s.value_en || statValueTranslations[rawValue] || rawValue) 
+          : (rawValue);
+
+        return {
+          value: displayValue,
+          label: displayLabel,
+        };
+      }),
+    };
+  });
+
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
-    Autoplay({ delay: 7000, stopOnInteraction: false }),
+    Autoplay({ delay: 5000, stopOnInteraction: false }),
   ]);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -92,10 +134,7 @@ export function HeroSlider({ locale }: HeroSliderProps) {
     <section className="bg-slate-50 overflow-hidden">
       <div ref={emblaRef} className="embla">
         <div className="embla__container">
-          {heroSlides.map((slide, idx) => {
-            const displayTitle = isEn ? (slideTranslationsEn[slide.id]?.title || slide.title) : slide.title;
-            const displayDescription = isEn ? (slideTranslationsEn[slide.id]?.description || slide.description) : slide.description;
-
+          {slides.map((slide) => {
             return (
               <div key={slide.id} className="embla__slide">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
@@ -103,16 +142,16 @@ export function HeroSlider({ locale }: HeroSliderProps) {
                     {/* Left: Text */}
                     <div className="flex flex-col gap-5">
                       <h2 className="text-4xl md:text-5xl font-black text-primary leading-tight">
-                        {displayTitle}
+                        {slide.title}
                       </h2>
                       <p className="text-slate-600 text-base md:text-lg leading-relaxed max-w-lg">
-                        {displayDescription}
+                        {slide.description}
                       </p>
                       <Link
                         href={slide.href as any}
                         className="inline-flex items-center gap-2 border-2 border-brand-dark text-brand-dark rounded-full px-6 py-3 font-bold text-sm hover:bg-brand-dark hover:text-white transition-all duration-200 w-fit"
                       >
-                        {isEn ? 'Learn More' : slide.buttonLabel}
+                        {slide.buttonLabel}
                       </Link>
                     </div>
 
@@ -121,27 +160,30 @@ export function HeroSlider({ locale }: HeroSliderProps) {
                       {/* Teal blob */}
                       <div className="relative w-[280px] h-[280px] md:w-[360px] md:h-[360px]">
                         <div className="w-full h-full bg-gradient-to-br from-brand-teal to-blue-700 rounded-[40%_60%_60%_40%/60%_40%_60%_40%] overflow-hidden flex items-center justify-center">
-                          <div className="w-full h-full bg-gradient-to-br from-slate-400 to-slate-600 flex items-center justify-center">
-                            <span className="text-white/50 font-bold text-center text-sm px-4">
-                              {displayTitle} {isEn ? 'Image' : 'Görseli'}
-                            </span>
-                          </div>
+                          {slide.image_url ? (
+                            <img src={slide.image_url} alt={slide.title} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-slate-400 to-slate-600 flex items-center justify-center">
+                              <span className="text-white/50 font-bold text-center text-sm px-4">
+                                {slide.title} {isEn ? 'Image' : 'Görseli'}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
 
                       {/* Stat pills */}
                       <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col gap-2">
-                        {slide.stats.map((stat: { value: string; label: string }, sIdx: number) => {
-                          const displayLabel = isEn ? (statLabelTranslations[stat.label] || stat.label) : stat.label;
+                        {slide.stats.map((stat: any, sIdx: number) => {
                           return (
                             <div
                               key={sIdx}
                               className="bg-white rounded-xl shadow-md px-4 py-2 text-right min-w-[90px]"
                             >
                               <p className="text-brand-dark font-black text-lg leading-none">
-                                {isEn ? (statValueTranslations[stat.value] || stat.value) : stat.value}
+                                {stat.value}
                               </p>
-                              {stat.label && <p className="text-slate-500 text-xs mt-0.5">{displayLabel}</p>}
+                              {stat.label && <p className="text-slate-500 text-xs mt-0.5">{stat.label}</p>}
                             </div>
                           );
                         })}
@@ -157,12 +199,13 @@ export function HeroSlider({ locale }: HeroSliderProps) {
 
       {/* Dots */}
       <div className="flex justify-center gap-2 pb-6">
-        {heroSlides.map((_, idx) => (
+        {slides.map((_, idx) => (
           <button
             key={idx}
             onClick={() => scrollTo(idx)}
-            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${idx === selectedIndex ? 'bg-primary w-6' : 'bg-slate-300'
-              }`}
+            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+              idx === selectedIndex ? 'bg-primary w-6' : 'bg-slate-300'
+            }`}
             aria-label={isEn ? `Slide ${idx + 1}` : `Slayt ${idx + 1}`}
           />
         ))}

@@ -2,15 +2,64 @@
 
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { stats } from '@/src/data/stats';
+import { stats as staticStats } from '@/src/data/stats';
 import { useLocale } from 'next-intl';
 import { cn } from '@/src/lib/utils';
 
-export function StatsSection() {
+interface StatsSectionProps {
+  initialStats?: any[];
+}
+
+export function StatsSection({ initialStats = [] }: StatsSectionProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const locale = useLocale();
   const isEn = locale === 'en';
+
+  const statsTranslationsEn: Record<string, { title: string; description: string; value?: string }> = {
+    '1': {
+      title: 'Number of Trainings',
+      description: 'Connecting young talents with technology and fostering development through our workshops across different provinces.',
+      value: '30'
+    },
+    '2': {
+      title: 'Intechne Academy Students',
+      description: 'Talented young engineering candidates receiving hands-on education and developing real-world projects.',
+    },
+    '3': {
+      title: 'Cezeri Robot League Competitors',
+      description: 'Participants of the national robotics league, experiencing engineering excitement and fierce competition.',
+    },
+    '4': {
+      title: 'Total Number of Events',
+      description: 'Major organizations focused on technology, science, e-sports, and innovation held throughout our ecosystem.',
+    },
+    '5': {
+      title: 'Partner Institutions',
+      description: 'Our collaboration partners supporting the Intechne vision and contributing to technological transformation.',
+    },
+  };
+
+  const statsList = initialStats && initialStats.length > 0
+    ? initialStats.map((s: any, idx: number) => {
+        const staticItem = staticStats[idx] || staticStats[0];
+        const trans = statsTranslationsEn[String(idx + 1)];
+        return {
+          id: s.id,
+          value: isEn && trans && trans.value ? trans.value : (isEn ? s.value_en : s.value_tr),
+          title: isEn ? s.label_en : s.label_tr,
+          description: isEn && trans ? trans.description : staticItem.description,
+        };
+      })
+    : staticStats.map((stat, idx) => {
+        const trans = statsTranslationsEn[stat.id];
+        return {
+          id: stat.id,
+          value: isEn && trans && trans.value ? trans.value : stat.value,
+          title: isEn && trans ? trans.title : stat.title,
+          description: isEn && trans ? trans.description : stat.description,
+        };
+      });
 
   return (
     <section className="bg-[#F7FAFB] py-16">
@@ -41,7 +90,7 @@ export function StatsSection() {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, staggerChildren: 0.1 }}
           >
-            {stats.map((stat, idx) => {
+            {statsList.map((stat, idx) => {
               const colors = [
                 { bg: '#0AC8DA', circleBg: '#089EAD', isLight: false },
                 { bg: '#DDF8FB', circleBg: '#0AC8DA', isLight: true },
@@ -50,36 +99,6 @@ export function StatsSection() {
                 { bg: '#089EAD', circleBg: '#111111', isLight: false },
               ];
               const color = colors[idx] || colors[0];
-
-              // Translate stats titles and descriptions dynamically to keep the JSON/data files clean
-              const statsTranslationsEn: Record<string, { title: string; description: string; value?: string }> = {
-                '1': {
-                  title: 'Number of Trainings',
-                  description: 'Connecting young talents with technology and fostering development through our workshops across different provinces.',
-                  value: '30'
-                },
-                '2': {
-                  title: 'Intechne Academy Students',
-                  description: 'Talented young engineering candidates receiving hands-on education and developing real-world projects.',
-                },
-                '3': {
-                  title: 'Cezeri Robot League Competitors',
-                  description: 'Participants of the national robotics league, experiencing engineering excitement and fierce competition.',
-                },
-                '4': {
-                  title: 'Total Number of Events',
-                  description: 'Major organizations focused on technology, science, e-sports, and innovation held throughout our ecosystem.',
-                },
-                '5': {
-                  title: 'Partner Institutions',
-                  description: 'Our collaboration partners supporting the Intechne vision and contributing to technological transformation.',
-                },
-              };
-
-              const trans = statsTranslationsEn[stat.id];
-              const displayTitle = isEn && trans ? trans.title : stat.title;
-              const displayDesc = isEn && trans ? trans.description : stat.description;
-              const displayValue = isEn && trans && trans.value ? trans.value : stat.value;
 
               return (
                 <motion.div
@@ -101,7 +120,7 @@ export function StatsSection() {
                       <span
                         className="font-bold text-[10px] sm:text-xs text-center leading-tight px-1 text-white"
                       >
-                        {displayValue}
+                        {stat.value}
                       </span>
                     </div>
                     <div>
@@ -109,7 +128,7 @@ export function StatsSection() {
                         className="font-bold text-base leading-snug"
                         style={{ color: color.isLight ? '#0F172A' : 'white' }}
                       >
-                        {displayTitle}
+                        {stat.title}
                       </h4>
                     </div>
                   </div>
@@ -117,7 +136,7 @@ export function StatsSection() {
                     className="text-xs sm:text-sm leading-relaxed"
                     style={{ color: color.isLight ? 'rgba(15,23,42,0.75)' : 'rgba(255,255,255,0.8)' }}
                   >
-                    {displayDesc}
+                    {stat.description}
                   </p>
                 </motion.div>
               );

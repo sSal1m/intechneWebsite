@@ -63,7 +63,7 @@ export function Footer({ locale }: FooterProps) {
               
               {/* Dinamik Menüler (Sadece Alt Menüsü Olanlar) */}
               {navigation.main.map((menu, index) => {
-                if (menu.items) {
+                if ('items' in menu) {
                   return (
                     <div key={index}>
                       <h4 className="font-bold text-base mb-5 text-white tracking-wide">
@@ -87,7 +87,7 @@ export function Footer({ locale }: FooterProps) {
               {/* Dinamik Menüler (Alt Menüsü Olmayanlar - Haberler vs.) */}
               <div className="flex flex-col gap-6">
                 {navigation.main.map((menu, index) => {
-                  if (!menu.items && menu.label !== 'İLETİŞİM' && menu.label !== 'CONTACT') {
+                  if (!('items' in menu) && menu.label !== 'İLETİŞİM' && menu.label !== 'CONTACT') {
                     return (
                       <div key={`single-${index}`}>
                         <h4 className="font-bold text-base text-white tracking-wide">

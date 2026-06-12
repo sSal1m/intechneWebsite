@@ -4,17 +4,48 @@ import { NewsFilterBar } from '@/components/news/NewsFilterBar';
 import { HeadlineCard } from '@/components/news/HeadlineCard';
 import { NewsCard } from '@/components/news/NewsCard';
 import { newsItems } from '@/src/data/news';
+import { getNews } from '@/src/actions/news';
+
+export const dynamic = 'force-dynamic';
+
+interface PageProps {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ category?: string }>;
+}
 
 export default async function HaberlerPage({
   params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+  searchParams,
+}: PageProps) {
   const { locale } = await params;
+  const { category } = await searchParams;
   const isEn = locale === 'en';
 
-  const headlineItem = newsItems.find(item => item.tag === 'Öne Çıkan') || newsItems[0];
-  const otherItems = newsItems.filter(item => item.id !== headlineItem?.id);
+  const allNews = await getNews();
+  const dbNews = category ? await getNews(category) : allNews;
+  const hasDbContent = allNews && allNews.length > 0;
+
+  const displayNews = hasDbContent
+    ? dbNews.map((item: any) => ({
+        id: item.id,
+        date: item.published_at
+          ? new Date(item.published_at).toLocaleDateString(isEn ? 'en-US' : 'tr-TR', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })
+          : '',
+        title: isEn ? item.title_en : item.title_tr,
+        excerpt: isEn ? item.excerpt_en : item.excerpt_tr,
+        href: `/haberler/${item.id}`,
+        tag: item.tag || undefined,
+        imageAlt: isEn ? item.title_en : item.title_tr,
+        image_url: item.image_url,
+      }))
+    : newsItems;
+
+  const headlineItem = displayNews.find((item: any) => item.tag === 'Öne Çıkan') || displayNews[0];
+  const otherItems = displayNews.filter((item: any) => item.id !== headlineItem?.id);
 
   // Fallback banner image
   const bannerBg = 'https://cdnv2.t3vakfi.org/media/project/T3_banner-03.png';
@@ -55,7 +86,7 @@ export default async function HaberlerPage({
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {otherItems.map(item => (
+              {otherItems.map((item: any) => (
                 <NewsCard key={item.id} news={item} />
               ))}
             </div>

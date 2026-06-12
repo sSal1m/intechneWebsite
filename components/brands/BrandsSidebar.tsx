@@ -14,7 +14,7 @@ export function BrandsSidebar() {
     (item) => item.label === 'MARKALARIMIZ' || item.label === 'OUR BRANDS'
   );
 
-  const links = brandsMenu?.items || [];
+  const links = brandsMenu && 'items' in brandsMenu ? brandsMenu.items : [];
 
   return (
     <aside className="lg:w-1/4 flex-shrink-0 w-full">

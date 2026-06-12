@@ -8,6 +8,10 @@ import { ContactCTA } from '@/components/home/ContactCTA';
 import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 import { StatsSection } from '@/components/home/StatsSection';
 
+import { getSliders, getStats } from '@/src/actions/sliders';
+
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Ana Sayfa',
 };
@@ -18,17 +22,19 @@ interface HomePageProps {
 
 export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
+  const sliders = await getSliders();
+  const statsData = await getStats();
 
   return (
     <>
-      <HeroSlider locale={locale} />
+      <HeroSlider locale={locale} initialSliders={sliders} />
       <BrandsTabSection locale={locale} />
       <BrandsLogoRow locale={locale} />
       <NewsSection />
       <InteractiveSection />
       <ContactCTA />
       {/* <TestimonialsSection locale={locale} /> */}
-      <StatsSection />
+      <StatsSection initialStats={statsData} />
     </>
   );
 }

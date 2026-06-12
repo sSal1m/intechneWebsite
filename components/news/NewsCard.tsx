@@ -5,8 +5,7 @@ import { ArrowRight, Clock } from 'lucide-react';
 import type { NewsItem } from '@/src/types/common.types';
 
 export function NewsCard({ news }: { news: NewsItem }) {
-  // Use placeholder image
-  const bgImage = 'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg';
+  const bgImage = (news as any).image_url || (news as any).imageUrl || 'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg';
 
   return (
     <article className="bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group overflow-hidden">

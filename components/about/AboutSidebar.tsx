@@ -14,7 +14,7 @@ export function AboutSidebar() {
     (item) => item.label === 'HAKKIMIZDA' || item.label === 'ABOUT US'
   );
 
-  const links = aboutMenu?.items || [];
+  const links = aboutMenu && 'items' in aboutMenu ? aboutMenu.items : [];
 
   return (
     <aside className="lg:w-1/4 flex-shrink-0 w-full">

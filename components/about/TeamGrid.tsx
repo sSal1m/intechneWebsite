@@ -23,6 +23,7 @@ interface TeamMember {
   roleEn: string;
   linkedin: string;
   email: string;
+  image_url?: string;
 }
 
 const teamMembers: TeamMember[] = [
@@ -42,7 +43,23 @@ const teamMembers: TeamMember[] = [
   },
 ];
 
-export function TeamGrid({ isEn }: { isEn: boolean }) {
+interface TeamGridProps {
+  isEn: boolean;
+  initialMembers?: any[];
+}
+
+export function TeamGrid({ isEn, initialMembers = [] }: TeamGridProps) {
+  const members = initialMembers && initialMembers.length > 0
+    ? initialMembers.map((m: any) => ({
+        name: m.name,
+        role: m.role_tr || m.role,
+        roleEn: m.role_en || m.roleEn || m.role,
+        linkedin: m.linkedin_url || m.linkedin || '#',
+        email: m.email ? (m.email.startsWith('mailto:') ? m.email : `mailto:${m.email}`) : '#',
+        image_url: m.image_url,
+      }))
+    : teamMembers;
+
   return (
     <div className="w-full">
       <h2 className="text-3xl font-black text-brand-navy mb-8">
@@ -50,14 +67,18 @@ export function TeamGrid({ isEn }: { isEn: boolean }) {
       </h2>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {teamMembers.map((member, index) => (
+        {members.map((member, index) => (
           <div 
             key={index} 
             className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col items-center text-center group"
           >
-            {/* Avatar Placeholder */}
+            {/* Avatar Image or Placeholder */}
             <div className="w-32 h-32 rounded-full bg-slate-100 flex items-center justify-center mb-6 overflow-hidden group-hover:scale-105 transition-transform duration-300 ring-4 ring-[#15a3b0]/10">
-              <User className="w-16 h-16 text-slate-300" />
+              {member.image_url ? (
+                <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
+              ) : (
+                <User className="w-16 h-16 text-slate-300" />
+              )}
             </div>
             
             <h3 className="text-xl font-bold text-brand-navy mb-2">

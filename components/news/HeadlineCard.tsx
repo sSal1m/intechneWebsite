@@ -5,8 +5,7 @@ import { Clock, ArrowRightCircle } from 'lucide-react';
 import type { NewsItem } from '@/src/types/common.types';
 
 export function HeadlineCard({ news }: { news: NewsItem }) {
-  // Using a placeholder image if none exists
-  const bgImage = 'https://cdnv2.t3vakfi.org/media/uploaded/1ZioP1pUPAnNQoV9z4z4q2f0r4BgEdrr.jpg';
+  const bgImage = (news as any).image_url || (news as any).imageUrl || 'https://cdnv2.t3vakfi.org/media/uploaded/1ZioP1pUPAnNQoV9z4z4q2f0r4BgEdrr.jpg';
 
   return (
     <div 
