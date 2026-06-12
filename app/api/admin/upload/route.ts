@@ -13,6 +13,7 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
     const file = formData.get('file') as File;
+    const folder = formData.get('folder') as string || 'uploads';
     if (!file) {
       return NextResponse.json({ error: 'Dosya bulunamadı' }, { status: 400 });
     }
@@ -21,7 +22,11 @@ export async function POST(request: NextRequest) {
     const fileBuffer = await file.arrayBuffer();
     const extension = file.name.split('.').pop() || '';
     const uniqueName = `${crypto.randomUUID()}.${extension}`;
-    const filePath = `uploads/${uniqueName}`;
+    
+    // Validate folder
+    const permittedFolders = ['sliders', 'news', 'team', 'identity', 'uploads'];
+    const targetFolder = permittedFolders.includes(folder) ? folder : 'uploads';
+    const filePath = `${targetFolder}/${uniqueName}`;
 
     // Upload to Supabase Storage
     const { error: uploadError } = await supabase.storage

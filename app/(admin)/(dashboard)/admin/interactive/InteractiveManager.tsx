@@ -78,6 +78,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
 
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('folder', 'identity');
 
     try {
       const res = await fetch('/api/admin/upload', {

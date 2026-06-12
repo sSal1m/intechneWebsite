@@ -97,6 +97,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
     setUploading(true);
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('folder', 'news');
 
     try {
       const res = await fetch('/api/admin/upload', {
