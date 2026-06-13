@@ -9,6 +9,8 @@ import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 import { StatsSection } from '@/components/home/StatsSection';
 
 import { getSliders, getStats } from '@/src/actions/sliders';
+import { getNews } from '@/src/actions/news';
+import { getInteractiveItems } from '@/src/actions/interactive';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,14 +26,16 @@ export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
   const sliders = await getSliders();
   const statsData = await getStats();
+  const newsData = await getNews();
+  const interactiveData = await getInteractiveItems();
 
   return (
     <>
       <HeroSlider locale={locale} initialSliders={sliders} />
       <BrandsTabSection locale={locale} />
       <BrandsLogoRow locale={locale} />
-      <NewsSection />
-      <InteractiveSection />
+      <NewsSection initialNews={newsData} />
+      <InteractiveSection initialItems={interactiveData} />
       <ContactCTA />
       {/* <TestimonialsSection locale={locale} /> */}
       <StatsSection initialStats={statsData} />

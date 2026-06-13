@@ -13,6 +13,7 @@ DROP TABLE IF EXISTS stats;
 DROP TABLE IF EXISTS team;
 DROP TABLE IF EXISTS interactive;
 DROP TABLE IF EXISTS messages;
+DROP TABLE IF EXISTS corporate_identity;
 
 -- 1. BAĞIMSIZ TABLOLAR
 
@@ -91,6 +92,17 @@ CREATE TABLE messages (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Kurumsal Kimlik Tablosu
+CREATE TABLE corporate_identity (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title_tr VARCHAR(255) NOT NULL,
+    title_en VARCHAR(255) NOT NULL,
+    type VARCHAR(50) NOT NULL, -- 'logo' veya 'guide'
+    file_url TEXT NOT NULL,
+    thumbnail_url TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 
 -- 2. BAĞIMLI TABLOLAR
 
@@ -121,6 +133,7 @@ ALTER TABLE sliders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE interactive ENABLE ROW LEVEL SECURITY;
 ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE news ENABLE ROW LEVEL SECURITY;
+ALTER TABLE corporate_identity ENABLE ROW LEVEL SECURITY;
 
 -- Politikalar: Ziyaretçi Okuma Yetkileri (Kamuya Açık Tablolar)
 CREATE POLICY "Ziyaretciler kategorileri okuyabilir" ON news_categories FOR SELECT USING (true);
@@ -129,6 +142,7 @@ CREATE POLICY "Ziyaretciler ekibi okuyabilir" ON team FOR SELECT USING (true);
 CREATE POLICY "Ziyaretciler slaytlari okuyabilir" ON sliders FOR SELECT USING (true);
 CREATE POLICY "Ziyaretciler yayinlari okuyabilir" ON interactive FOR SELECT USING (true);
 CREATE POLICY "Ziyaretciler haberleri okuyabilir" ON news FOR SELECT USING (true);
+CREATE POLICY "Ziyaretciler kurumsal kimligi okuyabilir" ON corporate_identity FOR SELECT USING (true);
 
 -- Politikalar: İletişim Formu Mesaj Ekleme Yetkisi (Kamuya Açık)
 CREATE POLICY "Ziyaretciler mesaj iletebilir" ON messages FOR INSERT WITH CHECK (true);
@@ -166,6 +180,11 @@ CREATE POLICY "Admin haberleri yonetebilir" ON news
     WITH CHECK ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr');
 
 CREATE POLICY "Admin mesajlari yonetebilir" ON messages
+    FOR ALL TO authenticated
+    USING ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr')
+    WITH CHECK ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr');
+
+CREATE POLICY "Admin kurumsal kimligi yonetebilir" ON corporate_identity
     FOR ALL TO authenticated
     USING ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr')
     WITH CHECK ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr');
@@ -308,3 +327,12 @@ INSERT INTO sliders (title_tr, title_en, description_tr, description_en, button_
 -- F. İnteraktif Yayınlar Seed Verisi
 INSERT INTO interactive (title_tr, title_en, description_tr, description_en, category, type, video_url) VALUES
 ('Intechne Robotik Eko-Sistemi Tanıtım Videosu', 'Intechne Robotics Eco-System Introduction Video', 'Intechne bünyesinde kurulan ve yürütülen robotik ligleri, festivaller ve akademi programlarının genel ekosistem tanıtım belgeseli.', 'A general ecosystem documentary of robotics leagues, festivals, and academy programs established and managed under Intechne.', 'projeler', 'video', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+
+-- G. Kurumsal Kimlik Seed Verisi
+INSERT INTO corporate_identity (title_tr, title_en, type, file_url) VALUES
+('Intechne Logo', 'Intechne Logo', 'logo', 'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg'),
+('Intechne Kurumsal Kimlik Kılavuzu', 'Intechne Corporate Identity Guide', 'guide', 'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg'),
+('Cezeri Robot Ligi Logo', 'Cezeri Robot League Logo', 'logo', 'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg'),
+('Robonex Robot Ligi Logo', 'Robonex Robot League Logo', 'logo', 'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg'),
+('Tech & Chill Fest Logo', 'Tech & Chill Fest Logo', 'logo', 'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg'),
+('Intechne Akademi Logo', 'Intechne Academy Logo', 'logo', 'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg');

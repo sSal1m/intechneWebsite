@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { createInteractiveItem, updateInteractiveItem, deleteInteractiveItem } from '@/src/actions/interactive';
 import { Trash2, Edit, Plus, X, Upload, BookOpen, ExternalLink, Play } from 'lucide-react';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 interface InteractiveItem {
   id: string;
@@ -27,6 +28,10 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
   const [isPending, startTransition] = useTransition();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<InteractiveItem | null>(null);
+
+  // Delete confirmation states
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{ id: string; img?: string; file?: string } | null>(null);
 
   // Form states
   const [titleTr, setTitleTr] = useState('');
@@ -137,9 +142,9 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
     });
   }
 
-  function handleDelete(id: string, img?: string, file?: string) {
-    if (!confirm('Bu interaktif yayını silmek istediğinize emin misiniz?')) return;
-
+  function executeDelete() {
+    if (!itemToDelete) return;
+    const { id, img, file } = itemToDelete;
     startTransition(async () => {
       const result = await deleteInteractiveItem(id, img, file);
       if (result.success) {
@@ -213,6 +218,22 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
 
               {/* Actions panel */}
               <div className="absolute right-4 top-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-950 p-1.5 rounded-lg border border-slate-850 shadow-md">
+                <a
+                  href={
+                    item.type === 'video' && item.video_url 
+                      ? item.video_url 
+                      : item.type === 'report' && item.file_url 
+                      ? item.file_url 
+                      : '/tr/interaktif'
+                  }
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
+                  aria-label="Sitede Gör"
+                  title="Sitede Gör"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </a>
                 <button
                   onClick={() => openEditModal(item)}
                   className="text-slate-400 hover:text-primary p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
@@ -221,7 +242,10 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
                   <Edit className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => handleDelete(item.id, item.image_url, item.file_url)}
+                  onClick={() => {
+                    setItemToDelete({ id: item.id, img: item.image_url, file: item.file_url });
+                    setDeleteConfirmOpen(true);
+                  }}
                   className="text-slate-400 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
                   aria-label="Sil"
                 >
@@ -411,6 +435,13 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
           </div>
         </div>
       )}
+      <ConfirmModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={executeDelete}
+        title="Yayını Sil"
+        message="Bu interaktif yayını silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
+      />
     </div>
   );
 }

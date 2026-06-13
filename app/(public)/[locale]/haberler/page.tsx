@@ -5,12 +5,13 @@ import { HeadlineCard } from '@/components/news/HeadlineCard';
 import { NewsCard } from '@/components/news/NewsCard';
 import { newsItems } from '@/src/data/news';
 import { getNews } from '@/src/actions/news';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; page?: string }>;
 }
 
 export default async function HaberlerPage({
@@ -18,8 +19,9 @@ export default async function HaberlerPage({
   searchParams,
 }: PageProps) {
   const { locale } = await params;
-  const { category } = await searchParams;
+  const { category, page: pageParam } = await searchParams;
   const isEn = locale === 'en';
+  const page = Math.max(1, parseInt(pageParam || '1', 10) || 1);
 
   const allNews = await getNews();
   const dbNews = category ? await getNews(category) : allNews;
@@ -46,6 +48,21 @@ export default async function HaberlerPage({
 
   const headlineItem = displayNews.find((item: any) => item.tag === 'Öne Çıkan') || displayNews[0];
   const otherItems = displayNews.filter((item: any) => item.id !== headlineItem?.id);
+
+  const ITEMS_PER_PAGE = 6;
+  const totalPages = Math.ceil(otherItems.length / ITEMS_PER_PAGE);
+  const paginatedOtherItems = otherItems.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE
+  );
+
+  const getPageUrl = (pageNum: number) => {
+    const params = new URLSearchParams();
+    if (category) params.set('category', category);
+    if (pageNum > 1) params.set('page', pageNum.toString());
+    const searchStr = params.toString();
+    return `/haberler${searchStr ? `?${searchStr}` : ''}`;
+  };
 
   // Fallback banner image
   const bannerBg = 'https://cdnv2.t3vakfi.org/media/project/T3_banner-03.png';
@@ -86,37 +103,60 @@ export default async function HaberlerPage({
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {otherItems.map((item: any) => (
+              {paginatedOtherItems.map((item: any) => (
                 <NewsCard key={item.id} news={item} />
               ))}
             </div>
 
-            {/* Pagination Placeholder */}
-            <div className="flex justify-center mt-12 mb-8">
-              <ul className="flex items-center gap-2">
-                <li>
-                  <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#15a3b0] text-white font-bold text-sm shadow-md">
-                    1
-                  </button>
-                </li>
-                <li>
-                  <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-[#15a3b0] hover:text-white hover:border-[#15a3b0] hover:shadow-md transition-all duration-300 text-sm font-bold">
-                    2
-                  </button>
-                </li>
-                <li>
-                  <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-[#15a3b0] hover:text-white hover:border-[#15a3b0] hover:shadow-md transition-all duration-300 text-sm font-bold">
-                    3
-                  </button>
-                </li>
-                <li className="text-slate-400 px-2 font-bold">...</li>
-                <li>
-                  <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-[#15a3b0] hover:text-white hover:border-[#15a3b0] hover:shadow-md transition-all duration-300 text-sm font-bold">
-                    53
-                  </button>
-                </li>
-              </ul>
-            </div>
+            {/* Dynamic Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-12 mb-8">
+                <ul className="flex items-center gap-2">
+                  {/* Previous Button */}
+                  {page > 1 && (
+                    <li>
+                      <Link
+                        href={getPageUrl(page - 1) as any}
+                        className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-[#15a3b0] hover:text-white hover:border-[#15a3b0] hover:shadow-md transition-all duration-300 text-sm font-bold"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </Link>
+                    </li>
+                  )}
+                  
+                  {/* Page Numbers */}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+                    const isActive = pageNum === page;
+                    return (
+                      <li key={pageNum}>
+                        <Link
+                          href={getPageUrl(pageNum) as any}
+                          className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold text-sm transition-all duration-300 ${
+                            isActive
+                              ? 'bg-[#15a3b0] text-white shadow-md'
+                              : 'bg-white border border-slate-200 text-slate-600 hover:bg-[#15a3b0] hover:text-white hover:border-[#15a3b0] hover:shadow-md'
+                          }`}
+                        >
+                          {pageNum}
+                        </Link>
+                      </li>
+                    );
+                  })}
+
+                  {/* Next Button */}
+                  {page < totalPages && (
+                    <li>
+                      <Link
+                        href={getPageUrl(page + 1) as any}
+                        className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-[#15a3b0] hover:text-white hover:border-[#15a3b0] hover:shadow-md transition-all duration-300 text-sm font-bold"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </Link>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>

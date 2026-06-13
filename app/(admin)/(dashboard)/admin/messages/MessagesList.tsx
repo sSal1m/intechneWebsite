@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { deleteMessage } from '@/src/actions/messages';
 import { Trash2, Calendar, User, Phone, Mail, FileText } from 'lucide-react';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 interface Message {
   id: string;
@@ -23,10 +24,19 @@ export function MessagesList({ initialMessages }: MessagesListProps) {
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  function handleDelete(id: string, e: React.MouseEvent) {
-    e.stopPropagation();
-    if (!confirm('Bu mesajı silmek istediğinize emin misiniz?')) return;
+  // Delete confirmation states
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
 
+  function triggerDelete(id: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    setMessageToDelete(id);
+    setDeleteConfirmOpen(true);
+  }
+
+  function executeDelete() {
+    if (!messageToDelete) return;
+    const id = messageToDelete;
     startTransition(async () => {
       const result = await deleteMessage(id);
       if (result.success) {
@@ -66,7 +76,7 @@ export function MessagesList({ initialMessages }: MessagesListProps) {
                 </div>
                 
                 <button
-                  onClick={(e) => handleDelete(msg.id, e)}
+                  onClick={(e) => triggerDelete(msg.id, e)}
                   disabled={isPending}
                   className="text-slate-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 flex-shrink-0"
                   aria-label="Sil"
@@ -136,7 +146,7 @@ export function MessagesList({ initialMessages }: MessagesListProps) {
               </div>
               
               <button
-                onClick={(e) => handleDelete(selectedMessage.id, e)}
+                onClick={(e) => triggerDelete(selectedMessage.id, e)}
                 disabled={isPending}
                 className="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white font-bold px-4 py-2 rounded-xl transition-all duration-200 flex items-center gap-2"
               >
@@ -152,6 +162,13 @@ export function MessagesList({ initialMessages }: MessagesListProps) {
           </div>
         )}
       </div>
+      <ConfirmModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={executeDelete}
+        title="Mesajı Sil"
+        message="Bu mesajı silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
+      />
     </div>
   );
 }

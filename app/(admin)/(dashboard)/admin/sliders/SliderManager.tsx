@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from 'react';
 import { createSlider, updateSlider, deleteSlider, updateStat } from '@/src/actions/sliders';
-import { Trash2, Edit, Plus, X, Upload, Layers, TrendingUp } from 'lucide-react';
+import { Trash2, Edit, Plus, X, Upload, Layers, TrendingUp, ExternalLink } from 'lucide-react';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 interface Slider {
   id: string;
@@ -42,6 +43,10 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
   const [isStatModalOpen, setIsStatModalOpen] = useState(false);
   const [editingSlider, setEditingSlider] = useState<Slider | null>(null);
   const [editingStat, setEditingStat] = useState<StatItem | null>(null);
+
+  // Delete confirmation states
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [sliderToDelete, setSliderToDelete] = useState<{ id: string; img?: string } | null>(null);
 
   // Slider Form state
   const [titleTr, setTitleTr] = useState('');
@@ -184,9 +189,9 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
     });
   }
 
-  function handleSliderDelete(id: string, img?: string) {
-    if (!confirm('Bu slaytı silmek istediğinize emin misiniz?')) return;
-
+  function executeSliderDelete() {
+    if (!sliderToDelete) return;
+    const { id, img } = sliderToDelete;
     startTransition(async () => {
       const result = await deleteSlider(id, img);
       if (result.success) {
@@ -275,6 +280,16 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
 
               {/* Actions panel */}
               <div className="absolute right-6 top-6 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-950 pl-2">
+                <a
+                  href={slider.href ? `/tr${slider.href}` : '/tr'}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
+                  aria-label="Sitede Gör"
+                  title="Sitede Gör"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </a>
                 <button
                   onClick={() => openEditSliderModal(slider)}
                   className="text-slate-400 hover:text-primary p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
@@ -283,7 +298,10 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
                   <Edit className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => handleSliderDelete(slider.id, slider.image_url)}
+                  onClick={() => {
+                    setSliderToDelete({ id: slider.id, img: slider.image_url });
+                    setDeleteConfirmOpen(true);
+                  }}
                   className="text-slate-400 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
                   aria-label="Sil"
                 >
@@ -619,6 +637,13 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
           </div>
         </div>
       )}
+      <ConfirmModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={executeSliderDelete}
+        title="Slaytı Sil"
+        message="Bu slaytı silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
+      />
     </div>
   );
 }

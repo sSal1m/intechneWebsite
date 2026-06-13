@@ -9,19 +9,25 @@ import type { MediaItem } from '@/src/types/common.types';
 import { useLocale } from 'next-intl';
 import { Link } from '@/src/i18n/navigation';
 
-const categories = ['Tümü', 'Podcast', 'Teknoloji', 'İnsan', 'Projeler', 'Robotik'] as const;
+const categories = ['Tümü', 'Projeler', 'Raporlar', 'Eğitimler', 'Podcast', 'Teknoloji', 'İnsan', 'Robotik'] as const;
 type Category = (typeof categories)[number];
 
 const categoryTranslations: Record<Category, string> = {
   'Tümü': 'All',
+  'Projeler': 'Projects',
+  'Raporlar': 'Reports',
+  'Eğitimler': 'Trainings',
   'Podcast': 'Podcast',
   'Teknoloji': 'Technology',
   'İnsan': 'People',
-  'Projeler': 'Projects',
   'Robotik': 'Robotics',
 };
 
-export function InteractiveSection() {
+interface InteractiveSectionProps {
+  initialItems?: any[];
+}
+
+export function InteractiveSection({ initialItems }: InteractiveSectionProps) {
   const locale = useLocale();
   const isEn = locale === 'en';
   const [activeCategory, setActiveCategory] = useState<Category>('Tümü');
@@ -30,10 +36,48 @@ export function InteractiveSection() {
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
+  // Map database items and pad/merge with mock items
+  let finalItems: MediaItem[] = initialItems && initialItems.length > 0
+    ? initialItems.map((item) => {
+        const catLower = item.category?.toLowerCase();
+        let mappedCat = item.category || '';
+        if (catLower === 'projeler') mappedCat = 'Projeler';
+        else if (catLower === 'raporlar') mappedCat = 'Raporlar';
+        else if (catLower === 'egitimler') mappedCat = 'Eğitimler';
+        else if (catLower === 'podcast') mappedCat = 'Podcast';
+        else if (catLower === 'teknoloji') mappedCat = 'Teknoloji';
+        else if (catLower === 'insan') mappedCat = 'İnsan';
+        else if (catLower === 'robotik') mappedCat = 'Robotik';
+        else if (item.category) {
+          mappedCat = item.category.charAt(0).toUpperCase() + item.category.slice(1);
+        }
+
+        return {
+          id: item.id,
+          date: new Date(item.created_at).toLocaleDateString(isEn ? 'en-US' : 'tr-TR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+          }),
+          category: mappedCat,
+          title: isEn ? item.title_en : item.title_tr,
+          subtitle: isEn ? item.description_en : item.description_tr,
+          type: item.type,
+          href: item.type === 'video' && item.video_url 
+            ? item.video_url 
+            : item.type === 'report' && item.file_url 
+            ? item.file_url 
+            : '/interaktif',
+          imageAlt: isEn ? item.title_en : item.title_tr,
+          imageUrl: item.image_url,
+        };
+      })
+    : mediaItems;
+
   const filtered: MediaItem[] =
     activeCategory === 'Tümü'
-      ? mediaItems
-      : mediaItems.filter((item) => item.category === activeCategory);
+      ? finalItems
+      : finalItems.filter((item) => item.category === activeCategory);
 
   return (
     <section>

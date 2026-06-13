@@ -59,6 +59,8 @@ export async function createInteractiveItem(formData: {
     if (error) throw new Error(error.message);
 
     revalidatePath('/[locale]/interaktif', 'page');
+    revalidatePath('/');
+    revalidatePath('/[locale]', 'layout');
     return { success: true, data };
   } catch (error: any) {
     console.error('createInteractiveItem error:', error);
@@ -106,6 +108,8 @@ export async function updateInteractiveItem(
     if (error) throw new Error(error.message);
 
     revalidatePath('/[locale]/interaktif', 'page');
+    revalidatePath('/');
+    revalidatePath('/[locale]', 'layout');
     return { success: true, data };
   } catch (error: any) {
     console.error('updateInteractiveItem error:', error);
@@ -140,6 +144,8 @@ export async function deleteInteractiveItem(id: string, imageUrl?: string, fileU
     }
 
     revalidatePath('/[locale]/interaktif', 'page');
+    revalidatePath('/');
+    revalidatePath('/[locale]', 'layout');
     return { success: true };
   } catch (error: any) {
     console.error('deleteInteractiveItem error:', error);

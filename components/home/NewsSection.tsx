@@ -6,8 +6,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { NewsCard } from '@/components/ui/NewsCard';
 import { newsItems } from '@/src/data/news';
 import { useLocale } from 'next-intl';
+import type { NewsItem } from '@/src/types/common.types';
 
-export function NewsSection() {
+export function NewsSection({ initialNews }: { initialNews?: any[] }) {
   const locale = useLocale();
   const isEn = locale === 'en';
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
@@ -15,8 +16,26 @@ export function NewsSection() {
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
-  const featured = newsItems[0];
-  const secondary = newsItems.slice(1);
+  // Map database news and merge with fallback if needed
+  let finalNews: NewsItem[] = initialNews && initialNews.length > 0
+    ? initialNews.map((item) => ({
+        id: item.id,
+        title: isEn ? item.title_en : item.title_tr,
+        excerpt: isEn ? item.excerpt_en : item.excerpt_tr,
+        href: `/haberler/${item.id}`,
+        tag: item.tag,
+        date: new Date(item.published_at).toLocaleDateString(isEn ? 'en-US' : 'tr-TR', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        }),
+        image_url: item.image_url,
+        imageAlt: isEn ? item.title_en : item.title_tr,
+      }))
+    : newsItems;
+
+  const featured = finalNews[0];
+  const secondary = finalNews.slice(1);
 
   return (
     <section className="bg-[#C0222A] py-14">
@@ -43,7 +62,7 @@ export function NewsSection() {
                 </div>
               </div>
               {/* Slide 2 (if more news) */}
-              {newsItems.length > 5 && (
+              {finalNews.length > 5 && (
                 <div className="embla__slide flex-shrink-0 w-full">
                   <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-4">
                     <NewsCard item={secondary[3]} variant="featured" />

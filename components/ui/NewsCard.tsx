@@ -12,6 +12,7 @@ interface NewsCardProps {
 export function NewsCard({ item, variant, className }: NewsCardProps) {
   const locale = useLocale();
   const isEn = locale === 'en';
+  const imageUrl = (item as any).image_url || (item as any).imageUrl;
 
   if (variant === 'featured') {
     return (
@@ -22,9 +23,13 @@ export function NewsCard({ item, variant, className }: NewsCardProps) {
               {item.tag}
             </span>
           )}
-          <div className="w-full h-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center">
-            <span className="text-white text-sm font-medium opacity-60">{item.imageAlt}</span>
-          </div>
+          {imageUrl ? (
+            <img src={imageUrl} alt={item.title} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center">
+              <span className="text-white text-sm font-medium opacity-60">{item.imageAlt}</span>
+            </div>
+          )}
         </div>
         <div className="p-6 flex flex-col flex-1">
           <p className="text-slate-500 text-sm mb-3">{item.date}</p>
@@ -48,9 +53,13 @@ export function NewsCard({ item, variant, className }: NewsCardProps) {
   return (
     <div className={cn('bg-white rounded-2xl overflow-hidden flex flex-col', className)}>
       <div className="relative aspect-video overflow-hidden">
-        <div className="w-full h-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center">
-          <span className="text-white text-xs font-medium opacity-60 text-center px-2">{item.imageAlt}</span>
-        </div>
+        {imageUrl ? (
+          <img src={imageUrl} alt={item.title} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center">
+            <span className="text-white text-xs font-medium opacity-60 text-center px-2">{item.imageAlt}</span>
+          </div>
+        )}
       </div>
       <div className="p-4 flex flex-col flex-1">
         <p className="text-slate-500 text-xs mb-2">{item.date}</p>

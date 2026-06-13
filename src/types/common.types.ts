@@ -13,12 +13,13 @@ export interface NewsItem {
 export interface MediaItem {
   id: string;
   date: string;
-  category: 'Podcast' | 'Teknoloji' | 'İnsan' | 'Projeler' | 'Robotik';
+  category: string;
   title: string;
   subtitle?: string;
-  type: 'video' | 'audio' | 'article';
+  type: 'video' | 'audio' | 'article' | 'report' | 'interactive';
   href: string;
   imageAlt: string;
+  imageUrl?: string;
 }
 
 export interface TestimonialItem {

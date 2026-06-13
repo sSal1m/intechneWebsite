@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from 'react';
 import { createNews, updateNews, deleteNews } from '@/src/actions/news';
-import { Trash2, Edit, Plus, X, Upload, FileText, Search } from 'lucide-react';
+import { Trash2, Edit, Plus, X, Upload, FileText, Search, ExternalLink } from 'lucide-react';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 interface NewsItem {
   id: string;
@@ -36,6 +37,10 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
 
+  // Delete confirmation states
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [newsToDelete, setNewsToDelete] = useState<{ id: string; img?: string } | null>(null);
+
   // Filter & Search states
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilterCategory, setSelectedFilterCategory] = useState('all');
@@ -52,6 +57,9 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
   const [imageUrl, setImageUrl] = useState('');
   const [publishedAt, setPublishedAt] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [inContentMediaUrl, setInContentMediaUrl] = useState('');
+  const [inContentUploading, setInContentUploading] = useState(false);
+  const [inContentMediaType, setInContentMediaType] = useState<'image' | 'video'>('image');
 
   function openAddModal() {
     setEditingNews(null);
@@ -64,6 +72,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
     setTag('');
     setCategorySlug(categories[0]?.slug || '');
     setImageUrl('');
+    setInContentMediaUrl('');
     // Default to current local time in datetime-local format (YYYY-MM-DDTHH:MM)
     const localNow = new Date();
     localNow.setMinutes(localNow.getMinutes() - localNow.getTimezoneOffset());
@@ -82,6 +91,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
     setTag(news.tag || '');
     setCategorySlug(news.category_slug || '');
     setImageUrl(news.image_url || '');
+    setInContentMediaUrl('');
     
     // Format published_at to local datetime-local format
     const dateObj = new Date(news.published_at);
@@ -113,6 +123,36 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
       alert('Resim yüklenirken hata oluştu: ' + err.message);
     } finally {
       setUploading(false);
+    }
+  }
+
+  async function handleInContentMediaUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setInContentUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'news');
+
+    // Automatically detect type from file mime
+    const isVideo = file.type.startsWith('video/');
+    setInContentMediaType(isVideo ? 'video' : 'image');
+
+    try {
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error('Yükleme başarısız');
+
+      const data = await res.json();
+      setInContentMediaUrl(data.url);
+    } catch (err: any) {
+      alert('Medya yüklenirken hata oluştu: ' + err.message);
+    } finally {
+      setInContentUploading(false);
     }
   }
 
@@ -157,9 +197,9 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
     });
   }
 
-  function handleDelete(id: string, img?: string) {
-    if (!confirm('Bu haberi silmek istediğinize emin misiniz?')) return;
-
+  function executeDelete() {
+    if (!newsToDelete) return;
+    const { id, img } = newsToDelete;
     startTransition(async () => {
       const result = await deleteNews(id, img);
       if (result.success) {
@@ -261,6 +301,15 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
 
             {/* Actions panel overlay */}
             <div className="absolute right-4 top-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-950 p-1.5 rounded-lg border border-slate-850 shadow-md">
+              <a
+                href={`/tr/haberler/${news.id}`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
+                aria-label="Sitede Gör"
+              >
+                <ExternalLink className="w-4 h-4" />
+              </a>
               <button
                 onClick={() => openEditModal(news)}
                 className="text-slate-400 hover:text-primary p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
@@ -269,7 +318,10 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
                 <Edit className="w-4 h-4" />
               </button>
               <button
-                onClick={() => handleDelete(news.id, news.image_url)}
+                onClick={() => {
+                  setNewsToDelete({ id: news.id, img: news.image_url });
+                  setDeleteConfirmOpen(true);
+                }}
                 className="text-slate-400 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
                 aria-label="Sil"
               >
@@ -371,6 +423,65 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
                   />
                 </div>
 
+                {/* Haber İçi Medya Yükleme Paneli */}
+                <div className="flex flex-col gap-3 col-span-2 bg-slate-950 p-4 border border-slate-800 rounded-xl mt-2">
+                  <div className="flex flex-col gap-1">
+                    <h5 className="text-white text-xs font-bold uppercase tracking-wider">Haber İçi Medya Yükleme Yardımcısı</h5>
+                    <p className="text-slate-500 text-[10px] font-semibold leading-relaxed">
+                      Haber metninizin içerisine görsel, video veya YouTube videosu yerleştirmek için bu aracı kullanabilirsiniz. Yüklediğiniz dosyanın kodunu kopyalayıp haber metninde boş satır olarak yapıştırın (Satırlar arası boşluk bırakarak yerleştirin).
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-t border-slate-900 pt-3">
+                    <label className="bg-slate-900 hover:bg-slate-850 border border-slate-800 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition-colors flex items-center gap-2 flex-shrink-0">
+                      <Upload className="w-3.5 h-3.5" />
+                      {inContentUploading ? 'Yükleniyor...' : 'Görsel / Video Yükle'}
+                      <input
+                        type="file"
+                        accept="image/*,video/*"
+                        onChange={handleInContentMediaUpload}
+                        disabled={inContentUploading}
+                        className="hidden"
+                      />
+                    </label>
+
+                    {inContentMediaUrl && (
+                      <div className="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full">
+                        <input
+                          type="text"
+                          readOnly
+                          value={
+                            inContentMediaType === 'image'
+                              ? `![Görsel Açıklaması](${inContentMediaUrl})`
+                              : `[video](${inContentMediaUrl})`
+                          }
+                          className="bg-slate-900 border border-slate-800 text-slate-400 rounded-xl px-3 py-1.5 text-xs focus:outline-none w-full font-mono select-all"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const code = inContentMediaType === 'image'
+                              ? `![Görsel Açıklaması](${inContentMediaUrl})`
+                              : `[video](${inContentMediaUrl})`;
+                            navigator.clipboard.writeText(code);
+                            alert('Haber içi medya kodu panoya kopyalandı! Haber detay metnine boş satır olarak yapıştırabilirsiniz.');
+                          }}
+                          className="bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 px-3 py-1.5 rounded-xl text-xs font-bold flex-shrink-0 transition-colors"
+                        >
+                          Kodu Kopyala
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-1 border-t border-slate-900 pt-3">
+                    <span className="text-slate-400 text-[10px] font-bold">YouTube Video Ekleme:</span>
+                    <p className="text-slate-500 text-[10px] font-semibold leading-relaxed">
+                      Herhangi bir YouTube videosunu yerleştirmek için video linkini (Örn: <code className="text-slate-400 font-mono">https://www.youtube.com/watch?v=dQw4w9WgXcQ</code>) kopyalayıp haber metninde tek başına bir satıra yapıştırmanız yeterlidir.
+                    </p>
+                  </div>
+                </div>
+
                 {/* Category & Tag & DateTime */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Kategori</label>
@@ -390,13 +501,18 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Haber Etiketi / Badge</label>
-                  <input
-                    type="text"
+                  <select
                     value={tag}
                     onChange={(e) => setTag(e.target.value)}
-                    placeholder="Örn: Öne Çıkan, Yeni"
-                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
-                  />
+                    className="bg-slate-950 border border-slate-800 text-slate-300 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
+                  >
+                    <option value="">Seçiniz (Opsiyonel)</option>
+                    <option value="Öne Çıkan">Öne Çıkan</option>
+                    <option value="Duyuru">Duyuru</option>
+                    <option value="Akademi">Akademi</option>
+                    <option value="Robotik">Robotik</option>
+                    <option value="Festival">Festival</option>
+                  </select>
                 </div>
 
                 <div className="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
@@ -457,6 +573,13 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
           </div>
         </div>
       )}
+      <ConfirmModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={executeDelete}
+        title="Haberi Sil"
+        message="Bu haberi silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
+      />
     </div>
   );
 }

@@ -9,7 +9,8 @@ import {
   Users, 
   BookOpen, 
   Mail, 
-  LogOut 
+  LogOut,
+  FolderArchive
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -37,6 +38,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { label: 'Haber Yönetimi', href: '/admin/news', icon: FileText },
     { label: 'Ekip Yönetimi', href: '/admin/team', icon: Users },
     { label: 'İnteraktif Yayınlar', href: '/admin/interactive', icon: BookOpen },
+    { label: 'Kurumsal Kimlik', href: '/admin/identity', icon: FolderArchive },
     { label: 'Gelen Mesajlar', href: '/admin/messages', icon: Mail },
   ];
 

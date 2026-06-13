@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from 'react';
 import { createTeamMember, updateTeamMember, deleteTeamMember } from '@/src/actions/team';
-import { Trash2, Edit, Plus, Mail, Users, X, Upload } from 'lucide-react';
+import { Trash2, Edit, Plus, Mail, Users, X, Upload, ExternalLink } from 'lucide-react';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 const LinkedinIcon = ({ className }: { className?: string }) => (
   <svg 
@@ -41,6 +42,10 @@ export function TeamManager({ initialMembers }: TeamManagerProps) {
   const [isPending, startTransition] = useTransition();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
+
+  // Delete confirmation states
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState<{ id: string; img?: string } | null>(null);
 
   // Form states
   const [name, setName] = useState('');
@@ -140,9 +145,9 @@ export function TeamManager({ initialMembers }: TeamManagerProps) {
     });
   }
 
-  function handleDelete(id: string, img?: string) {
-    if (!confirm('Bu ekip üyesini silmek istediğinize emin misiniz?')) return;
-
+  function executeDelete() {
+    if (!memberToDelete) return;
+    const { id, img } = memberToDelete;
     startTransition(async () => {
       const result = await deleteTeamMember(id, img);
       if (result.success) {
@@ -209,6 +214,16 @@ export function TeamManager({ initialMembers }: TeamManagerProps) {
 
             {/* Actions panel overlay */}
             <div className="absolute right-4 top-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-950 pl-2">
+              <a
+                href="/tr/hakkimizda/ekibimiz"
+                target="_blank"
+                rel="noreferrer"
+                className="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
+                aria-label="Sitede Gör"
+                title="Sitede Gör"
+              >
+                <ExternalLink className="w-4 h-4" />
+              </a>
               <button
                 onClick={() => openEditModal(member)}
                 className="text-slate-400 hover:text-primary p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
@@ -217,7 +232,10 @@ export function TeamManager({ initialMembers }: TeamManagerProps) {
                 <Edit className="w-4 h-4" />
               </button>
               <button
-                onClick={() => handleDelete(member.id, member.image_url)}
+                onClick={() => {
+                  setMemberToDelete({ id: member.id, img: member.image_url });
+                  setDeleteConfirmOpen(true);
+                }}
                 className="text-slate-400 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
                 aria-label="Sil"
               >
@@ -368,6 +386,13 @@ export function TeamManager({ initialMembers }: TeamManagerProps) {
           </div>
         </div>
       )}
+      <ConfirmModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={executeDelete}
+        title="Ekip Üyesini Sil"
+        message="Bu ekip üyesini silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
+      />
     </div>
   );
 }

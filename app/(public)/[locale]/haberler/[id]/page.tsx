@@ -133,11 +133,62 @@ export default async function HaberDetailPage({ params }: PageProps) {
               {excerpt}
             </p>
           )}
-          {content && content.split('\n\n').map((paragraph: string, idx: number) => (
-            <p key={idx} className="text-slate-600 leading-relaxed text-lg font-medium mb-6">
-              {paragraph}
-            </p>
-          ))}
+          {content && content.split('\n\n').map((paragraph: string, idx: number) => {
+            const trimmed = paragraph.trim();
+            
+            // Match markdown image: ![alt](url)
+            const imgMatch = trimmed.match(/^!\[(.*?)\]\((.*?)\)$/);
+            if (imgMatch) {
+              const alt = imgMatch[1];
+              const src = imgMatch[2];
+              return (
+                <div key={idx} className="my-8 rounded-3xl overflow-hidden shadow-lg border border-slate-100 max-w-full">
+                  <img src={src} alt={alt} className="w-full h-auto object-cover max-h-[500px]" />
+                  {alt && (
+                    <div className="bg-slate-50 px-6 py-3 text-slate-500 text-sm font-semibold border-t border-slate-100 text-center">
+                      {alt}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            // Match markdown video: [video](url)
+            const videoMatch = trimmed.match(/^\[video\]\((.*?)\)$/);
+            if (videoMatch) {
+              const src = videoMatch[1];
+              return (
+                <div key={idx} className="my-8 rounded-3xl overflow-hidden shadow-lg border border-slate-100 max-w-full bg-black">
+                  <video src={src} controls className="w-full h-auto max-h-[500px]" />
+                </div>
+              );
+            }
+
+            // Match YouTube URL: youtube.com or youtu.be
+            const ytMatch = trimmed.match(/^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})$/);
+            if (ytMatch) {
+              const videoId = ytMatch[1];
+              return (
+                <div key={idx} className="my-8 aspect-video w-full rounded-3xl overflow-hidden shadow-lg border border-slate-100">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${videoId}`}
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                </div>
+              );
+            }
+
+            // Default text rendering
+            return (
+              <p key={idx} className="text-slate-600 leading-relaxed text-lg font-medium mb-6 whitespace-pre-line">
+                {paragraph}
+              </p>
+            );
+          })}
         </article>
       </div>
     </div>

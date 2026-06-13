@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ArrowRight, BookOpen, MonitorPlay, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface InteractiveItem {
-  id: number;
+  id: string | number;
   title: string;
   titleEn: string;
   category: string;
@@ -13,6 +13,8 @@ interface InteractiveItem {
   descriptionEn: string;
   type: 'report' | 'video' | 'interactive';
   imageUrl?: string;
+  fileUrl?: string;
+  videoUrl?: string;
 }
 
 const categories = [
@@ -65,11 +67,47 @@ const mockItems: InteractiveItem[] = [
   },
 ];
 
-export function InteractiveGrid({ isEn }: { isEn: boolean }) {
+export function InteractiveGrid({ isEn, initialItems }: { isEn: boolean; initialItems?: any[] }) {
   const [activeTab, setActiveTab] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 6;
 
-  const filteredItems = mockItems.filter(
+  // Map database items and merge with mock items
+  let finalItems: InteractiveItem[] = initialItems && initialItems.length > 0
+    ? initialItems.map((item) => {
+        const catLower = item.category?.toLowerCase() || '';
+        const catEn = catLower === 'projeler'
+          ? 'Projects'
+          : catLower === 'raporlar'
+          ? 'Reports'
+          : catLower === 'egitimler'
+          ? 'Trainings'
+          : item.category;
+
+        return {
+          id: item.id,
+          title: item.title_tr,
+          titleEn: item.title_en,
+          category: catLower,
+          categoryEn: catEn,
+          description: item.description_tr || '',
+          descriptionEn: item.description_en || '',
+          type: item.type,
+          imageUrl: item.image_url,
+          fileUrl: item.file_url,
+          videoUrl: item.video_url,
+        };
+      })
+    : mockItems;
+
+  const filteredItems = finalItems.filter(
     (item) => activeTab === 'all' || item.category === activeTab
+  );
+
+  const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
+  const paginatedItems = filteredItems.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
   );
 
   return (
@@ -108,7 +146,10 @@ export function InteractiveGrid({ isEn }: { isEn: boolean }) {
           {categories.map((category) => (
             <button
               key={category.id}
-              onClick={() => setActiveTab(category.id)}
+              onClick={() => {
+                setActiveTab(category.id);
+                setCurrentPage(1);
+              }}
               className={`px-6 py-2.5 rounded-full font-bold text-sm transition-all duration-300 ${
                 activeTab === category.id
                   ? 'bg-[#15a3b0] text-white shadow-md scale-105'
@@ -122,56 +163,111 @@ export function InteractiveGrid({ isEn }: { isEn: boolean }) {
 
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col group cursor-pointer"
-            >
-              <div className="h-48 md:h-64 bg-slate-100 flex items-center justify-center relative overflow-hidden">
-                {/* Fallback pattern background */}
-                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#15a3b0_1px,transparent_1px)] [background-size:16px_16px]" />
-                
-                {item.type === 'report' && <FileText className="w-20 h-20 text-[#15a3b0]/40 group-hover:scale-110 transition-transform duration-500" />}
-                {item.type === 'video' && <MonitorPlay className="w-20 h-20 text-[#15a3b0]/40 group-hover:scale-110 transition-transform duration-500" />}
-                {item.type === 'interactive' && <BookOpen className="w-20 h-20 text-[#15a3b0]/40 group-hover:scale-110 transition-transform duration-500" />}
-                
-                <span className="absolute top-4 left-4 bg-white/90 backdrop-blur text-[#15a3b0] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
-                  {isEn ? item.categoryEn : item.category}
-                </span>
-              </div>
-              
-              <div className="p-8 flex flex-col flex-1">
-                <h3 className="text-2xl font-bold text-brand-navy mb-4 group-hover:text-[#15a3b0] transition-colors">
-                  {isEn ? item.titleEn : item.title}
-                </h3>
-                <p className="text-slate-600 leading-relaxed mb-8 flex-1">
-                  {isEn ? item.descriptionEn : item.description}
-                </p>
-                
-                <div className="flex items-center text-[#15a3b0] font-bold mt-auto group/btn">
-                  <span>{isEn ? 'Review' : 'İncele'}</span>
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-2 transition-transform" />
+          {paginatedItems.map((item) => {
+            const targetUrl = item.type === 'video' && item.videoUrl
+              ? item.videoUrl
+              : item.type === 'report' && item.fileUrl
+              ? item.fileUrl
+              : '#';
+            const isExternal = targetUrl.startsWith('http') || targetUrl.startsWith('//');
+
+            return (
+              <a
+                key={item.id}
+                href={targetUrl}
+                target={isExternal ? '_blank' : undefined}
+                rel={isExternal ? 'noopener noreferrer' : undefined}
+                className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col group cursor-pointer"
+              >
+                <div className="h-48 md:h-64 bg-slate-100 flex items-center justify-center relative overflow-hidden">
+                  {/* Fallback pattern background */}
+                  <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#15a3b0_1px,transparent_1px)] [background-size:16px_16px]" />
+                  
+                  {item.imageUrl ? (
+                    <img
+                      src={item.imageUrl}
+                      alt={isEn ? item.titleEn : item.title}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <>
+                      {item.type === 'report' && <FileText className="w-20 h-20 text-[#15a3b0]/40 group-hover:scale-110 transition-transform duration-500" />}
+                      {item.type === 'video' && <MonitorPlay className="w-20 h-20 text-[#15a3b0]/40 group-hover:scale-110 transition-transform duration-500" />}
+                      {item.type === 'interactive' && <BookOpen className="w-20 h-20 text-[#15a3b0]/40 group-hover:scale-110 transition-transform duration-500" />}
+                    </>
+                  )}
+                  
+                  <span className="absolute top-4 left-4 bg-white/90 backdrop-blur text-[#15a3b0] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
+                    {isEn 
+                      ? (item.categoryEn || item.category) 
+                      : (item.category === 'projeler' 
+                        ? 'Projeler' 
+                        : item.category === 'raporlar' 
+                        ? 'Raporlar' 
+                        : item.category === 'egitimler' 
+                        ? 'Eğitimler' 
+                        : item.category)}
+                  </span>
                 </div>
-              </div>
-            </div>
-          ))}
+                
+                <div className="p-8 flex flex-col flex-1">
+                  <h3 className="text-2xl font-bold text-brand-navy mb-4 group-hover:text-[#15a3b0] transition-colors">
+                    {isEn ? item.titleEn : item.title}
+                  </h3>
+                  <p className="text-slate-600 leading-relaxed mb-8 flex-1">
+                    {isEn ? item.descriptionEn : item.description}
+                  </p>
+                  
+                  <div className="flex items-center text-[#15a3b0] font-bold mt-auto group/btn">
+                    <span>{isEn ? 'Review' : 'İncele'}</span>
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-2 transition-transform" />
+                  </div>
+                </div>
+              </a>
+            );
+          })}
         </div>
 
-        {/* Pagination Placeholder */}
-        <div className="flex items-center justify-center gap-2">
-          <button className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-[#15a3b0] hover:bg-[#15a3b0]/10 transition-colors">
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#15a3b0] text-white font-bold shadow-md">
-            1
-          </button>
-          <button className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 font-bold hover:bg-slate-100 transition-colors">
-            2
-          </button>
-          <button className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-[#15a3b0] hover:bg-[#15a3b0]/10 transition-colors">
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                currentPage === 1
+                  ? 'text-slate-300 cursor-not-allowed'
+                  : 'text-slate-600 hover:text-[#15a3b0] hover:bg-[#15a3b0]/10'
+              }`}
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+              <button
+                key={pageNum}
+                onClick={() => setCurrentPage(pageNum)}
+                className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold transition-all duration-200 ${
+                  currentPage === pageNum
+                    ? 'bg-[#15a3b0] text-white shadow-md scale-105'
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                {pageNum}
+              </button>
+            ))}
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                currentPage === totalPages
+                  ? 'text-slate-300 cursor-not-allowed'
+                  : 'text-slate-600 hover:text-[#15a3b0] hover:bg-[#15a3b0]/10'
+              }`}
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
