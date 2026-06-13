@@ -176,6 +176,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
         <button
           onClick={openAddModal}
           className="bg-primary hover:bg-primary-dark text-slate-950 font-bold px-4 py-2.5 rounded-xl text-sm flex items-center gap-2 shadow-lg"
+          title="Yeni Yayın Ekle"
         >
           <Plus className="w-4 h-4" />
           Yeni Yayın Ekle
@@ -238,6 +239,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
                   onClick={() => openEditModal(item)}
                   className="text-slate-400 hover:text-primary p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
                   aria-label="Düzenle"
+                  title="Düzenle"
                 >
                   <Edit className="w-4 h-4" />
                 </button>
@@ -248,6 +250,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
                   }}
                   className="text-slate-400 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
                   aria-label="Sil"
+                  title="Sil"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

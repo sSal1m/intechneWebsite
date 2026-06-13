@@ -127,7 +127,7 @@ export function InteractiveGrid({ isEn, initialItems }: { isEn: boolean; initial
           </div>
           <div className="flex-1 w-full flex justify-center md:justify-end">
             <div className="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-3xl max-w-md relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-2 h-full bg-orange-400" />
+              <div className="absolute top-0 left-0 w-2 h-full bg-red-600" />
               <p className="italic text-lg font-medium leading-relaxed mb-4">
                 {isEn
                   ? '"Technology is only meaningful when shared and developed with the community. Let\'s build the future together."'

@@ -2,6 +2,8 @@
 
 import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
+import { moveToTrash } from './trash-bin';
+import { extractStoragePath } from '@/src/utils/storage';
 
 export async function getInteractiveItems(category?: string) {
   try {
@@ -125,23 +127,29 @@ export async function deleteInteractiveItem(id: string, imageUrl?: string, fileU
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Unauthorized');
 
+    // Fetch original interactive item data
+    const { data: item, error: fetchError } = await supabase
+      .from('interactive')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !item) throw new Error(fetchError?.message || 'Interactive item not found');
+
+    // Collect file paths to delete later
+    const filePaths: string[] = [];
+    const pathImage = extractStoragePath(item.image_url);
+    if (pathImage) filePaths.push(pathImage);
+    const pathFile = extractStoragePath(item.file_url);
+    if (pathFile) filePaths.push(pathFile);
+
+    // Move to trash
+    const trashResult = await moveToTrash('interactive', id, item, filePaths);
+    if (!trashResult.success) throw new Error(trashResult.error);
+
+    // Remove from main DB
     const { error: dbError } = await supabase.from('interactive').delete().eq('id', id);
     if (dbError) throw new Error(dbError.message);
-
-    // Clean up files from storage if applicable
-    const filesToRemove = [];
-    if (imageUrl) {
-      const match = imageUrl.match(/\/uploads\/(.+)$/);
-      if (match && match[1]) filesToRemove.push(`uploads/${match[1]}`);
-    }
-    if (fileUrl) {
-      const match = fileUrl.match(/\/uploads\/(.+)$/);
-      if (match && match[1]) filesToRemove.push(`uploads/${match[1]}`);
-    }
-
-    if (filesToRemove.length > 0) {
-      await supabase.storage.from('intechne-assets').remove(filesToRemove);
-    }
 
     revalidatePath('/[locale]/interaktif', 'page');
     revalidatePath('/');

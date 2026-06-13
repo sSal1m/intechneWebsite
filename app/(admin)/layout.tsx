@@ -12,7 +12,7 @@ export default function AdminRootLayout({
 }) {
   return (
     <html lang="tr">
-      <body className="bg-slate-900 text-slate-100 font-sans min-h-screen">
+      <body className="admin-body bg-black text-white font-sans min-h-screen">
         {children}
       </body>
     </html>

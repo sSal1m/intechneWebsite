@@ -258,6 +258,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
         <button
           onClick={openAddModal}
           className="bg-primary hover:bg-primary-dark text-slate-950 font-bold px-4 py-2.5 rounded-xl text-sm flex items-center gap-2 shadow-lg w-full md:w-auto justify-center"
+          title="Yeni Haber Ekle"
         >
           <Plus className="w-4 h-4" />
           Yeni Haber Ekle
@@ -314,6 +315,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
                 onClick={() => openEditModal(news)}
                 className="text-slate-400 hover:text-primary p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
                 aria-label="Düzenle"
+                title="Düzenle"
               >
                 <Edit className="w-4 h-4" />
               </button>
@@ -324,6 +326,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
                 }}
                 className="text-slate-400 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
                 aria-label="Sil"
+                title="Sil"
               >
                 <Trash2 className="w-4 h-4" />
               </button>

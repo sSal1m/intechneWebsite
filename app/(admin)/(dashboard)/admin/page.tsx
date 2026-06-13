@@ -103,7 +103,7 @@ export default async function AdminDashboardPage() {
                   <p className="text-slate-400 text-xs line-clamp-1">{msg.message}</p>
                 </div>
                 <span className="text-slate-500 text-[10px] font-bold uppercase self-start sm:self-center">
-                  {new Date(msg.created_at).toLocaleDateString('tr-TR')}
+                  {new Date(msg.created_at).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })}
                 </span>
               </div>
             ))}

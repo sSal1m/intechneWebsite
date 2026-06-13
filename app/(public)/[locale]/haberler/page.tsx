@@ -1,6 +1,5 @@
 import { Link } from '@/src/i18n/navigation';
 import { NewsSidebar } from '@/components/news/NewsSidebar';
-import { NewsFilterBar } from '@/components/news/NewsFilterBar';
 import { HeadlineCard } from '@/components/news/HeadlineCard';
 import { NewsCard } from '@/components/news/NewsCard';
 import { newsItems } from '@/src/data/news';
@@ -11,7 +10,7 @@ export const dynamic = 'force-dynamic';
 
 interface PageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ category?: string; page?: string }>;
+  searchParams: Promise<{ category?: string; page?: string; search?: string; startDate?: string; endDate?: string }>;
 }
 
 export default async function HaberlerPage({
@@ -19,7 +18,7 @@ export default async function HaberlerPage({
   searchParams,
 }: PageProps) {
   const { locale } = await params;
-  const { category, page: pageParam } = await searchParams;
+  const { category, page: pageParam, search, startDate, endDate } = await searchParams;
   const isEn = locale === 'en';
   const page = Math.max(1, parseInt(pageParam || '1', 10) || 1);
 
@@ -27,7 +26,7 @@ export default async function HaberlerPage({
   const dbNews = category ? await getNews(category) : allNews;
   const hasDbContent = allNews && allNews.length > 0;
 
-  const displayNews = hasDbContent
+  let displayNews = hasDbContent
     ? dbNews.map((item: any) => ({
         id: item.id,
         date: item.published_at
@@ -37,6 +36,7 @@ export default async function HaberlerPage({
               year: 'numeric',
             })
           : '',
+        publishedAtRaw: item.published_at ? item.published_at.split('T')[0] : '',
         title: isEn ? item.title_en : item.title_tr,
         excerpt: isEn ? item.excerpt_en : item.excerpt_tr,
         href: `/haberler/${item.id}`,
@@ -44,7 +44,47 @@ export default async function HaberlerPage({
         imageAlt: isEn ? item.title_en : item.title_tr,
         image_url: item.image_url,
       }))
-    : newsItems;
+    : newsItems.map((item: any) => {
+        let dateRaw = '';
+        if (item.date) {
+          const parts = item.date.split(' ');
+          if (parts.length === 3) {
+            const day = parts[0].padStart(2, '0');
+            const year = parts[2];
+            const months: Record<string, string> = {
+              'Haziran': '06', 'June': '06',
+            };
+            const month = months[parts[1]] || '06';
+            dateRaw = `${year}-${month}-${day}`;
+          }
+        }
+        return {
+          ...item,
+          publishedAtRaw: dateRaw,
+          image_url: item.imageUrl,
+        };
+      });
+
+  // Apply Search Filter in memory
+  if (search) {
+    const searchLower = search.toLowerCase();
+    displayNews = displayNews.filter((item: any) => 
+      (item.title && item.title.toLowerCase().includes(searchLower)) || 
+      (item.excerpt && item.excerpt.toLowerCase().includes(searchLower))
+    );
+  }
+
+  // Apply Date Range Filter in memory
+  if (startDate) {
+    displayNews = displayNews.filter((item: any) => 
+      item.publishedAtRaw && item.publishedAtRaw >= startDate
+    );
+  }
+  if (endDate) {
+    displayNews = displayNews.filter((item: any) => 
+      item.publishedAtRaw && item.publishedAtRaw <= endDate
+    );
+  }
 
   const headlineItem = displayNews.find((item: any) => item.tag === 'Öne Çıkan') || displayNews[0];
   const otherItems = displayNews.filter((item: any) => item.id !== headlineItem?.id);
@@ -59,6 +99,9 @@ export default async function HaberlerPage({
   const getPageUrl = (pageNum: number) => {
     const params = new URLSearchParams();
     if (category) params.set('category', category);
+    if (search) params.set('search', search);
+    if (startDate) params.set('startDate', startDate);
+    if (endDate) params.set('endDate', endDate);
     if (pageNum > 1) params.set('page', pageNum.toString());
     const searchStr = params.toString();
     return `/haberler${searchStr ? `?${searchStr}` : ''}`;
@@ -89,24 +132,39 @@ export default async function HaberlerPage({
       {/* Main Content Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row gap-6 items-start">
-          {/* Left Sidebar (Desktop Only) */}
-          <div className="hidden lg:block lg:w-[22%] lg:flex-shrink-0">
+          {/* Left Sidebar (Filters & Categories) */}
+          <div className="w-full lg:w-[25%] lg:flex-shrink-0 mb-8 lg:mb-0">
             <NewsSidebar />
           </div>
 
           {/* Right Content */}
-          <div className="flex-1 w-full lg:w-[78%]">
-            <NewsFilterBar />
+          <div className="flex-1 w-full lg:w-[75%]">
             
-            {headlineItem && (
-              <HeadlineCard news={headlineItem} />
-            )}
+            {displayNews.length === 0 ? (
+              <div className="text-center py-16 bg-slate-50 border border-slate-200 rounded-3xl mb-8">
+                <p className="text-slate-500 font-bold text-base mb-3">
+                  {isEn ? 'No news articles found matching your filters.' : 'Aradığınız kriterlere uygun haber bulunamadı.'}
+                </p>
+                <Link 
+                  href="/haberler" 
+                  className="text-[#15a3b0] hover:text-[#128a95] font-bold text-sm underline"
+                >
+                  {isEn ? 'Clear all filters' : 'Tüm filtreleri temizle'}
+                </Link>
+              </div>
+            ) : (
+              <>
+                {headlineItem && (
+                  <HeadlineCard news={headlineItem} />
+                )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {paginatedOtherItems.map((item: any) => (
-                <NewsCard key={item.id} news={item} />
-              ))}
-            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {paginatedOtherItems.map((item: any) => (
+                    <NewsCard key={item.id} news={item} />
+                  ))}
+                </div>
+              </>
+            )}
 
             {/* Dynamic Pagination */}
             {totalPages > 1 && (

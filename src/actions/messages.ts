@@ -2,6 +2,7 @@
 
 import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
+import { moveToTrash } from './trash-bin';
 
 export async function submitContactForm(formData: {
   name: string;
@@ -70,8 +71,22 @@ export async function deleteMessage(id: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Unauthorized');
 
-    const { error } = await supabase.from('messages').delete().eq('id', id);
-    if (error) throw new Error(error.message);
+    // Fetch original message data
+    const { data: message, error: fetchError } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !message) throw new Error(fetchError?.message || 'Message not found');
+
+    // Move to trash
+    const trashResult = await moveToTrash('messages', id, message, []);
+    if (!trashResult.success) throw new Error(trashResult.error);
+
+    // Remove from main DB
+    const { error: dbError } = await supabase.from('messages').delete().eq('id', id);
+    if (dbError) throw new Error(dbError.message);
 
     revalidatePath('/admin');
     revalidatePath('/admin/messages');

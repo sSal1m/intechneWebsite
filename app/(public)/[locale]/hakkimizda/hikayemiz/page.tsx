@@ -1,10 +1,18 @@
-'use client';
+import type { Metadata } from 'next';
+import { HikayemizClient } from '@/components/about/HikayemizClient';
 
-import { PlaceholderPage } from '@/components/ui/PlaceholderPage';
-import { useParams } from 'next/navigation';
+interface PageProps {
+  params: Promise<{ locale: string }>;
+}
 
-export default function Page() {
-  const params = useParams();
-  const locale = (params?.locale as string) || 'tr';
-  return <PlaceholderPage title="HİKAYEMİZ" locale={locale} />;
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: locale === 'en' ? 'Our Story' : 'Hikayemiz',
+  };
+}
+
+export default async function HikayemizPage({ params }: PageProps) {
+  const { locale } = await params;
+  return <HikayemizClient locale={locale} />;
 }

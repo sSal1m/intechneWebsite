@@ -1,5 +1,5 @@
 import { BrandsSidebar } from '@/components/brands/BrandsSidebar';
-import { Link } from '@/src/i18n/navigation';
+import { DynamicHeader } from '@/components/ui/DynamicHeader';
 
 export default async function BrandsLayout({
   children,
@@ -14,21 +14,7 @@ export default async function BrandsLayout({
   return (
     <div className="min-h-screen bg-white">
       {/* Header Area */}
-      <div className="bg-[#15a3b0] text-white py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Breadcrumb */}
-          <nav className="text-white/80 text-sm font-medium mb-4 flex items-center gap-2">
-            <Link href="/" className="hover:text-white transition-colors">
-              {isEn ? 'Home' : 'Anasayfa'}
-            </Link>
-            <span>/</span>
-            <span>{isEn ? 'Our Brands' : 'Markalarımız'}</span>
-          </nav>
-          <h1 className="text-3xl md:text-5xl font-black">
-            {isEn ? 'Our Brands' : 'Markalarımız'}
-          </h1>
-        </div>
-      </div>
+      <DynamicHeader locale={locale} defaultTitle="Markalarımız" defaultTitleEn="Our Brands" />
 
       {/* Main Content Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

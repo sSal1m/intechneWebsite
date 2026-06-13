@@ -100,6 +100,7 @@ CREATE TABLE corporate_identity (
     type VARCHAR(50) NOT NULL, -- 'logo' veya 'guide'
     file_url TEXT NOT NULL,
     thumbnail_url TEXT,
+    order_index INTEGER DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -328,11 +329,26 @@ INSERT INTO sliders (title_tr, title_en, description_tr, description_en, button_
 INSERT INTO interactive (title_tr, title_en, description_tr, description_en, category, type, video_url) VALUES
 ('Intechne Robotik Eko-Sistemi Tanıtım Videosu', 'Intechne Robotics Eco-System Introduction Video', 'Intechne bünyesinde kurulan ve yürütülen robotik ligleri, festivaller ve akademi programlarının genel ekosistem tanıtım belgeseli.', 'A general ecosystem documentary of robotics leagues, festivals, and academy programs established and managed under Intechne.', 'projeler', 'video', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 
--- G. Kurumsal Kimlik Seed Verisi
-INSERT INTO corporate_identity (title_tr, title_en, type, file_url) VALUES
-('Intechne Logo', 'Intechne Logo', 'logo', 'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg'),
-('Intechne Kurumsal Kimlik Kılavuzu', 'Intechne Corporate Identity Guide', 'guide', 'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg'),
-('Cezeri Robot Ligi Logo', 'Cezeri Robot League Logo', 'logo', 'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg'),
-('Robonex Robot Ligi Logo', 'Robonex Robot League Logo', 'logo', 'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg'),
-('Tech & Chill Fest Logo', 'Tech & Chill Fest Logo', 'logo', 'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg'),
-('Intechne Akademi Logo', 'Intechne Academy Logo', 'logo', 'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg');
+-- H. MİGRASYON SORGUSU (MEVCUT VERİTABANINA UYGULAMAK İÇİN)
+-- Mevcut veritabanında bu kolonu eklemek için Supabase SQL Editor'de aşağıdaki satırı çalıştırın:
+-- ALTER TABLE corporate_identity ADD COLUMN IF NOT EXISTS order_index INTEGER DEFAULT 0;
+
+-- I. Çöp Kutusu Tablosu ve Politikaları
+CREATE TABLE IF NOT EXISTS trash_bin (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    entity_type VARCHAR(100) NOT NULL, -- 'sliders', 'news', 'team', 'corporate_identity', 'interactive'
+    entity_id UUID NOT NULL,
+    original_data JSONB NOT NULL,
+    file_paths TEXT[] DEFAULT '{}',
+    deleted_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE trash_bin ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admin cop kutusunu yonetebilir" ON trash_bin
+    FOR ALL
+    TO authenticated
+    USING ((auth.jwt() ->> 'email'::text) = 'admin@intechne.com.tr'::text)
+    WITH CHECK ((auth.jwt() ->> 'email'::text) = 'admin@intechne.com.tr'::text);
+
+

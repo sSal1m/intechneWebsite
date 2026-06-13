@@ -11,6 +11,7 @@ export interface Brand {
   stats: BrandStat[];
   logoAlt: string;
   accentColor?: string;
+  logoUrl?: string;
 }
 
 export interface HeroSlide {

@@ -6,6 +6,11 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
+const flags: Record<string, string> = {
+  tr: 'https://flagcdn.com/w20/tr.png',
+  en: 'https://flagcdn.com/w20/gb.png',
+};
+
 export function LanguageSwitcher() {
   const locale = useLocale();
   const router = useRouter();
@@ -15,8 +20,13 @@ export function LanguageSwitcher() {
   const otherLocale = locale === 'tr' ? 'en' : 'tr';
 
   function switchLocale(newLocale: string) {
-    // Replace the current locale prefix in the path
-    const newPath = pathname.replace(`/${locale}`, `/${newLocale}`);
+    const segments = pathname.split('/');
+    if (segments[1] === 'tr' || segments[1] === 'en') {
+      segments[1] = newLocale;
+    } else {
+      segments.splice(1, 0, newLocale);
+    }
+    const newPath = segments.join('/') || '/';
     router.push(newPath);
     setIsOpen(false);
   }
@@ -29,14 +39,15 @@ export function LanguageSwitcher() {
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-1 border rounded-full px-3 py-1.5 text-sm font-semibold transition-colors duration-200 ${
+        className={`flex items-center gap-1.5 border rounded-full px-3 py-1.5 text-sm font-semibold transition-colors duration-200 ${
           isOpen
             ? 'border-primary text-primary'
             : 'border-white/25 text-white hover:border-primary hover:text-primary'
         }`}
         aria-label="Language selector"
       >
-        {locale.toUpperCase()}
+        <span>{locale.toUpperCase()}</span>
+        <img src={flags[locale]} alt={locale} className="w-4 h-auto rounded-sm flex-shrink-0" />
         <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
@@ -53,13 +64,14 @@ export function LanguageSwitcher() {
               <button
                 key={loc}
                 onClick={() => switchLocale(loc)}
-                className={`block w-full px-5 py-2 text-sm font-semibold text-left transition-colors ${
+                className={`flex items-center gap-2 w-full px-5 py-2 text-sm font-semibold text-left transition-colors ${
                   loc === locale
                     ? 'text-primary bg-white/10'
                     : 'text-white hover:bg-white/10 hover:text-primary'
                 }`}
               >
-                {loc.toUpperCase()}
+                <span>{loc.toUpperCase()}</span>
+                <img src={flags[loc]} alt={loc} className="w-4 h-auto rounded-sm flex-shrink-0" />
               </button>
             ))}
           </motion.div>

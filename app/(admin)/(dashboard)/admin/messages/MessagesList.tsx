@@ -80,6 +80,7 @@ export function MessagesList({ initialMessages }: MessagesListProps) {
                   disabled={isPending}
                   className="text-slate-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 flex-shrink-0"
                   aria-label="Sil"
+                  title="Sil"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -87,7 +88,7 @@ export function MessagesList({ initialMessages }: MessagesListProps) {
 
               <div className="flex items-center justify-between text-[10px] text-slate-500 font-semibold mt-1">
                 <span>{msg.email}</span>
-                <span>{new Date(msg.created_at).toLocaleDateString('tr-TR')}</span>
+                <span>{new Date(msg.created_at).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })}</span>
               </div>
             </div>
           ))
@@ -149,6 +150,7 @@ export function MessagesList({ initialMessages }: MessagesListProps) {
                 onClick={(e) => triggerDelete(selectedMessage.id, e)}
                 disabled={isPending}
                 className="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white font-bold px-4 py-2 rounded-xl transition-all duration-200 flex items-center gap-2"
+                title="Bu Mesajı Sil"
               >
                 <Trash2 className="w-4 h-4" />
                 Bu Mesajı Sil

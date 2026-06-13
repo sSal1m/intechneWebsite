@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { createSlider, updateSlider, deleteSlider, updateStat } from '@/src/actions/sliders';
-import { Trash2, Edit, Plus, X, Upload, Layers, TrendingUp, ExternalLink } from 'lucide-react';
+import { createSlider, updateSlider, deleteSlider } from '@/src/actions/sliders';
+import { Trash2, Edit, Plus, X, Upload, Layers, ExternalLink } from 'lucide-react';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 interface Slider {
@@ -19,30 +19,17 @@ interface Slider {
   order_index: number;
 }
 
-interface StatItem {
-  id: string;
-  value_tr: string;
-  value_en: string;
-  label_tr: string;
-  label_en: string;
-  order_index: number;
-}
-
 interface SliderManagerProps {
   initialSliders: Slider[];
-  initialStats: StatItem[];
 }
 
-export function SliderManager({ initialSliders, initialStats }: SliderManagerProps) {
+export function SliderManager({ initialSliders }: SliderManagerProps) {
   const [sliders, setSliders] = useState<Slider[]>(initialSliders);
-  const [globalStats, setGlobalStats] = useState<StatItem[]>(initialStats);
   const [isPending, startTransition] = useTransition();
 
   // Modals state
   const [isSliderModalOpen, setIsSliderModalOpen] = useState(false);
-  const [isStatModalOpen, setIsStatModalOpen] = useState(false);
   const [editingSlider, setEditingSlider] = useState<Slider | null>(null);
-  const [editingStat, setEditingStat] = useState<StatItem | null>(null);
 
   // Delete confirmation states
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -67,11 +54,7 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
     { value: '', label: '', valueEn: '', labelEn: '' }
   ]);
 
-  // Global Stat Form state
-  const [statValueTr, setStatValueTr] = useState('');
-  const [statValueEn, setStatValueEn] = useState('');
-  const [statLabelTr, setStatLabelTr] = useState('');
-  const [statLabelEn, setStatLabelEn] = useState('');
+
 
   // Open modals
   function openAddSliderModal() {
@@ -84,7 +67,7 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
     setBtnLabelEn('');
     setHref('');
     setImageUrl('');
-    setOrderIndex(sliders.length);
+    setOrderIndex(sliders.length + 1);
     setSliderStats([
       { value: '', label: '', valueEn: '', labelEn: '' },
       { value: '', label: '', valueEn: '', labelEn: '' },
@@ -103,7 +86,7 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
     setBtnLabelEn(slider.button_label_en || '');
     setHref(slider.href || '');
     setImageUrl(slider.image_url || '');
-    setOrderIndex(slider.order_index);
+    setOrderIndex(sliders.findIndex(s => s.id === slider.id) + 1);
     
     // Fill stats (pad to 3 items if shorter)
     const filledStats = [...(slider.stats || [])];
@@ -114,14 +97,7 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
     setIsSliderModalOpen(true);
   }
 
-  function openEditStatModal(stat: StatItem) {
-    setEditingStat(stat);
-    setStatValueTr(stat.value_tr);
-    setStatValueEn(stat.value_en);
-    setStatLabelTr(stat.label_tr);
-    setStatLabelEn(stat.label_en);
-    setIsStatModalOpen(true);
-  }
+
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -164,7 +140,7 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
         href,
         image_url: imageUrl,
         stats: cleanStats,
-        order_index: orderIndex,
+        order_index: Math.max(0, orderIndex - 1),
       };
 
       if (editingSlider) {
@@ -202,27 +178,7 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
     });
   }
 
-  function handleStatSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!editingStat) return;
 
-    startTransition(async () => {
-      const result = await updateStat(editingStat.id, {
-        value_tr: statValueTr,
-        value_en: statValueEn,
-        label_tr: statLabelTr,
-        label_en: statLabelEn,
-      });
-
-      if (result.success && result.data) {
-        const updated = result.data[0];
-        setGlobalStats(globalStats.map(s => s.id === editingStat.id ? updated : s).sort((a,b) => a.order_index - b.order_index));
-        setIsStatModalOpen(false);
-      } else {
-        alert('İstatistik güncelleme hatası: ' + result.error);
-      }
-    });
-  }
 
   return (
     <div className="flex flex-col gap-10">
@@ -236,6 +192,7 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
           <button
             onClick={openAddSliderModal}
             className="bg-primary hover:bg-primary-dark text-slate-950 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-lg"
+            title="Yeni Slayt Ekle"
           >
             <Plus className="w-4 h-4" />
             Yeni Slayt Ekle
@@ -243,7 +200,7 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
         </div>
 
         <div className="grid grid-cols-1 gap-6 max-w-5xl">
-          {sliders.map((slider) => (
+          {sliders.map((slider, idx) => (
             <div
               key={slider.id}
               className="bg-slate-950 border border-slate-800 rounded-2xl p-6 flex flex-col md:flex-row gap-6 relative group"
@@ -294,6 +251,7 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
                   onClick={() => openEditSliderModal(slider)}
                   className="text-slate-400 hover:text-primary p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
                   aria-label="Düzenle"
+                  title="Düzenle"
                 >
                   <Edit className="w-4 h-4" />
                 </button>
@@ -304,51 +262,21 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
                   }}
                   className="text-slate-400 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
                   aria-label="Sil"
+                  title="Sil"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
 
               <span className="absolute bottom-6 right-6 text-[9px] font-bold text-slate-600 uppercase">
-                Sıra: {slider.order_index}
+                Sıra: {idx + 1}
               </span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* SECTION 2: SAYILARLA BİZ STATS */}
-      <div className="flex flex-col gap-6">
-        <div className="flex justify-between items-center border-b border-slate-800 pb-4">
-          <h3 className="font-bold text-white text-base flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-primary" />
-            Sayılarla Biz İstatistikleri ({globalStats.length})
-          </h3>
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl">
-          {globalStats.map((stat) => (
-            <div
-              key={stat.id}
-              className="bg-slate-950 border border-slate-800 rounded-2xl p-5 relative group flex flex-col gap-2"
-            >
-              <div className="flex flex-col gap-1 min-w-0">
-                <span className="text-2xl font-black text-white">{stat.value_tr}</span>
-                <span className="text-slate-400 text-xs font-bold">{stat.label_tr}</span>
-                <span className="text-slate-500 text-[10px] uppercase font-bold">{stat.label_en}</span>
-              </div>
-
-              <button
-                onClick={() => openEditStatModal(stat)}
-                className="absolute right-4 top-4 text-slate-500 hover:text-primary p-1.5 rounded-lg hover:bg-slate-900 transition-all opacity-0 group-hover:opacity-100"
-                aria-label="Düzenle"
-              >
-                <Edit className="w-4 h-4" />
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* SLIDER MODAL */}
       {isSliderModalOpen && (
@@ -480,7 +408,7 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
                         <span className="text-[10px] font-bold text-slate-500 uppercase">Kart {idx+1} Değer</span>
                         <input
                           type="text"
-                          value={stat.value}
+                          value={stat.value || ''}
                           onChange={(e) => {
                             const newStats = [...sliderStats];
                             newStats[idx].value = e.target.value;
@@ -495,7 +423,7 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
                         <div className="grid grid-cols-2 gap-2">
                           <input
                             type="text"
-                            value={stat.label}
+                            value={stat.label || ''}
                             onChange={(e) => {
                               const newStats = [...sliderStats];
                               newStats[idx].label = e.target.value;
@@ -506,7 +434,7 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
                           />
                           <input
                             type="text"
-                            value={stat.labelEn}
+                            value={stat.labelEn || ''}
                             onChange={(e) => {
                               const newStats = [...sliderStats];
                               newStats[idx].labelEn = e.target.value;
@@ -522,15 +450,24 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Sıralama İndeksi</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Sıra Numarası</label>
+                    <span className="text-[10px] text-slate-500 font-medium">
+                      {editingSlider 
+                        ? `Toplam ${sliders.length} slayt var` 
+                        : `Yeni eklenecek: ${sliders.length + 1}. slayt`
+                      }
+                    </span>
+                  </div>
                   <input
                     type="number"
                     required
+                    min={1}
                     value={orderIndex}
-                    onChange={(e) => setOrderIndex(parseInt(e.target.value) || 0)}
-                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary"
+                    onChange={(e) => setOrderIndex(parseInt(e.target.value) || 1)}
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary w-1/4 min-w-[80px]"
                   />
                 </div>
               </div>
@@ -556,87 +493,7 @@ export function SliderManager({ initialSliders, initialStats }: SliderManagerPro
         </div>
       )}
 
-      {/* STAT MODAL */}
-      {isStatModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsStatModalOpen(false)} />
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden">
-            <header className="px-6 py-4 border-b border-slate-800 flex justify-between items-center">
-              <h3 className="font-bold text-white text-base">İstatistiği Düzenle</h3>
-              <button onClick={() => setIsStatModalOpen(false)} className="text-slate-400 hover:text-white transition-colors">
-                <X className="w-5 h-5" />
-              </button>
-            </header>
 
-            <form onSubmit={handleStatSubmit} className="p-6 flex flex-col gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Değer (TR)</label>
-                <input
-                  type="text"
-                  required
-                  value={statValueTr}
-                  onChange={(e) => setStatValueTr(e.target.value)}
-                  placeholder="9. Yıl"
-                  className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Değer (EN)</label>
-                <input
-                  type="text"
-                  required
-                  value={statValueEn}
-                  onChange={(e) => setStatValueEn(e.target.value)}
-                  placeholder="9th Year"
-                  className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Etiket (TR)</label>
-                <input
-                  type="text"
-                  required
-                  value={statLabelTr}
-                  onChange={(e) => setStatLabelTr(e.target.value)}
-                  placeholder="Kuruluş Yılı"
-                  className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Etiket (EN)</label>
-                <input
-                  type="text"
-                  required
-                  value={statLabelEn}
-                  onChange={(e) => setStatLabelEn(e.target.value)}
-                  placeholder="Foundation Year"
-                  className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
-                />
-              </div>
-
-              <footer className="border-t border-slate-800 pt-5 mt-4 flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsStatModalOpen(false)}
-                  className="bg-slate-950 border border-slate-800 text-slate-300 font-bold px-4 py-2.5 rounded-xl text-sm transition-colors"
-                >
-                  Vazgeç
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="bg-primary hover:bg-primary-dark text-slate-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-colors"
-                >
-                  {isPending ? 'Güncelleniyor...' : 'Güncelle'}
-                </button>
-              </footer>
-            </form>
-          </div>
-        </div>
-      )}
       <ConfirmModal
         isOpen={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}

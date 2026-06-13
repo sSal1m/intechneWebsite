@@ -2,6 +2,8 @@
 
 import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
+import { moveToTrash } from './trash-bin';
+import { extractStoragePath } from '@/src/utils/storage';
 
 export async function getTeam() {
   try {
@@ -111,17 +113,27 @@ export async function deleteTeamMember(id: string, imageUrl?: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Unauthorized');
 
+    // Fetch original team member data
+    const { data: member, error: fetchError } = await supabase
+      .from('team')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !member) throw new Error(fetchError?.message || 'Team member not found');
+
+    // Collect file paths to delete later
+    const filePaths: string[] = [];
+    const path = extractStoragePath(member.image_url);
+    if (path) filePaths.push(path);
+
+    // Move to trash
+    const trashResult = await moveToTrash('team', id, member, filePaths);
+    if (!trashResult.success) throw new Error(trashResult.error);
+
+    // Remove from main DB
     const { error: dbError } = await supabase.from('team').delete().eq('id', id);
     if (dbError) throw new Error(dbError.message);
-
-    // Clean up image from storage if applicable
-    if (imageUrl) {
-      const match = imageUrl.match(/\/uploads\/(.+)$/);
-      if (match && match[1]) {
-        const filePath = `uploads/${match[1]}`;
-        await supabase.storage.from('intechne-assets').remove([filePath]);
-      }
-    }
 
     revalidatePath('/[locale]/hakkimizda/ekibimiz', 'page');
     return { success: true };

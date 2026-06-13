@@ -55,17 +55,20 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center px-4 relative overflow-hidden">
-      {/* Background radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
-
-      <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-8 relative z-10 backdrop-blur-md bg-opacity-70">
-        <div className="flex flex-col items-center mb-8 gap-2">
-          <div className="flex items-center gap-2">
-            <span className="font-black text-2xl text-primary tracking-wider">INTECHNE</span>
-            <span className="bg-slate-800 text-[10px] text-slate-400 font-bold px-2 py-0.5 rounded">CMS</span>
+    <div className="min-h-screen bg-black flex flex-col justify-center items-center px-4 relative overflow-hidden">
+      <div className="w-full max-w-md bg-[#0a0a0a] border border-[#1f1f1f] rounded-2xl shadow-2xl p-8 relative z-10">
+        <div className="flex flex-col items-center mb-8 gap-3">
+          <div className="flex items-center gap-3">
+            <img
+              src="/logo.avif"
+              alt="Intechne Logo"
+              className="h-10 w-auto object-contain"
+            />
+            <span className="bg-neutral-800 text-[10px] text-neutral-400 font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+              CMS
+            </span>
           </div>
-          <p className="text-slate-400 text-xs">Yönetici Girişi</p>
+          <p className="text-neutral-400 text-xs font-semibold uppercase tracking-wider">Yönetici Girişi</p>
         </div>
 
         {error && (
@@ -76,7 +79,7 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleLogin} className="flex flex-col gap-5">
           <div className="flex flex-col gap-1.5">
-            <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">
+            <label className="text-neutral-300 text-xs font-semibold uppercase tracking-wider">
               E-posta Adresi
             </label>
             <input
@@ -85,12 +88,12 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@intechne.com.tr"
-              className="bg-slate-950 border border-slate-800 text-white placeholder-slate-600 rounded-xl px-4 py-3 text-sm focus:border-primary focus:outline-none transition-colors w-full font-medium"
+              className="bg-black border border-[#1f1f1f] text-white placeholder-neutral-700 rounded-xl px-4 py-3 text-sm focus:border-primary focus:outline-none transition-colors w-full font-medium"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">
+            <label className="text-neutral-300 text-xs font-semibold uppercase tracking-wider">
               Şifre
             </label>
             <input
@@ -99,14 +102,14 @@ export default function AdminLoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="bg-slate-950 border border-slate-800 text-white placeholder-slate-600 rounded-xl px-4 py-3 text-sm focus:border-primary focus:outline-none transition-colors w-full font-medium"
+              className="bg-black border border-[#1f1f1f] text-white placeholder-neutral-700 rounded-xl px-4 py-3 text-sm focus:border-primary focus:outline-none transition-colors w-full font-medium"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="bg-primary hover:bg-primary-dark text-slate-950 font-bold py-3 px-4 rounded-xl transition-all duration-200 text-sm shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+            className="bg-primary hover:bg-primary-dark text-black font-bold py-3 px-4 rounded-xl transition-all duration-200 text-sm flex items-center justify-center gap-2"
           >
             {loading ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
           </button>

@@ -174,8 +174,16 @@ export function BrandsTabSection({ locale }: BrandsTabSectionProps) {
                 {/* Image + Stats */}
                 <div className="relative flex justify-center items-center">
                   <div className="w-[220px] h-[220px] md:w-[280px] md:h-[280px] bg-white/20 rounded-[40%_60%_60%_40%/60%_40%_60%_40%] flex items-center justify-center">
-                    <div className="w-[90%] h-[90%] bg-white/10 rounded-full flex items-center justify-center">
-                      <span className="text-white font-black text-2xl">{activeName.slice(0, 2)}</span>
+                    <div className="w-[90%] h-[90%] bg-white/10 rounded-full flex items-center justify-center overflow-hidden">
+                      {active.logoUrl ? (
+                        <img
+                          src={active.logoUrl}
+                          alt={activeName}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-white font-black text-2xl">{activeName.slice(0, 2)}</span>
+                      )}
                     </div>
                   </div>
 

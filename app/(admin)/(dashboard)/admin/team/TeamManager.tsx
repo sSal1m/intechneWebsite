@@ -167,6 +167,7 @@ export function TeamManager({ initialMembers }: TeamManagerProps) {
         <button
           onClick={openAddModal}
           className="bg-primary hover:bg-primary-dark text-slate-950 font-bold px-4 py-2.5 rounded-xl transition-all duration-200 text-sm flex items-center gap-2 shadow-lg shadow-primary/10"
+          title="Yeni Üye Ekle"
         >
           <Plus className="w-4 h-4" />
           Yeni Üye Ekle
@@ -228,6 +229,7 @@ export function TeamManager({ initialMembers }: TeamManagerProps) {
                 onClick={() => openEditModal(member)}
                 className="text-slate-400 hover:text-primary p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
                 aria-label="Düzenle"
+                title="Düzenle"
               >
                 <Edit className="w-4 h-4" />
               </button>
@@ -238,6 +240,7 @@ export function TeamManager({ initialMembers }: TeamManagerProps) {
                 }}
                 className="text-slate-400 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
                 aria-label="Sil"
+                title="Sil"
               >
                 <Trash2 className="w-4 h-4" />
               </button>

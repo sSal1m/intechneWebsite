@@ -2,6 +2,8 @@
 
 import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
+import { moveToTrash } from './trash-bin';
+import { extractStoragePath } from '@/src/utils/storage';
 
 export async function getNews(categorySlug?: string) {
   try {
@@ -161,17 +163,27 @@ export async function deleteNews(id: string, imageUrl?: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Unauthorized');
 
+    // Fetch original news data
+    const { data: newsItem, error: fetchError } = await supabase
+      .from('news')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !newsItem) throw new Error(fetchError?.message || 'News not found');
+
+    // Collect file paths to delete later
+    const filePaths: string[] = [];
+    const path = extractStoragePath(newsItem.image_url);
+    if (path) filePaths.push(path);
+
+    // Move to trash
+    const trashResult = await moveToTrash('news', id, newsItem, filePaths);
+    if (!trashResult.success) throw new Error(trashResult.error);
+
+    // Remove from main DB
     const { error: dbError } = await supabase.from('news').delete().eq('id', id);
     if (dbError) throw new Error(dbError.message);
-
-    // Clean up image from storage if applicable
-    if (imageUrl) {
-      const match = imageUrl.match(/\/uploads\/(.+)$/);
-      if (match && match[1]) {
-        const filePath = `uploads/${match[1]}`;
-        await supabase.storage.from('intechne-assets').remove([filePath]);
-      }
-    }
 
     revalidatePath('/[locale]/haberler', 'page');
     revalidatePath('/');

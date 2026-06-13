@@ -2,6 +2,8 @@
 
 import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
+import { moveToTrash } from './trash-bin';
+import { extractStoragePath } from '@/src/utils/storage';
 
 export async function getCorporateIdentityItems() {
   try {
@@ -9,7 +11,7 @@ export async function getCorporateIdentityItems() {
     const { data, error } = await supabase
       .from('corporate_identity')
       .select('*')
-      .order('created_at', { ascending: true });
+      .order('order_index', { ascending: true });
 
     if (error) throw new Error(error.message);
     return data || [];
@@ -25,6 +27,7 @@ export async function createCorporateIdentityItem(formData: {
   type: string;
   file_url: string;
   thumbnail_url?: string;
+  order_index?: number;
 }) {
   try {
     const supabase = await createClient();
@@ -42,6 +45,7 @@ export async function createCorporateIdentityItem(formData: {
           type: formData.type,
           file_url: formData.file_url,
           thumbnail_url: formData.thumbnail_url || null,
+          order_index: formData.order_index || 0,
         },
       ])
       .select();
@@ -64,6 +68,7 @@ export async function updateCorporateIdentityItem(
     type: string;
     file_url: string;
     thumbnail_url?: string;
+    order_index?: number;
   }
 ) {
   try {
@@ -81,6 +86,7 @@ export async function updateCorporateIdentityItem(
         type: formData.type,
         file_url: formData.file_url,
         thumbnail_url: formData.thumbnail_url || null,
+        order_index: formData.order_index || 0,
       })
       .eq('id', id)
       .select();
@@ -103,30 +109,33 @@ export async function deleteCorporateIdentityItem(id: string, fileUrl?: string, 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Unauthorized');
 
+    // Fetch original corporate identity item data
+    const { data: item, error: fetchError } = await supabase
+      .from('corporate_identity')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !item) throw new Error(fetchError?.message || 'Corporate identity item not found');
+
+    // Collect file paths to delete later
+    const filePaths: string[] = [];
+    const pathFile = extractStoragePath(item.file_url);
+    if (pathFile) filePaths.push(pathFile);
+    const pathThumb = extractStoragePath(item.thumbnail_url);
+    if (pathThumb) filePaths.push(pathThumb);
+
+    // Move to trash
+    const trashResult = await moveToTrash('corporate_identity', id, item, filePaths);
+    if (!trashResult.success) throw new Error(trashResult.error);
+
+    // Remove from main DB
     const { error: dbError } = await supabase
       .from('corporate_identity')
       .delete()
       .eq('id', id);
 
     if (dbError) throw new Error(dbError.message);
-
-    // Clean up file from storage if applicable
-    if (fileUrl) {
-      const match = fileUrl.match(/\/intechne-assets\/(.+)$/);
-      if (match && match[1]) {
-        const filePath = decodeURIComponent(match[1]);
-        await supabase.storage.from('intechne-assets').remove([filePath]);
-      }
-    }
-
-    // Clean up thumbnail from storage if applicable
-    if (thumbnailUrl) {
-      const match = thumbnailUrl.match(/\/intechne-assets\/(.+)$/);
-      if (match && match[1]) {
-        const filePath = decodeURIComponent(match[1]);
-        await supabase.storage.from('intechne-assets').remove([filePath]);
-      }
-    }
 
     revalidatePath('/[locale]/hakkimizda/kurumsal-kimlik', 'page');
     return { success: true };

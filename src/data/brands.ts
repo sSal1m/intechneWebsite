@@ -13,6 +13,7 @@ export const brands: Brand[] = [
     ],
     logoAlt: 'Cezeri Robot Ligi Logo',
     accentColor: '#E30713',
+    logoUrl: '/cezeri-logo.jpg',
   },
   {
     id: '2',

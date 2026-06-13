@@ -2,6 +2,8 @@
 
 import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
+import { moveToTrash } from './trash-bin';
+import { extractStoragePath } from '@/src/utils/storage';
 
 export async function getSliders() {
   try {
@@ -125,18 +127,27 @@ export async function deleteSlider(id: string, imageUrl?: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Unauthorized');
 
-    // Remove from DB
+    // Fetch original slider data
+    const { data: slider, error: fetchError } = await supabase
+      .from('sliders')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !slider) throw new Error(fetchError?.message || 'Slider not found');
+
+    // Collect file paths to delete later
+    const filePaths: string[] = [];
+    const path = extractStoragePath(slider.image_url);
+    if (path) filePaths.push(path);
+
+    // Move to trash
+    const trashResult = await moveToTrash('sliders', id, slider, filePaths);
+    if (!trashResult.success) throw new Error(trashResult.error);
+
+    // Remove from main DB
     const { error: dbError } = await supabase.from('sliders').delete().eq('id', id);
     if (dbError) throw new Error(dbError.message);
-
-    // Clean up image from storage if applicable
-    if (imageUrl) {
-      const match = imageUrl.match(/\/uploads\/(.+)$/);
-      if (match && match[1]) {
-        const filePath = `uploads/${match[1]}`;
-        await supabase.storage.from('intechne-assets').remove([filePath]);
-      }
-    }
 
     revalidatePath('/');
     revalidatePath('/[locale]', 'layout');

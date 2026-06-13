@@ -16,6 +16,7 @@ interface CorporateIdentityItem {
   type: string; // 'logo' | 'guide'
   file_url: string;
   thumbnail_url?: string;
+  order_index?: number;
   created_at?: string;
 }
 
@@ -39,6 +40,7 @@ export function IdentityManager({ initialItems }: IdentityManagerProps) {
   const [type, setType] = useState('logo'); // 'logo' or 'guide'
   const [fileUrl, setFileUrl] = useState('');
   const [thumbnailUrl, setThumbnailUrl] = useState('');
+  const [orderIndex, setOrderIndex] = useState(1);
   const [uploading, setUploading] = useState(false);
   const [thumbnailUploading, setThumbnailUploading] = useState(false);
 
@@ -49,6 +51,7 @@ export function IdentityManager({ initialItems }: IdentityManagerProps) {
     setType('logo');
     setFileUrl('');
     setThumbnailUrl('');
+    setOrderIndex(items.length + 1);
     setIsModalOpen(true);
   }
 
@@ -59,6 +62,7 @@ export function IdentityManager({ initialItems }: IdentityManagerProps) {
     setType(item.type);
     setFileUrl(item.file_url);
     setThumbnailUrl(item.thumbnail_url || '');
+    setOrderIndex(item.order_index !== undefined ? item.order_index + 1 : items.findIndex(i => i.id === item.id) + 1);
     setIsModalOpen(true);
   }
 
@@ -129,6 +133,7 @@ export function IdentityManager({ initialItems }: IdentityManagerProps) {
         type,
         file_url: fileUrl,
         thumbnail_url: thumbnailUrl || undefined,
+        order_index: Math.max(0, orderIndex - 1),
       };
 
       if (editingItem) {
@@ -136,7 +141,11 @@ export function IdentityManager({ initialItems }: IdentityManagerProps) {
         const result = await updateCorporateIdentityItem(editingItem.id, payload);
         if (result.success && result.data) {
           const updated = result.data[0];
-          setItems(items.map((item) => (item.id === editingItem.id ? updated : item)));
+          setItems(
+            items
+              .map((item) => (item.id === editingItem.id ? updated : item))
+              .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+          );
           setIsModalOpen(false);
         } else {
           alert('Güncelleme hatası: ' + result.error);
@@ -146,7 +155,10 @@ export function IdentityManager({ initialItems }: IdentityManagerProps) {
         const result = await createCorporateIdentityItem(payload);
         if (result.success && result.data) {
           const created = result.data[0];
-          setItems([...items, created]);
+          setItems(
+            [...items, created]
+              .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+          );
           setIsModalOpen(false);
         } else {
           alert('Ekleme hatası: ' + result.error);
@@ -177,6 +189,7 @@ export function IdentityManager({ initialItems }: IdentityManagerProps) {
         <button
           onClick={openAddModal}
           className="bg-primary hover:bg-primary-dark text-slate-950 font-bold px-4 py-2.5 rounded-xl transition-all duration-200 text-sm flex items-center gap-2 shadow-lg shadow-primary/10"
+          title="Yeni Öge Ekle"
         >
           <Plus className="w-4 h-4" />
           Yeni Öge Ekle
@@ -185,7 +198,7 @@ export function IdentityManager({ initialItems }: IdentityManagerProps) {
 
       {/* Grid List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {items.map((item) => (
+        {items.map((item, idx) => (
           <div
             key={item.id}
             className="bg-slate-950 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between gap-4 relative group"
@@ -199,6 +212,9 @@ export function IdentityManager({ initialItems }: IdentityManagerProps) {
                     : 'bg-blue-500/10 text-blue-500'
                 }`}>
                   {item.type === 'logo' ? 'Logo' : 'Kılavuz'}
+                </span>
+                <span className="text-[10px] font-bold text-slate-500 uppercase">
+                  Sıra: {item.order_index !== undefined ? item.order_index + 1 : idx + 1}
                 </span>
               </div>
 
@@ -257,6 +273,7 @@ export function IdentityManager({ initialItems }: IdentityManagerProps) {
                   onClick={() => openEditModal(item)}
                   className="text-slate-400 hover:text-primary p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
                   aria-label="Düzenle"
+                  title="Düzenle"
                 >
                   <Edit className="w-4 h-4" />
                 </button>
@@ -267,6 +284,7 @@ export function IdentityManager({ initialItems }: IdentityManagerProps) {
                   }}
                   className="text-slate-400 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
                   aria-label="Sil"
+                  title="Sil"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -283,8 +301,8 @@ export function IdentityManager({ initialItems }: IdentityManagerProps) {
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
           
           {/* Content */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl relative z-10 overflow-hidden">
-            <header className="px-6 py-4 border-b border-slate-800 flex justify-between items-center">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl relative z-10 overflow-hidden max-h-[90vh] flex flex-col">
+            <header className="px-6 py-4 border-b border-slate-800 flex justify-between items-center flex-shrink-0">
               <h3 className="font-bold text-white text-base">
                 {editingItem ? 'Kurumsal Kimlik Ögesini Düzenle' : 'Yeni Öge Ekle'}
               </h3>
@@ -293,7 +311,7 @@ export function IdentityManager({ initialItems }: IdentityManagerProps) {
               </button>
             </header>
 
-            <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
+            <form onSubmit={handleSubmit} className="p-6 flex-1 overflow-y-auto flex flex-col gap-4">
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Başlık (TR)</label>
@@ -416,9 +434,29 @@ export function IdentityManager({ initialItems }: IdentityManagerProps) {
                     className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
                   />
                 </div>
+
+                <div className="flex flex-col gap-1.5 pt-3 border-t border-slate-800">
+                  <div className="flex items-center justify-between">
+                    <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Sıra Numarası</label>
+                    <span className="text-[10px] text-slate-500 font-medium">
+                      {editingItem 
+                        ? `Toplam ${items.length} dosya var` 
+                        : `Yeni eklenecek: ${items.length + 1}. dosya`
+                      }
+                    </span>
+                  </div>
+                  <input
+                    type="number"
+                    required
+                    min={1}
+                    value={orderIndex}
+                    onChange={(e) => setOrderIndex(parseInt(e.target.value) || 1)}
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary w-1/4 min-w-[80px]"
+                  />
+                </div>
               </div>
 
-              <footer className="border-t border-slate-800 pt-5 mt-4 flex items-center justify-end gap-3">
+              <footer className="border-t border-slate-800 pt-5 mt-4 flex items-center justify-end gap-3 flex-shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}

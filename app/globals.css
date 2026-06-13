@@ -11,9 +11,9 @@
   --color-foreground: var(--foreground);
 
   /* Brand Colors */
-  --color-primary: #0AC8DA;
-  --color-primary-dark: #089EAD;
-  --color-primary-light: #DDF8FB;
+  --color-primary: #01c1d3;
+  --color-primary-dark: #009cb0;
+  --color-primary-light: #e0f8fa;
 
   --color-white: #FFFFFF;
   --color-off-white: #F7FAFB;
@@ -25,11 +25,11 @@
   /* Mappings for legacy colors to maintain layout integrity with new palette */
   --color-brand-navy: #111111;
   --color-brand-dark: #111111;
-  --color-brand-orange: #0AC8DA;
-  --color-brand-yellow: #DDF8FB;
-  --color-brand-teal: #0AC8DA;
-  --color-brand-teal-dark: #089EAD;
-  --color-brand-red: #089EAD;
+  --color-brand-orange: #01c1d3;
+  --color-brand-yellow: #e0f8fa;
+  --color-brand-teal: #01c1d3;
+  --color-brand-teal-dark: #009cb0;
+  --color-brand-red: #009cb0;
   --color-brand-red-dark: #111111;
 
   --font-sans: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
@@ -59,11 +59,11 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #000000;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #0ac8da;
+  background: #01c1d3;
   border-radius: 3px;
 }
 
@@ -77,4 +77,35 @@ body {
 .embla__slide {
   flex: 0 0 100%;
   min-width: 0;
+}
+
+/* Scoped variables to enforce black, white, and cyan (#01c1d3) theme in the admin panel */
+.admin-body {
+  --color-slate-50: #fafafa;
+  --color-slate-100: #e5e5e5;
+  --color-slate-200: #cccccc;
+  --color-slate-300: #b3b3b3;
+  --color-slate-400: #999999;
+  --color-slate-500: #737373;
+  --color-slate-600: #5c5c5c;
+  --color-slate-700: #404040;
+  --color-slate-800: #1a1a1a;
+  --color-slate-900: #0c0c0c;
+  --color-slate-950: #000000;
+
+  --color-zinc-50: #fafafa;
+  --color-zinc-100: #e5e5e5;
+  --color-zinc-200: #cccccc;
+  --color-zinc-300: #b3b3b3;
+  --color-zinc-400: #999999;
+  --color-zinc-500: #737373;
+  --color-zinc-600: #5c5c5c;
+  --color-zinc-700: #404040;
+  --color-zinc-800: #1a1a1a;
+  --color-zinc-900: #0c0c0c;
+  --color-zinc-950: #000000;
+
+  --color-primary: #01c1d3;
+  --color-primary-dark: #009cb0;
+  --color-primary-light: #e0f8fa;
 }
