@@ -29,7 +29,7 @@ export default function AdminLoginPage() {
         setLoading(false);
         return;
       } else {
-        setError('Demo modundasınız. Giriş yapmak için admin@intechne.com.tr ve admin123 şifresini kullanın.');
+        setError('Giriş bilgileri hatalı.');
         setLoading(false);
         return;
       }
@@ -87,7 +87,7 @@ export default function AdminLoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@intechne.com.tr"
+              placeholder="E-posta adresinizi girin"
               className="bg-black border border-[#1f1f1f] text-white placeholder-neutral-700 rounded-xl px-4 py-3 text-sm focus:border-primary focus:outline-none transition-colors w-full font-medium"
             />
           </div>

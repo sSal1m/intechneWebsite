@@ -44,7 +44,7 @@ export default async function AdminDashboardPage() {
       <div className="bg-slate-950 p-8 rounded-2xl border border-slate-800 shadow-xl max-w-4xl">
         <h2 className="text-xl font-black text-white mb-2">Yönetim Paneline Hoş Geldiniz</h2>
         <p className="text-slate-400 text-sm leading-relaxed max-w-2xl">
-          CMS üzerinden ana sayfa slaytlarını, haberleri, ekip listesini ve interaktif yayınları yönetebilir, Bize Ulaşın formu üzerinden gelen mesajları görüntüleyebilirsiniz.
+          Destek için: better call seha.
         </p>
       </div>
 

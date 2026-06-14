@@ -127,7 +127,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             {isOnline ? (
               <>
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs font-semibold text-neutral-400">Canlı Sistem</span>
+                <span className="text-xs font-semibold text-neutral-400">Aktif</span>
               </>
             ) : (
               <>
