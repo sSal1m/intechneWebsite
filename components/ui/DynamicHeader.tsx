@@ -38,7 +38,7 @@ const routeNamesEn: Record<string, string> = {
   'tech-chill-fest': 'Tech & Chill Fest',
   'intechne-akademi': 'Intechne Academy',
   'drone-cup': 'Drone Cup',
-  'intechne-girisim-kulubu': 'Intechne Venture Club',
+  'intechne-girisim-kulubu': 'Intechne Entrepreneurship Club',
   'intechne-gaming-hub': 'Intechne Gaming Hub',
   'hack-the-future-marathons': 'Hack the Future',
   'haberler': 'News',

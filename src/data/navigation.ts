@@ -57,7 +57,7 @@ export const enNavigation: NavigationConfig = {
         { label: 'Intechne Academy', href: '/markalarimiz/intechne-akademi' },
         { label: 'Drone Cup', href: '/markalarimiz/drone-cup' },
         { label: 'Hack The Future Marathons', href: '/markalarimiz/hack-the-future-marathons' },
-        { label: 'Intechne Venture Club', href: '/markalarimiz/intechne-girisim-kulubu' },
+        { label: 'Intechne Entrepreneurship Club', href: '/markalarimiz/intechne-girisim-kulubu' },
         { label: 'Tech & Chill Fest', href: '/markalarimiz/tech-chill-fest' },
         { label: 'Intechne Gaming Hub', href: '/markalarimiz/intechne-gaming-hub' },
       ],

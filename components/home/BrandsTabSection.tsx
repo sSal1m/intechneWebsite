@@ -78,8 +78,8 @@ const brandTranslationsEn: Record<string, { name: string; shortDescription: stri
     shortDescription: 'The futuristic competitive arena of the Intechne ecosystem in the sky, Drone Cup, hosts high-speed professional drone races, breathtaking drone soccer matches played entirely in the air, aerodynamic design workshops, and advanced engineering events, bringing a unique experience that connects aviation passion with technology.',
   },
   'intechne-girisim-kulubu': {
-    name: 'Intechne Venture Club',
-    shortDescription: 'The visionary kitchen of the Intechne ecosystem that transforms innovative ideas into global projects, Intechne Venture Club hosts ideathons, investor meetings, startup summits, and strategic mentorship programs, aiming to bring technology production passion together with sustainable business models.',
+    name: 'Intechne Entrepreneurship Club',
+    shortDescription: 'The visionary kitchen of the Intechne ecosystem that transforms innovative ideas into global projects, Intechne Entrepreneurship Club hosts ideathons, investor meetings, startup summits, and strategic mentorship programs, aiming to bring technology production passion together with sustainable business models.',
   },
   'intechne-gaming-hub': {
     name: 'Intechne Gaming Hub',
