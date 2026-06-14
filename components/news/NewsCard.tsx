@@ -5,19 +5,26 @@ import { ArrowRight, Clock } from 'lucide-react';
 import type { NewsItem } from '@/src/types/common.types';
 
 export function NewsCard({ news }: { news: NewsItem }) {
-  const bgImage = (news as any).image_url || (news as any).imageUrl || 'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg';
+  const imageUrl = (news as any).image_url || (news as any).imageUrl;
+  const hasImage = !!imageUrl;
 
   return (
     <article className="bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group overflow-hidden">
       <figure className="w-full h-[200px] overflow-hidden relative">
         <Link href={news.href as any} className="block w-full h-full">
           <div className="absolute inset-0 bg-[#15a3b0]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
-          <img 
-            src={bgImage} 
-            alt={news.imageAlt || news.title} 
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-            loading="lazy" 
-          />
+          {hasImage ? (
+            <img 
+              src={imageUrl} 
+              alt={news.imageAlt || news.title} 
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+              loading="lazy" 
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-slate-50 to-slate-100 border-b border-slate-100 flex items-center justify-center text-slate-400 font-bold text-xs uppercase tracking-wider select-none">
+              {news.tag || 'HABER'}
+            </div>
+          )}
         </Link>
       </figure>
       <div className="flex flex-col flex-1 p-6">
