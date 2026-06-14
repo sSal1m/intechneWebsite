@@ -94,7 +94,7 @@ export function StatsSection({ initialStats = [] }: StatsSectionProps) {
               const colors = [
                 { bg: '#0AC8DA', circleBg: '#089EAD', isLight: false },
                 { bg: '#DDF8FB', circleBg: '#0AC8DA', isLight: true },
-                { bg: '#F7FAFB', circleBg: '#E5E7EB', isLight: true },
+                { bg: '#ffffff', circleBg: '#64748B', isLight: true },
                 { bg: '#111111', circleBg: '#333333', isLight: false },
                 { bg: '#089EAD', circleBg: '#111111', isLight: false },
               ];
@@ -108,7 +108,8 @@ export function StatsSection({ initialStats = [] }: StatsSectionProps) {
                   transition={{ delay: idx * 0.1, duration: 0.4 }}
                   className={cn(
                     "rounded-2xl p-6",
-                    idx === 4 && "sm:col-span-2"
+                    idx === 4 && "sm:col-span-2",
+                    color.bg === '#ffffff' && "border border-slate-200/50 shadow-sm"
                   )}
                   style={{ backgroundColor: color.bg }}
                 >
