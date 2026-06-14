@@ -54,18 +54,9 @@ export function ContactForm() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center bg-white rounded-[2rem] p-6 lg:p-10 shadow-xl border border-slate-100 mb-12">
-      {/* Left side Image */}
-      <div className="w-full lg:w-1/2 flex justify-center order-2 lg:order-1">
-        <img 
-          src="/cute-axolotl-axolotl-illustration-sea-salamander-sea-life-marine-life-png.webp" 
-          alt="Contact Illustration" 
-          className="w-full max-w-md object-contain"
-        />
-      </div>
-
-      {/* Right side Form */}
-      <div className="w-full lg:w-1/2 order-1 lg:order-2">
+    <div className="max-w-3xl mx-auto bg-white rounded-[2rem] p-6 lg:p-10 shadow-xl border border-slate-100 mb-12">
+      {/* Form Container */}
+      <div className="w-full">
         <h2 className="text-3xl font-black text-slate-800 mb-2">Bize Ulaşın</h2>
         <p className="text-slate-500 font-medium mb-8">
           Soru ve talepleriniz için aşağıdaki formu doldurarak bizimle iletişime geçebilirsiniz.
