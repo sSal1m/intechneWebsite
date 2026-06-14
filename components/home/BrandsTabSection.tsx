@@ -93,6 +93,7 @@ const brandTranslationsEn: Record<string, { name: string; shortDescription: stri
 
 export function BrandsTabSection({ locale }: BrandsTabSectionProps) {
   const [activeIdx, setActiveIdx] = useState(0);
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [hoveredLink, setHoveredLink] = useState(false);
   const isEn = locale === 'en';
 
@@ -128,19 +129,25 @@ export function BrandsTabSection({ locale }: BrandsTabSectionProps) {
           <div className="lg:w-1/4 flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
             {brands.map((brand, idx) => {
               const brandName = isEn ? (brandTranslationsEn[brand.slug]?.name || brand.name) : brand.name;
+              const isActive = idx === activeIdx;
+              const isHovered = idx === hoveredIdx;
+              const shouldHighlight = isActive || isHovered;
+
               return (
                 <button
                   key={brand.id}
                   onClick={() => handleTabClick(idx)}
+                  onMouseEnter={() => setHoveredIdx(idx)}
+                  onMouseLeave={() => setHoveredIdx(null)}
                   style={{
-                    backgroundColor: idx === activeIdx ? '#ffffff' : 'rgba(255, 255, 255, 0.12)',
-                    borderLeft: `4px solid ${idx === activeIdx ? brand.accentColor : 'transparent'}`,
-                    color: idx === activeIdx ? brand.accentColor : '#ffffff',
+                    backgroundColor: shouldHighlight ? '#ffffff' : 'rgba(255, 255, 255, 0.12)',
+                    borderLeft: `4px solid ${shouldHighlight ? brand.accentColor : 'transparent'}`,
+                    color: shouldHighlight ? brand.accentColor : '#ffffff',
                   }}
-                  className={`text-left px-4 py-3 rounded-lg font-bold text-xs whitespace-nowrap lg:whitespace-normal transition-all duration-200 flex-shrink-0 ${
-                    idx === activeIdx
-                      ? 'shadow-lg font-black scale-[1.02] hover:scale-[1.04] active:scale-[0.98]'
-                      : 'text-white/90 hover:bg-white/20 hover:text-white hover:scale-[1.02] lg:hover:translate-x-1 active:scale-[0.98]'
+                  className={`text-left px-4 py-3 rounded-lg font-bold text-xs whitespace-nowrap lg:whitespace-normal transition-all duration-200 flex-shrink-0 active:scale-[0.98] ${
+                    shouldHighlight
+                      ? 'shadow-lg font-black scale-[1.02] hover:scale-[1.04]'
+                      : 'text-white/90 lg:hover:translate-x-1'
                   }`}
                 >
                   {brandName}
