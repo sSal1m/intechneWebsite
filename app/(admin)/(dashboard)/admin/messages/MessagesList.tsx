@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { deleteMessage } from '@/src/actions/messages';
 import { Trash2, Calendar, User, Phone, Mail, FileText } from 'lucide-react';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { createClient } from '@/src/utils/supabase/client';
 
 interface Message {
   id: string;
@@ -27,6 +28,47 @@ export function MessagesList({ initialMessages }: MessagesListProps) {
   // Delete confirmation states
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
+
+  // Real-time message listener
+  useEffect(() => {
+    const supabase = createClient();
+
+    const channel = supabase
+      .channel('messages-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+        },
+        (payload: any) => {
+          const newMessage = payload.new as Message;
+          setMessages((prev) => {
+            if (prev.some((msg) => msg.id === newMessage.id)) return prev;
+            return [newMessage, ...prev];
+          });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'messages',
+        },
+        (payload: any) => {
+          const deletedId = payload.old.id;
+          setMessages((prev) => prev.filter((msg) => msg.id !== deletedId));
+          setSelectedMessage((prev) => (prev?.id === deletedId ? null : prev));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   function triggerDelete(id: string, e: React.MouseEvent) {
     e.stopPropagation();
