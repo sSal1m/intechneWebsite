@@ -12,21 +12,21 @@ export const brands: Brand[] = [
       { value: '10.000', label: 'Yarışmacı' },
     ],
     logoAlt: 'Cezeri Robot Ligi Logo',
-    accentColor: '#E30713',
+    accentColor: '#7C3AED',
     logoUrl: '/cezeri-logo.jpg',
   },
   {
     id: '2',
     name: 'Robonex Robot Ligi',
     slug: 'robonex-robot-ligi',
-    shortDescription: 'Intechne\'nin yeni nesil teknoloji vizyonunu sahaya yansıtan Robonex Robot Ligi; fütüristik otonom sistem mücadeleleri, yapay zeka destekli robotik yarışmaları ve ileri teknoloji etkinlikleri gibi birçok faaliyete ev sahipliği yaparak genç mühendisleri geleceğin global inovasyon yarışına en iyi şekilde hazırlamayı temel alır.',
+    shortDescription: 'Intechne\'nin yeni nesil teknoloji vizyonunu sahaya yansıtan Robonex Robot Ligi; fütüristik otonom sistem mücadeleleri, yapay zeka destekli robotik yarışmaları ve ileri teknoloji etkinlikleri gibi birçok faaliyete ev sahipliği yaparak genç mühendisleri geleceğin global inovasyon yarışına en iyi şekilde hazırlayı temel alır.',
     stats: [
       { value: '1. Yıl', label: '' },
       { value: '3', label: 'Yarışma' },
       { value: '6000', label: 'Yarışmacı' },
     ],
     logoAlt: 'Robonex Robot Ligi Logo',
-    accentColor: '#4F46E5',
+    accentColor: '#2563EB',
   },
   {
     id: '3',
@@ -39,7 +39,7 @@ export const brands: Brand[] = [
       { value: '8000+', label: 'Katılımcı' },
     ],
     logoAlt: 'Tech & Chill Fest Logo',
-    accentColor: '#D97706',
+    accentColor: '#16A34A',
   },
   {
     id: '4',
@@ -52,7 +52,7 @@ export const brands: Brand[] = [
       { value: '5.000+', label: 'Öğrenci' },
     ],
     logoAlt: 'Intechne Akademi Logo',
-    accentColor: '#7C3AED',
+    accentColor: '#DB2777',
   },
   {
     id: '5',
@@ -65,7 +65,7 @@ export const brands: Brand[] = [
       { value: '2500', label: 'Ziyaretçi' },
     ],
     logoAlt: 'Drone Cup Logo',
-    accentColor: '#0D9488',
+    accentColor: '#1E3A8A',
   },
   {
     id: '6',
@@ -78,7 +78,7 @@ export const brands: Brand[] = [
       { value: '5+', label: 'Yıl' },
     ],
     logoAlt: 'Intechne Girişim Kulübü Logo',
-    accentColor: '#0ac8da',
+    accentColor: '#94A3B8',
   },
   {
     id: '7',
@@ -104,7 +104,7 @@ export const brands: Brand[] = [
       { value: '50+', label: 'Mentor' },
     ],
     logoAlt: 'Hack the Future Maratonları Logo',
-    accentColor: '#1D4ED8',
+    accentColor: '#DC2626',
   },
 ];
 
