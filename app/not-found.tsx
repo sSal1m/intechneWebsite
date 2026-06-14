@@ -33,9 +33,6 @@ export default function NotFound() {
           <span className="text-8xl md:text-9xl font-black text-white/20 select-none tracking-widest leading-none drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)]">
             404
           </span>
-          <span className="absolute bottom-2 text-lg md:text-xl font-bold tracking-widest text-[#15a3b0] uppercase">
-            {isEn ? "This Page Doesn't Appear on the Marauder's Map" : "Bu Sayfa Marauder Haritası'nda Görünmüyor"}
-          </span>
         </div>
 
         {/* Text Area */}
