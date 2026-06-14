@@ -1,12 +1,17 @@
 'use client';
 
-import { useLocale } from 'next-intl';
-import { Link } from '@/src/i18n/navigation';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Home, HelpCircle } from 'lucide-react';
 
 export default function NotFound() {
-  const locale = useLocale();
-  const isEn = locale === 'en';
+  const [isEn, setIsEn] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsEn(window.location.pathname.startsWith('/en'));
+    }
+  }, []);
 
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden py-16 px-4">
@@ -48,14 +53,14 @@ export default function NotFound() {
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2">
           <Link
-            href="/"
+            href={isEn ? '/en' : '/'}
             className="inline-flex items-center gap-2 bg-[#15a3b0] text-white px-6 py-3 rounded-full font-bold text-sm shadow-lg hover:bg-[#0d8e9a] transition-all duration-300 transform hover:-translate-y-0.5 w-full sm:w-auto justify-center"
           >
             <Home className="w-4 h-4" />
             {isEn ? 'Return to Base' : 'Ana Üsse Dön'}
           </Link>
           <Link
-            href="/iletisim"
+            href={isEn ? '/en/contact' : '/iletisim'}
             className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 px-6 py-3 rounded-full font-bold text-sm shadow-md transition-all duration-300 transform hover:-translate-y-0.5 w-full sm:w-auto justify-center"
           >
             <HelpCircle className="w-4 h-4" />
