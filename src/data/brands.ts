@@ -12,7 +12,7 @@ export const brands: Brand[] = [
       { value: '10.000', label: 'Yarışmacı' },
     ],
     logoAlt: 'Cezeri Robot Ligi Logo',
-    accentColor: '#7C3AED',
+    accentColor: '#4f2567',
     logoUrl: '/cezeri-logo.jpg',
   },
   {
@@ -26,7 +26,7 @@ export const brands: Brand[] = [
       { value: '6000', label: 'Yarışmacı' },
     ],
     logoAlt: 'Robonex Robot Ligi Logo',
-    accentColor: '#2563EB',
+    accentColor: '#f65b00',
   },
   {
     id: '3',
@@ -39,7 +39,7 @@ export const brands: Brand[] = [
       { value: '5.000+', label: 'Öğrenci' },
     ],
     logoAlt: 'Intechne Akademi Logo',
-    accentColor: '#DB2777',
+    accentColor: '#f280c9',
   },
   {
     id: '4',
@@ -52,7 +52,7 @@ export const brands: Brand[] = [
       { value: '2500', label: 'Ziyaretçi' },
     ],
     logoAlt: 'Drone Cup Logo',
-    accentColor: '#1E3A8A',
+    accentColor: '#0F5D3F',
   },
   {
     id: '5',
@@ -65,7 +65,7 @@ export const brands: Brand[] = [
       { value: '50+', label: 'Mentor' },
     ],
     logoAlt: 'Hack the Future Maratonları Logo',
-    accentColor: '#DC2626',
+    accentColor: '#A90432',
   },
   {
     id: '6',
@@ -91,7 +91,7 @@ export const brands: Brand[] = [
       { value: '8000+', label: 'Katılımcı' },
     ],
     logoAlt: 'Tech & Chill Fest Logo',
-    accentColor: '#16A34A',
+    accentColor: '#1E3A8A',
   },
   {
     id: '8',
