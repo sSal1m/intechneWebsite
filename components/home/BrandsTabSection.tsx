@@ -93,6 +93,7 @@ const brandTranslationsEn: Record<string, { name: string; shortDescription: stri
 
 export function BrandsTabSection({ locale }: BrandsTabSectionProps) {
   const [activeIdx, setActiveIdx] = useState(0);
+  const [hoveredLink, setHoveredLink] = useState(false);
   const isEn = locale === 'en';
 
   function handleTabClick(idx: number) {
@@ -105,7 +106,10 @@ export function BrandsTabSection({ locale }: BrandsTabSectionProps) {
   const activeDesc = isEn ? (activeTranslation?.shortDescription || active.shortDescription) : active.shortDescription;
 
   return (
-    <section className="bg-[#15a3b0] py-16">
+    <section 
+      style={{ backgroundColor: active.accentColor }} 
+      className="py-16 transition-all duration-500"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-10">
@@ -129,12 +133,13 @@ export function BrandsTabSection({ locale }: BrandsTabSectionProps) {
                   key={brand.id}
                   onClick={() => handleTabClick(idx)}
                   style={{
-                    backgroundColor: idx === activeIdx ? '#DDF8FB' : 'rgba(10, 200, 218, 0.15)',
-                    borderLeft: `4px solid #0AC8DA`,
+                    backgroundColor: idx === activeIdx ? '#ffffff' : 'rgba(255, 255, 255, 0.12)',
+                    borderLeft: `4px solid ${idx === activeIdx ? brand.accentColor : 'transparent'}`,
+                    color: idx === activeIdx ? brand.accentColor : '#ffffff',
                   }}
                   className={`text-left px-4 py-3 rounded-lg font-bold text-xs whitespace-nowrap lg:whitespace-normal transition-all duration-200 flex-shrink-0 ${
                     idx === activeIdx
-                      ? 'text-[#089EAD] shadow-lg font-black scale-[1.02]'
+                      ? 'shadow-lg font-black scale-[1.02]'
                       : 'text-white/90 hover:bg-white/20 hover:text-white'
                   }`}
                 >
@@ -165,7 +170,14 @@ export function BrandsTabSection({ locale }: BrandsTabSectionProps) {
                   </p>
                   <Link
                     href={`/markalarimiz/${active.slug}` as any}
-                    className="inline-flex items-center gap-2 border-2 border-white text-white rounded-full px-6 py-3 font-bold text-sm hover:bg-white hover:text-primary transition-all duration-200 w-fit"
+                    onMouseEnter={() => setHoveredLink(true)}
+                    onMouseLeave={() => setHoveredLink(false)}
+                    style={{
+                      backgroundColor: hoveredLink ? '#ffffff' : 'transparent',
+                      color: hoveredLink ? active.accentColor : '#ffffff',
+                      borderColor: '#ffffff',
+                    }}
+                    className="inline-flex items-center gap-2 border-2 rounded-full px-6 py-3 font-bold text-sm transition-all duration-200 w-fit"
                   >
                     {isEn ? 'Learn More' : 'Daha Fazla Bilgi'}
                   </Link>
@@ -193,7 +205,10 @@ export function BrandsTabSection({ locale }: BrandsTabSectionProps) {
                       const displayLabel = isEn ? (statLabelTranslations[stat.label] || stat.label) : stat.label;
                       return (
                         <div key={sIdx} className="bg-white rounded-xl shadow-md px-4 py-2 text-right min-w-[100px]">
-                          <p className="text-brand-dark font-black text-base leading-none">
+                          <p 
+                            style={{ color: active.accentColor }}
+                            className="font-black text-base leading-none"
+                          >
                             {isEn ? (statValueTranslations[stat.value] || stat.value) : stat.value}
                           </p>
                           {stat.label && <p className="text-slate-500 text-xs mt-0.5">{displayLabel}</p>}
