@@ -5,7 +5,7 @@ export const brands: Brand[] = [
     id: '1',
     name: 'Cezeri Robot Ligi',
     slug: 'cezeri-robot-ligi',
-    shortDescription: 'Intechne ekosisteminin güçlü bir parçası olan Cezeri Robot Ligi; uluslararası standartlardaki robotik yarışmaları, kıyasıya geçen otonom donanım mücadeleleri, teknoloji atölyeleri ve inovasyon odaklı etkinlikler gibi birçok faaliyete ev sahipliği yaparak gençlerde mühendisliğe olan ilgiyi heyecan verici bir spor tutkusuna dönüştürmeyi ve Türkiye’nin küresel ölçekte yüksek teknoloji üreten yenilmez bir topluma dönüşmesi konusunda güçlü bir farkındalık oluşturmayı hedeflemektedir.',
+    shortDescription: 'Intechne ekosisteminin güçlü bir parçası olan Cezeri Robot Ligi; uluslararası standartlardaki robotik yarışmaları, kıyasıya geçen otonom donanım mücadeleleri, teknoloji atölyeleri ve inovasyon odaklı etkinlikler gibi birçok faaliyete ev sahipliği yaparak gençlerde mühendisliğe olan ilgiyi heyecan verici bir spor tutkusuna dönüştürmeyi ve yeteneklerin potansiyelini sahada keşfetmeyi amaçlamaktadır.',
     stats: [
       { value: '3. Yıl', label: '' },
       { value: '6', label: 'Yarışma' },
@@ -19,7 +19,7 @@ export const brands: Brand[] = [
     id: '2',
     name: 'Robonex Robot Ligi',
     slug: 'robonex-robot-ligi',
-    shortDescription: 'Intechne\'nin yeni nesil teknoloji vizyonunu sahaya yansıtan Robonex Robot Ligi; fütüristik otonom sistem mücadeleleri, yapay zeka destekli robotik yarışmaları ve ileri teknoloji etkinlikleri gibi birçok faaliyete ev sahipliği yaparak genç mühendisleri geleceğin global inovasyon yarışına en iyi şekilde hazırlayı temel alır.',
+    shortDescription: 'Intechne\'nin yeni nesil teknoloji vizyonunu sahaya yansıtan Robonex Robot Ligi; fütüristik otonom sistem mücadeleleri, yapay zeka destekli robotik yarışmaları ve ileri teknoloji etkinlikleri gibi birçok faaliyete ev sahipliği yaparak genç mühendisleri geleceğin global inovasyon yarışına en iyi şekilde hazırlamayı temel alır.',
     stats: [
       { value: '1. Yıl', label: '' },
       { value: '3', label: 'Yarışma' },
@@ -32,7 +32,7 @@ export const brands: Brand[] = [
     id: '3',
     name: 'Tech & Chill Fest',
     slug: 'tech-chill-fest',
-    shortDescription: 'Intechne ekosisteminin amiral gemisi etkinliği olan Tech & Chill Fest; gündüzleri teknoloji hackathonları, robotik finalleri ve inovasyon atölyeleri, akşamları ise canlı müzik performansları ve e-spor turnuvaları gibi many faaliyete ev sahipliği yaparak teknolojinin sosyal yaşamla kusursuzca bütünleştiği dinamik bir buluşma noktası yaratır.',
+    shortDescription: 'Intechne ekosisteminin amiral gemisi etkinliği olan Tech & Chill Fest; gündüzleri teknoloji hackathonları, robotik finalleri ve inovasyon atölyeleri, akşamları ise canlı müzik performansları ve e-spor turnuvaları gibi birçok faaliyete ev sahipliği yaparak teknolojinin sosyal yaşamla kusursuzca bütünleştiği dinamik bir buluşma noktası yaratır.',
     stats: [
       { value: '1. Yıl', label: '' },
       { value: '4', label: 'Etkinlik' },
@@ -71,7 +71,7 @@ export const brands: Brand[] = [
     id: '6',
     name: 'Intechne Girişim Kulübü',
     slug: 'intechne-girisim-kulubu',
-    shortDescription: 'Intechne ekosisteminin yenilikçi fikirleri küresel projelere dönüştüren vizyoner mutfağı olan Intechne Girişim Kulübü; ideathonlar, yatırımcı buluşmaları, start-up zirveleri ve stratejik mentorluk programları gibi birçok faaliyete ev sahipliği yaparak gençlerdeki teknoloji üretme tutkusunu sürdürülebilir iş modelleriyle buluşturmayı ve sahanın zorlu şartlarından doğan projelerin küresel çapta başarılı derin teknoloji girişimleri olarak ekosisteme kazandırılmasını amaçlamaktadır.',
+    shortDescription: 'Intechne ekosisteminin yenilikçi fikirleri küresel projelere dönüştüren vizyoner mutfağı olan Intechne Girişim Kulübü; ideathonlar, yatırımcı buluşmaları, start-up zirveleri ve stratejik mentorluk programları gibi birçok faaliyete ev sahipliği yaparak gençlerdeki teknoloji üretme tutkusunu sürdürülebilir iş modelleriyle buluşturmayı amaçlamaktadır.',
     stats: [
       { value: '200+', label: 'Girişim' },
       { value: '50+', label: 'Mentor' },
@@ -84,7 +84,7 @@ export const brands: Brand[] = [
     id: '7',
     name: 'Intechne Gaming Hub',
     slug: 'intechne-gaming-hub',
-    shortDescription: 'Intechne ekosisteminin dijital dünyadaki interaktif rekabet ve üretim üssü olan Intechne Gaming Hub; strateji odaklı e-spor turnuvaları, oyun geliştirme maratonları (game jams), sanal gerçeklik (VR) atölyeleri ve dijital inovasyon etkinlikleri gibi birçok faaliyete ev sahipliği yaparak gençlerdeki oyun oynama tutkusunu teknoloji tasarlama gücüne dönüştürmeyi ve yetenekli geliştiricileri küresel oyun ekosistemine kazandırmayı amaçlamaktadır.',
+    shortDescription: 'Intechne ekosisteminin dijital dünyadaki interaktif rekabet ve üretim üssü olan Intechne Gaming Hub; strateji odaklı e-spor turnuvaları, oyun geliştirme maratonları (game jams), sanal gerçeklik (VR) atölyeleri ve dijital inovasyon etkinlikleri gibi birçok faaliyete ev sahipliği yaparak gençlerdeki oyun oynama tutkusunu teknoloji tasarlama gücüne dönüştürmeyi amaçlamaktadır.',
     stats: [
       { value: '15', label: 'Turnuva' },
       { value: '500+', label: 'Geliştirici' },
@@ -97,7 +97,7 @@ export const brands: Brand[] = [
     id: '8',
     name: 'Hack the Future Maratonları',
     slug: 'hack-the-future-marathons',
-    shortDescription: 'Intechne ekosisteminin sınırları zorlayan vizyoner yazılım ve üretim arenası olan Hack the Future Maratonları; kesintisiz kodlama hackathonları, derin teknoloji (deep-tech) odaklı hızlı prototipleme yarışmaları, yapay zeka geliştirme kampları ve ileri düzey problem çözme etkinlikleri gibi birçok faaliyete ev sahipliği yaparak gençlerin analitik zekasını inovatif projelere dönüştürmeyi ve geleceğin küresel sorunlarına bugünden güçlü teknolojik çözümler üreten yenilikçi bir nesil yetiştirmeyi amaçlamaktadır.',
+    shortDescription: 'Intechne ekosisteminin sınırları zorlayan vizyoner yazılım ve üretim arenası olan Hack the Future Maratonları; kesintisiz kodlama hackathonları, derin teknoloji (deep-tech) odaklı hızlı prototipleme yarışmaları, yapay zeka geliştirme kampları ve ileri düzey problem çözme etkinlikleri gibi birçok faaliyete ev sahipliği yaparak gençlerin analitik zekasını inovatif projelere dönüştürmeyi amaçlamaktadır.',
     stats: [
       { value: '24 Saat', label: 'Kodlama' },
       { value: '1500+', label: 'Geliştirici' },

@@ -29,8 +29,8 @@ export default async function BizKimizPage({ params }: PageProps) {
       <div className="bg-primary-light/40 border-l-4 border-primary p-6 md:p-8 rounded-r-3xl">
         <p className="text-brand-navy font-semibold text-lg md:text-xl leading-relaxed">
           {isEn
-            ? 'Intechne is the unification of an R&D company developing deep tech solutions and a massive robotics ecosystem bringing tens of thousands of young people together.'
-            : 'Intechne, derin teknoloji çözümleri geliştiren bir Ar-Ge şirketi ile on binlerce genci buluşturan devasa bir robotik ekosisteminin tek vücut olmuş halidir.'}
+            ? 'Intechne set out at a time when technology education remained largely theoretical, by building physical arenas where young people can showcase their skills in real-world environments.'
+            : 'Intechne, teknoloji eğitiminin teoride kaldığı bir dönemde, gençlerin becerilerini gerçek ortamlarda sergileyebileceği fiziksel arenalar kurarak yola çıktı.'}
         </p>
       </div>
 
@@ -43,8 +43,8 @@ export default async function BizKimizPage({ params }: PageProps) {
           </h3>
           <p className="text-slate-600 text-sm md:text-base leading-relaxed font-medium">
             {isEn
-              ? 'Our story began with a simple but unsettling observation: Young people consume technology very well, but when it comes to producing work and showcasing their physical abilities, the system only offered them boring classrooms and theoretical exams. We wanted to change this. We set out to build physical arenas where code doesn\'t stay on paper but turns into autonomous vehicles and strategic competition.'
-              : 'Hikayemiz, basit ama rahatsız edici bir tespitle başladı: Gençler teknolojiyi çok iyi tüketiyor ama iş üretmeye ve fiziksel yeteneklerini sergilemeye geldiğinde sistem onlara sadece sıkıcı sınıflar ve teorik sınavlar sunuyordu. Biz bunu değiştirmek istedik. Kodların kağıt üzerinde kalmadığı, otonom araçlara ve stratejik rekabete dönüştüğü fiziksel arenalar kurarak yola çıktık.'}
+              ? 'Our starting point was an observation: there were talented young people, but no system to recognize them. Robotics competitions offered an ideal ground to fill this gap—bridging the distance between learning and making, and transforming technical skills into tangible competition. We began building this foundation in Türkiye by establishing leagues for international robotics competitions.'
+              : 'Başlangıç noktamız bir gözlemdi: Yetenekli gençler vardı, onları tanıyan bir sistem yoktu. Robotik yarışmaları bu boşluğu doldurmak için ideal bir zemin sunuyordu — öğrenmek ile üretmek arasındaki mesafeyi kapatıyor, teknik beceriyi somut bir rekabete dönüştürüyordu. Türkiye\'de uluslararası robot yarışmaları için ligler hayata geçirerek bu zemini inşa etmeye başladık.'}
           </p>
         </div>
 
@@ -55,8 +55,8 @@ export default async function BizKimizPage({ params }: PageProps) {
           </h3>
           <p className="text-slate-600 text-sm md:text-base leading-relaxed font-medium">
             {isEn
-              ? 'Over time, these arenas turned from mere event venues into a laboratory where we develop our own technology. Today, Intechne is an ecosystem builder organizing international robotics leagues in Turkey, a technology producer developing AI-assisted autonomous refereeing systems that eliminate human error on these fields, and a bridge to the future that transforms on-field talent into digital data to connect them with companies.'
-              : 'Zamanla bu arenalar, sadece birer etkinlik alanı olmaktan çıkıp kendi teknolojimizi geliştirdiğimiz bir laboratuvara dönüştü. Bugün Intechne; uluslararası robotik liglerini Türkiye\'de organize eden bir ekosistem kurucusu, bu sahalardaki insan hatasını sıfırlayan yapay zeka destekli otonom hakemlik sistemi geliştiren bir teknoloji üreticisi ve sahadaki yetenekleri dijital veriye dönüştürüp şirketlerle buluşturan bir gelecek köprüsüdür.'}
+              ? 'Over the years, our organizational experience created the need to develop our own technology. To solve inefficiencies in the field, we developed **ARENO**, an AI-powered autonomous refereeing system. To translate standout talent in competitions into digital data, we built the **TechApp** platform. Today, Intechne is an integrated ecosystem that adapts and organizes international robotics leagues in Türkiye, develops technology products emerging from these processes, and connects talent discovered in the field with industry. We create experience for the competing student, AI-powered insight for the system observer, and actionable data for companies seeking talent.'
+              : 'Yıllar içinde organizasyon deneyimimiz, kendi teknolojimizi geliştirme ihtiyacını doğurdu. Sahalardaki verimsizlikleri çözmek için yapay zeka destekli otonom hakemlik sistemi ARENO\'yu geliştirdik. Yarışmalarda öne çıkan yetenekleri dijital veriye taşımak için TechApp platformunu kurduk.Bugün Intechne; uluslararası robotik liglerini Türkiye’de uyarlayarak organize eden, bu süreçten doğan teknoloji ürünleri geliştiren ve sahadan çıkan yetenekleri endüstriyle buluşturan bütünleşik bir yapıdır. Sahada yarışan gence deneyim, sistemi izleyene yapay zeka, yeteneği arayan şirkete ise veri üretiyoruz.'}
           </p>
         </div>
       </div>

@@ -1,8 +1,6 @@
 import { Link } from '@/src/i18n/navigation';
 import { cn } from '@/src/lib/utils';
 
-import { Rocket } from 'lucide-react';
-
 interface PlaceholderPageProps {
   title: string;
   locale: string;
@@ -15,8 +13,12 @@ export function PlaceholderPage({ title, locale, className }: PlaceholderPagePro
   return (
     <div className={cn('min-h-[60vh] flex flex-col items-center justify-center bg-slate-50 px-4 rounded-2xl', className)}>
       <div className="max-w-md text-center">
-        <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-          <Rocket className="w-10 h-10 text-primary" />
+        <div className="w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+          <img
+            src="/cute-axolotl-axolotl-illustration-sea-salamander-sea-life-marine-life-png.webp"
+            alt={isEn ? 'Coming Soon' : 'Yakında Hazır Olacak'}
+            className="w-full h-full object-contain"
+          />
         </div>
         <h1 className="text-2xl font-bold text-brand-dark mb-3">{title}</h1>
         <p className="text-slate-500 mb-2 text-base font-medium">

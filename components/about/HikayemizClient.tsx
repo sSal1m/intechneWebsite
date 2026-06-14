@@ -13,45 +13,45 @@ interface TimelineEvent {
 const timelineEvents: TimelineEvent[] = [
   {
     year: '2021',
-    titleTr: 'Kuruluş ve İlk Kıvılcım',
-    titleEn: 'Foundation and the First Spark',
-    descTr: 'Intechne, teknoloji üreten bir toplum vizyonuyla, genç yeteneklerin mühendislik ve robotik alanlarındaki potansiyelini açığa çıkarmak için 2021 yılında kuruldu. İlk eğitim modülleri ve atölye planlamaları bu dönemde hayata geçirildi.',
-    descEn: 'Intechne was founded in 2021 with the vision of a technology-producing society, aiming to unlock the potential of young talents in engineering and robotics. The first training modules and workshop planning were launched in this period.'
+    titleTr: 'Kuruluş ve İlk Adım',
+    titleEn: 'Foundation and First Step',
+    descTr: 'Intechne, gençlerin teknik becerilerini teorinin ötesinde, gerçek rekabet ortamlarında geliştirebileceği bir ekosistem kurma vizyonuyla İstanbul\'da hayata geçti. Robotik yarışma organizasyonuna yönelik ilk altyapı çalışmaları ve ortaklık görüşmeleri bu dönemde başladı.',
+    descEn: 'Intechne was launched in Istanbul with the vision of establishing an ecosystem where young people can develop their technical skills beyond theory in real competitive environments. First infrastructure works and partnership discussions for robotics competition organization began in this period.'
   },
   {
     year: '2022',
-    titleTr: 'Cezeri Robot Ligi\'nin Doğuşu',
-    titleEn: 'Birth of the Cezeri Robot League',
-    descTr: 'Türkiye\'nin en kapsamlı ve prestijli robotik yarışmalarından biri olan Cezeri Robot Ligi\'nin temelleri atıldı. İlk bölgesel turnuvalar düzenlendi ve yüzlerce genç mühendis adayı takım ruhuyla yarıştı.',
-    descEn: 'The foundations of the Cezeri Robot League, one of Turkey\'s most comprehensive and prestigious robotics competitions, were laid. The first regional tournaments were held, and hundreds of young engineer candidates competed with team spirit.'
+    titleTr: 'Uluslararası Lisanslar ve İlk Turnuvalar',
+    titleEn: 'International Licenses and First Tournaments',
+    descTr: 'VEX Robotics ve Drone Soccer alanlarında Türkiye resmi organizatörlüğü lisansları alındı. İlk bölgesel turnuvalar düzenlenerek yüzlerce öğrenci, uluslararası standartta bir robotik yarışmasıyla ilk kez buluştu.',
+    descEn: 'Official national organizer licenses for VEX Robotics and Drone Soccer were acquired. The first regional tournaments were organized, introducing hundreds of students to international standard robotics competitions for the first time.'
   },
   {
     year: '2023',
-    titleTr: 'Intechne Akademi ve Yaygınlaşma',
-    titleEn: 'Intechne Academy and Expansion',
-    descTr: 'Genç yetenekleri gerçek dünya projeleriyle buluşturan Intechne Akademi kuruldu. Farklı şehirlerde açılan yeni atölyeler ve uygulamalı teknoloji eğitimleriyle ulaşılan öğrenci sayısı 5.000\'i aştı.',
-    descEn: 'Intechne Academy was established, bringing young talents together with real-world projects. The number of students reached exceeded 5,000 with new workshops opened in different cities and practical technology trainings.'
+    titleTr: 'Ekosistem Büyüyor: RoboNex ve Yeni Ortaklıklar',
+    titleEn: 'Ecosystem Grows: RoboNex and New Partnerships',
+    descTr: 'Türkiye\'ye özgü robotik lig formatı RoboNex hayata geçirildi. Teknopark İstanbul bünyesinde Ar-Ge faaliyetleri başlatıldı. İstanbul Gedik Üniversitesi ile stratejik iş birliği kurularak akademi-saha bağlantısı güçlendirildi.',
+    descEn: 'RoboNex, a Turkey-specific robotics league format, was launched. R&D activities were initiated at Technopark Istanbul. Strategic cooperation was established with Istanbul Gedik University, strengthening the academy-field link.'
   },
   {
     year: '2024',
-    titleTr: 'Ulusal Başarılar ve Robonex Ligi',
-    titleEn: 'National Achievements and Robonex League',
-    descTr: 'Otonom sistemler ve ileri teknoloji yarışmalarını içeren Robonex Robot Ligi başlatıldı. Vex Robotics Türkiye Şampiyonası ulusal arenada büyük ses getirerek binlerce gence ilham kaynağı oldu.',
-    descEn: 'The Robonex Robot League, featuring autonomous systems and advanced technology competitions, was launched. The Vex Robotics Turkey Championship made a huge impact in the national arena, inspiring thousands of young people.'
+    titleTr: 'ARENO: Yapay Zekayı Sahaya Taşımak',
+    titleEn: 'ARENO: Bringing AI to the Field',
+    descTr: 'Yarışma alanlarındaki hakemlik süreçlerini otomatikleştirmek amacıyla geliştirilen ARENO projesi Ar-Ge aşamasına girdi. Vex Robotics Türkiye Şampiyonası düzenlendi. Gedik Holding GearUP programıyla stratejik yatırım süreci başladı.',
+    descEn: 'The ARENO project, developed to automate refereeing processes in competition areas, entered the R&D phase. The Vex Robotics Turkey Championship was held. Strategic investment process started with the Gedik Holding GearUP program.'
   },
   {
     year: '2025',
-    titleTr: 'Dijital Ekosistem ve Küresel Vizyon',
-    titleEn: 'Digital Ecosystem and Global Vision',
-    descTr: 'Intechne İnteraktif ve bulut tabanlı yayıncılık altyapısı hayata geçirildi. Robotikten yapay zekaya uzanan geniş bir yelpazede hazırlanan teknik raporlar ve eğitim simülasyonları dijital ekosisteme kazandırıldı.',
-    descEn: 'Intechne Interactive and cloud-based publishing infrastructure were implemented. Technical reports and educational simulations prepared in a wide range from robotics to artificial intelligence were brought to the digital ecosystem.'
+    titleTr: 'TechApp ve Teknofest',
+    titleEn: 'TechApp and Teknofest',
+    descTr: 'Sahadaki yetenekleri dijital veriye taşıyan TechApp platformunun geliştirme süreci hız kazandı. Teknofest İzmir Girişim Yarışması finaline ulaşıldı. Yıldız Teknopark ile robot ligi ve atölye iş birliği hayata geçirildi.',
+    descEn: 'The development process of the TechApp platform, which translates on-field talent into digital data, gained momentum. Reached the finals of the Teknofest Izmir Startup Competition. Robot league and workshop cooperation with Yildiz Technopark was implemented.'
   },
   {
     year: '2026',
-    titleTr: 'Geleceği Hep Birlikte İnşa Ediyoruz',
-    titleEn: 'Building the Future Together',
-    descTr: 'Bugün Intechne, 30\'dan fazla eğitim programı, binlerce aktif mezunu ve genişleyen paydaş ağıyla Türkiye\'nin teknoloji odaklı gelişimine liderlik etmeye ve yarının mühendislerini yetiştirmeye devam ediyor.',
-    descEn: 'Today, with more than 30 educational programs, thousands of active alumni, and an expanding network of stakeholders, Intechne continues to lead Turkey\'s technology-oriented development and train the engineers of tomorrow.'
+    titleTr: 'Ürün, Ekosistem, Büyüme',
+    titleEn: 'Product, Ecosystem, Growth',
+    descTr: 'Gedik Holding GearUP yatırımı tamamlandı. ARENO ve TechApp ürünleri piyasaya hazırlık aşamasına geldi. Intechne bugün; aktif robotik ligleri, iki özgün teknoloji ürünü ve genişleyen kurumsal ortaklıklarıyla büyümeye devam ediyor.',
+    descEn: 'Gedik Holding GearUP investment was completed. ARENO and TechApp products reached the market preparation stage. Intechne today continues to grow with active robotics leagues, two unique technology products, and expanding corporate partnerships.'
   }
 ];
 
@@ -71,8 +71,8 @@ export function HikayemizClient({ locale }: { locale: string }) {
       {/* Intro */}
       <p className="text-neutral-600 text-sm md:text-base leading-relaxed font-medium max-w-3xl">
         {isEn
-          ? 'Discover the milestones and achievements of Intechne since our inception in 2021 as we build the future of technology and robotics.'
-          : '2021 yılındaki kuruluşumuzdan bu yana Intechne\'nin teknoloji ve robotik geleceğini inşa ederken kaydettiği önemli kilometre taşlarını ve başarıları keşfedin.'}
+          ? 'Discover the important steps we have taken in technology and robotics since our foundation in 2021 as Intechne.'
+          : '2021 yılındaki kuruluşumuzdan bu yana Intechne olarak teknoloji ve robotik alanında kaydettiğimiz önemli adımları keşfedin.'}
       </p>
 
       {/* Vertical Timeline */}
