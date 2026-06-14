@@ -139,8 +139,8 @@ export function BrandsTabSection({ locale }: BrandsTabSectionProps) {
                   }}
                   className={`text-left px-4 py-3 rounded-lg font-bold text-xs whitespace-nowrap lg:whitespace-normal transition-all duration-200 flex-shrink-0 ${
                     idx === activeIdx
-                      ? 'shadow-lg font-black scale-[1.02]'
-                      : 'text-white/90 hover:bg-white/20 hover:text-white'
+                      ? 'shadow-lg font-black scale-[1.02] hover:scale-[1.04] active:scale-[0.98]'
+                      : 'text-white/90 hover:bg-white/20 hover:text-white hover:scale-[1.02] lg:hover:translate-x-1 active:scale-[0.98]'
                   }`}
                 >
                   {brandName}
