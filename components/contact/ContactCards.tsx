@@ -17,7 +17,7 @@ export function ContactCards() {
       icon: <MessageCircle className="w-6 h-6 text-[#15a3b0]" />
     },
     {
-      title: "Burs Süreçleri",
+      title: "İş Birliği ve Sponsorluk",
       detail: "kurumsal@intechne.com.tr",
       href: "mailto:kurumsal@intechne.com.tr",
       icon: <GraduationCap className="w-6 h-6 text-[#15a3b0]" />

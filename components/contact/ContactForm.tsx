@@ -58,7 +58,7 @@ export function ContactForm() {
       {/* Left side Image */}
       <div className="w-full lg:w-1/2 flex justify-center order-2 lg:order-1">
         <img 
-          src="https://cdnv2.t3vakfi.org/media/uploaded/V2CUKth9TDqEoX7OpbBdkRJHyKaCRBtV.png" 
+          src="/cute-axolotl-axolotl-illustration-sea-salamander-sea-life-marine-life-png.webp" 
           alt="Contact Illustration" 
           className="w-full max-w-md object-contain"
         />
