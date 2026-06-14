@@ -13,7 +13,7 @@ export default function NotFound() {
       {/* Fullscreen Background Image */}
       <div className="absolute inset-0 z-0">
         <img
-          src="/404notFound.jpg"
+          src="/404hp3.png"
           alt="404 Background"
           className="w-full h-full object-cover"
         />
