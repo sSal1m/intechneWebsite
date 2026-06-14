@@ -8,7 +8,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   return {
-    title: locale === 'en' ? 'Our Collaborations' : 'İşbirliklerimiz',
+    title: locale === 'en' ? 'Our Collaborations' : 'İş Birliklerimiz',
   };
 }
 

@@ -48,10 +48,10 @@ export function IsbirliklerimizClient({ locale }: { locale: string }) {
               {isEn ? 'Home' : 'Anasayfa'}
             </Link>
             <span>/</span>
-            <span>{isEn ? 'Collaborations' : 'İşbirliklerimiz'}</span>
+            <span>{isEn ? 'Collaborations' : 'İş Birliklerimiz'}</span>
           </nav>
           <h1 className="text-3xl md:text-5xl font-black">
-            {isEn ? 'Our Collaborations' : 'İşbirliklerimiz'}
+            {isEn ? 'Our Collaborations' : 'İş Birliklerimiz'}
           </h1>
         </div>
       </div>

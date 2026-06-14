@@ -26,7 +26,7 @@ export const trNavigation: NavigationConfig = {
         { label: 'Intechne Girişim Kulübü', href: '/markalarimiz/intechne-girisim-kulubu' },
       ],
     },
-    { label: 'İŞBİRLİKLERİMİZ', href: '/isbirliklerimiz' },
+    { label: 'İŞ BİRLİKLERİMİZ', href: '/isbirliklerimiz' },
     { label: 'HABERLER', href: '/haberler' },
     { label: 'İLETİŞİM', href: '/iletisim' },
   ],
