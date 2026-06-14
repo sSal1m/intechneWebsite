@@ -9,11 +9,11 @@ const displayBrands = [
   { name: 'Cezeri Robot Ligi', nameEn: 'Cezeri Robot League', slug: 'cezeri-robot-ligi' },
   { name: 'Robonex Robot Ligi', nameEn: 'Robonex Robot League', slug: 'robonex-robot-ligi' },
   { name: 'Intechne Akademi', nameEn: 'Intechne Academy', slug: 'intechne-akademi' },
-  { name: 'Tech & Chill Fest', nameEn: 'Tech & Chill Fest', slug: 'tech-chill-fest' },
-  { name: 'Hack the Future', nameEn: 'Hack the Future', slug: 'hack-the-future-marathons' },
-  { name: 'Intechne Gaming Hub', nameEn: 'Intechne Gaming Hub', slug: 'intechne-gaming-hub' },
   { name: 'Drone Cup', nameEn: 'Drone Cup', slug: 'drone-cup' },
+  { name: 'Hack the Future', nameEn: 'Hack the Future', slug: 'hack-the-future-marathons' },
   { name: 'Intechne Girişim Kulübü', nameEn: 'Intechne Venture Club', slug: 'intechne-girisim-kulubu' },
+  { name: 'Tech & Chill Fest', nameEn: 'Tech & Chill Fest', slug: 'tech-chill-fest' },
+  { name: 'Intechne Gaming Hub', nameEn: 'Intechne Gaming Hub', slug: 'intechne-gaming-hub' },
 ];
 
 export function BrandsLogoRow({ locale }: BrandsLogoRowProps) {
