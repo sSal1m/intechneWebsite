@@ -34,19 +34,19 @@ export default function NotFound() {
             404
           </span>
           <span className="absolute bottom-2 text-lg md:text-xl font-bold tracking-widest text-[#15a3b0] uppercase">
-            {isEn ? 'The Force Cannot Find This Page' : 'Güç Bu Sayfayı Bulamıyor'}
+            {isEn ? "This Page Doesn't Appear on the Marauder's Map" : "Bu Sayfa Marauder Haritası'nda Görünmüyor"}
           </span>
         </div>
 
         {/* Text Area */}
         <div className="space-y-3">
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
-            {isEn ? 'The Force Cannot Find This Page' : 'Güç Bu Sayfayı Bulamıyor'}
+            {isEn ? "This Page Doesn't Appear on the Marauder's Map" : "Bu Sayfa Marauder Haritası'nda Görünmüyor"}
           </h1>
-          <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-md mx-auto">
+          <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-md mx-auto whitespace-pre-line">
             {isEn
-              ? 'The coordinates you are looking for were not found in galactic charts.'
-              : 'Aradığınız koordinatlar galaktik haritalarda bulunamadı.'}
+              ? "The page you are looking for could not be found in the corridors of Hogwarts or on the Marauder's Map.\n\nPerhaps it was hit by a Vanishing Spell, or an incorrect Portkey brought you here."
+              : "Aradığınız sayfa ne Hogwarts koridorlarında ne de Marauder Haritası'nda bulunabildi.\n\nBelki bir Kaybolma Büyüsü'ne maruz kaldı ya da yanlış bir Portkey sizi buraya getirdi."}
           </p>
         </div>
 
@@ -57,14 +57,14 @@ export default function NotFound() {
             className="inline-flex items-center gap-2 bg-[#15a3b0] text-white px-6 py-3 rounded-full font-bold text-sm shadow-lg hover:bg-[#0d8e9a] transition-all duration-300 transform hover:-translate-y-0.5 w-full sm:w-auto justify-center"
           >
             <Home className="w-4 h-4" />
-            {isEn ? 'Return to Base' : 'Ana Üsse Dön'}
+            {isEn ? 'Return to Hogwarts' : "Hogwarts'a Dön"}
           </Link>
           <Link
             href={isEn ? '/en/contact' : '/iletisim'}
             className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 px-6 py-3 rounded-full font-bold text-sm shadow-md transition-all duration-300 transform hover:-translate-y-0.5 w-full sm:w-auto justify-center"
           >
             <HelpCircle className="w-4 h-4" />
-            {isEn ? 'Ask a Droid' : 'Bir Droid\'e Sor'}
+            {isEn ? 'Ask a Wizard' : 'Bir Büyücüye Sor'}
           </Link>
         </div>
       </div>
