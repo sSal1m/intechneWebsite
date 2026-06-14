@@ -49,6 +49,49 @@ export async function getNewsCategories() {
       .order('slug', { ascending: true });
 
     if (error) throw new Error(error.message);
+
+    const targetCategories = [
+      { slug: 'duyurular-kurumsal', name_tr: 'Duyurular & Kurumsal', name_en: 'Announcements & Corporate' },
+      { slug: 'robotik-yarismalar', name_tr: 'Robotik & Yarışmalar', name_en: 'Robotics & Competitions' },
+      { slug: 'egitim-akademi', name_tr: 'Eğitim & Akademi', name_en: 'Education & Academy' },
+      { slug: 'yazilim-hackathon', name_tr: 'Yazılım & Hackathon', name_en: 'Software & Hackathons' },
+      { slug: 'girisimcilik-yatirim', name_tr: 'Girişimcilik & Yatırım', name_en: 'Entrepreneurship & Innovation' },
+      { slug: 'oyun-espor', name_tr: 'Oyun & E-Spor', name_en: 'Gaming & E-Sports' }
+    ];
+
+    const needsSync = !data || data.length === 0 || !data.some(c => c.slug === 'duyurular-kurumsal');
+
+    if (needsSync) {
+      console.log('Syncing categories in database...');
+      // 1. Unlink existing categories from news articles to avoid foreign key violations
+      await supabase
+        .from('news')
+        .update({ category_slug: null })
+        .not('category_slug', 'is', null);
+
+      // 2. Delete old categories
+      await supabase
+        .from('news_categories')
+        .delete()
+        .neq('slug', 'all-keep');
+
+      // 3. Insert new categories
+      const { error: insertError } = await supabase
+        .from('news_categories')
+        .insert(targetCategories);
+
+      if (insertError) {
+        console.error('Error inserting categories during sync:', insertError.message);
+      } else {
+        console.log('Categories synced successfully!');
+        return targetCategories.map(c => ({
+          slug: c.slug,
+          name_tr: c.name_tr,
+          name_en: c.name_en
+        }));
+      }
+    }
+
     return data || [];
   } catch (error: any) {
     console.error('getNewsCategories error:', error);
