@@ -9,50 +9,57 @@ export default function NotFound() {
   const isEn = locale === 'en';
 
   return (
-    <div className="min-h-[70vh] flex flex-col items-center justify-center bg-slate-50 py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full text-center space-y-8">
-        {/* Large 404 & Image Container */}
+    <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden py-16 px-4">
+      {/* Fullscreen Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="/404notFound.jpg"
+          alt="404 Background"
+          className="w-full h-full object-cover"
+        />
+        {/* Dark overlay to ensure contrast and modern look */}
+        <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px]" />
+      </div>
+
+      {/* Glassmorphic Card Container */}
+      <div className="relative z-10 max-w-lg w-full text-center p-8 md:p-12 rounded-3xl bg-slate-900/40 backdrop-blur-md border border-white/10 shadow-2xl space-y-8 text-white">
+        {/* Giant 404 Header */}
         <div className="relative flex flex-col items-center">
-          <span className="text-9xl font-black text-slate-200 select-none leading-none">
+          <span className="text-8xl md:text-9xl font-black text-white/20 select-none tracking-widest leading-none drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)]">
             404
           </span>
-          <div className="w-40 h-40 flex items-center justify-center -mt-10 relative z-10">
-            <img
-              src="/cute-axolotl-axolotl-illustration-sea-salamander-sea-life-marine-life-png.webp"
-              alt="404 Axolotl"
-              className="w-full h-full object-contain animate-bounce"
-              style={{ animationDuration: '3s' }}
-            />
-          </div>
+          <span className="absolute bottom-2 text-lg md:text-xl font-bold tracking-widest text-[#15a3b0] uppercase">
+            {isEn ? 'The Force Cannot Find This Page' : 'Güç Bu Sayfayı Bulamıyor'}
+          </span>
         </div>
 
         {/* Text Area */}
         <div className="space-y-3">
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight">
-            {isEn ? 'Page Not Found' : 'Sayfa Bulunamadı'}
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+            {isEn ? 'The Force Cannot Find This Page' : 'Güç Bu Sayfayı Bulamıyor'}
           </h1>
-          <p className="text-slate-500 text-sm md:text-base leading-relaxed">
+          <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-md mx-auto">
             {isEn
-              ? 'The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.'
-              : 'Aradığınız sayfa kaldırılmış, adı değiştirilmiş veya geçici olarak kullanılamıyor olabilir.'}
+              ? 'The coordinates you are looking for were not found in galactic charts.'
+              : 'Aradığınız koordinatlar galaktik haritalarda bulunamadı.'}
           </p>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 bg-[#15a3b0] text-white px-6 py-3 rounded-full font-bold text-sm shadow-md hover:bg-[#0d8e9a] transition-all duration-200 w-full sm:w-auto justify-center"
+            className="inline-flex items-center gap-2 bg-[#15a3b0] text-white px-6 py-3 rounded-full font-bold text-sm shadow-lg hover:bg-[#0d8e9a] transition-all duration-300 transform hover:-translate-y-0.5 w-full sm:w-auto justify-center"
           >
             <Home className="w-4 h-4" />
-            {isEn ? 'Go to Homepage' : 'Ana Sayfaya Dön'}
+            {isEn ? 'Return to Base' : 'Ana Üsse Dön'}
           </Link>
           <Link
             href="/iletisim"
-            className="inline-flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-6 py-3 rounded-full font-bold text-sm shadow-sm hover:bg-slate-50 transition-all duration-200 w-full sm:w-auto justify-center"
+            className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 px-6 py-3 rounded-full font-bold text-sm shadow-md transition-all duration-300 transform hover:-translate-y-0.5 w-full sm:w-auto justify-center"
           >
             <HelpCircle className="w-4 h-4" />
-            {isEn ? 'Contact Us' : 'Bize Ulaşın'}
+            {isEn ? 'Ask a Droid' : 'Bir Droid\'e Sor'}
           </Link>
         </div>
       </div>
