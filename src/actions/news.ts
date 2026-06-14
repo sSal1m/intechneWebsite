@@ -59,7 +59,7 @@ export async function getNewsCategories() {
       { slug: 'oyun-espor', name_tr: 'Oyun & E-Spor', name_en: 'Gaming & E-Sports' }
     ];
 
-    const needsSync = !data || data.length === 0 || !data.some(c => c.slug === 'duyurular-kurumsal');
+    const needsSync = !data || data.length === 0 || !data.some((c: any) => c.slug === 'duyurular-kurumsal');
 
     if (needsSync) {
       console.log('Syncing categories in database...');
