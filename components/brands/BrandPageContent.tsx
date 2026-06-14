@@ -288,7 +288,7 @@ export function BrandPageContent({ slug, locale }: BrandPageContentProps) {
   }
 
   const activeDetails = isEn ? details.en : details.tr;
-  const accentColor = brand.accentColor || '#15a3b0';
+  const accentColor = '#15a3b0';
   const BrandIcon = details.icon;
 
   return (
