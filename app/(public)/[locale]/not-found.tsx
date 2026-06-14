@@ -38,7 +38,7 @@ export default function NotFound() {
           <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-md mx-auto whitespace-pre-line">
             {isEn
               ? "The page you are looking for could not be found in the corridors of Hogwarts or on the Marauder's Map.\n\nPerhaps it was hit by a Vanishing Spell, or an incorrect Portkey brought you here."
-              : "Aradığınız sayfa ne Hogwarts koridorlarında ne de Marauder Haritası'nda bulunabildi.\n\nBelki bir Kaybolma Büyüsü'ne maruz kaldı ya da yanlış bir Portkey sizi buraya getirdi."}
+              : "Aradığınız sayfa ne Hogwarts koridorlarında ne de Marauder Haritası'nda bulunabildi.\nBelki bir Kaybolma Büyüsü'ne maruz kaldı ya da yanlış bir Portkey sizi buraya getirdi."}
           </p>
         </div>
 
