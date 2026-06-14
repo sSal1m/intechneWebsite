@@ -4,6 +4,7 @@ import { usePathname, Link } from '@/src/i18n/navigation';
 import { useLocale } from 'next-intl';
 import { cn } from '@/src/lib/utils';
 import { trNavigation, enNavigation } from '@/src/data/navigation';
+import { brands } from '@/src/data/brands';
 
 export function BrandsSidebar() {
   const pathname = usePathname();
@@ -22,6 +23,10 @@ export function BrandsSidebar() {
         <ul className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-hide">
           {links.map((link) => {
             const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
+            const slug = link.href.split('/').pop() || '';
+            const brand = brands.find((b) => b.slug === slug);
+            const accentColor = brand?.accentColor || '#15a3b0';
+
             return (
               <li key={link.href} className="flex-shrink-0 lg:flex-shrink">
                 <Link
@@ -29,10 +34,28 @@ export function BrandsSidebar() {
                   className={cn(
                     "block px-5 py-3 rounded-xl font-bold text-sm transition-all duration-200 whitespace-nowrap lg:whitespace-normal border-l-4",
                     isActive
-                      ? "bg-[#15a3b0] text-white shadow-md border-transparent"
-                      : "text-slate-600 hover:bg-[#15a3b0]/10 hover:text-[#15a3b0] border-transparent lg:border-transparent lg:hover:border-[#15a3b0]"
+                      ? "text-white shadow-md"
+                      : "text-slate-600"
                   )}
-                  style={isActive ? undefined : { borderLeftColor: isActive ? 'transparent' : 'transparent' }}
+                  style={{
+                    backgroundColor: isActive ? accentColor : undefined,
+                    borderLeftColor: 'transparent',
+                    color: isActive ? 'white' : undefined,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = `${accentColor}1a`;
+                      e.currentTarget.style.color = accentColor;
+                      e.currentTarget.style.borderLeftColor = accentColor;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = '';
+                      e.currentTarget.style.color = '';
+                      e.currentTarget.style.borderLeftColor = 'transparent';
+                    }
+                  }}
                 >
                   {link.label}
                 </Link>
