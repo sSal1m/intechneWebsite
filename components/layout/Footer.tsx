@@ -71,9 +71,9 @@ export function Footer({ locale }: FooterProps) {
   return (
     <footer className="bg-brand-navy text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Column 1: Logo */}
-          <div className="lg:col-span-1">
+          <div>
             <div className="flex items-center gap-3 mb-4">
               <img
                 src="/logo.avif"
@@ -84,7 +84,7 @@ export function Footer({ locale }: FooterProps) {
           </div>
 
           {/* Column 2: Contact */}
-          <div className="lg:col-span-1">
+          <div className="lg:min-w-[220px]">
             <h4 className="font-bold text-base mb-5 text-white">
               <Link href="/iletisim" className="hover:text-white/80 transition-colors">
                 {isEn ? 'Contact' : 'İletişim'}
@@ -95,9 +95,9 @@ export function Footer({ locale }: FooterProps) {
                 <strong className="text-white">{isEn ? 'Address' : 'Adres'}:</strong>{' '}
                 İstanbul/Türkiye
               </p>
-              <p className="text-white/70 text-sm">
+              <p className="text-white/70 text-sm lg:text-xs xl:text-sm">
                 <strong className="text-white">Email:</strong>{' '}
-                <a href="mailto:kurumsal@intechne.com.tr" className="hover:text-white transition-colors break-all">
+                <a href="mailto:kurumsal@intechne.com.tr" className="hover:text-white transition-colors whitespace-nowrap">
                   kurumsal@intechne.com.tr
                 </a>
               </p>
@@ -110,72 +110,65 @@ export function Footer({ locale }: FooterProps) {
             </div>
           </div>
 
-          {/* Column 3: Menus */}
-          <div className="lg:col-span-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-              
-              {/* Dinamik Menüler (Sadece Alt Menüsü Olanlar) */}
-              {navigation.main.map((menu, index) => {
-                if ('items' in menu) {
-                  return (
-                    <div key={index}>
-                      <h4 className="font-bold text-base mb-5 text-white tracking-wide">
-                        {menu.label}
-                      </h4>
-                      <ul className="space-y-3">
-                        {menu.items.map((item, idx) => (
-                          <li key={idx}>
-                            <Link href={item.href as any} className="text-white/70 text-sm hover:text-white transition-colors">
-                              {item.label}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  );
-                }
-                return null;
-              })}
-
-              {/* Dinamik Menüler (Alt Menüsü Olmayanlar - Haberler vs.) */}
-              <div className="flex flex-col gap-6">
-                {navigation.main.map((menu, index) => {
-                  if (!('items' in menu) && menu.label !== 'İLETİŞİM' && menu.label !== 'CONTACT') {
-                    return (
-                      <div key={`single-${index}`}>
-                        <h4 className="font-bold text-base text-white tracking-wide">
-                          <Link href={menu.href as any} className="hover:text-white/80 transition-colors">
-                            {menu.label}
-                          </Link>
-                        </h4>
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
-
-                {/* Sosyal Medya İkonları */}
-                <div className="mt-4">
-                  <h4 className="font-bold text-base mb-4 flex items-center gap-2 text-white">
-                    {isEn ? 'Social Media' : 'Sosyal Medya'}
+          {/* Dinamik Menüler (Sadece Alt Menüsü Olanlar) */}
+          {navigation.main.map((menu, index) => {
+            if ('items' in menu) {
+              return (
+                <div key={index}>
+                  <h4 className="font-bold text-base mb-5 text-white tracking-wide">
+                    {menu.label}
                   </h4>
-                  <div className="flex flex-wrap gap-3">
-                    {socialLinks.map(({ href, label, icon: Icon }) => (
-                      <a
-                        key={label}
-                        href={href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={label}
-                        className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 hover:text-primary transition-all duration-200 flex items-center justify-center text-white"
-                      >
-                        <Icon className="w-5 h-5" />
-                      </a>
+                  <ul className="space-y-3">
+                    {menu.items.map((item, idx) => (
+                      <li key={idx}>
+                        <Link href={item.href as any} className="text-white/70 text-sm hover:text-white transition-colors">
+                          {item.label}
+                        </Link>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
-              </div>
+              );
+            }
+            return null;
+          })}
 
+          {/* Dinamik Menüler (Alt Menüsü Olmayanlar - Haberler vs.) */}
+          <div className="flex flex-col gap-6">
+            {navigation.main.map((menu, index) => {
+              if (!('items' in menu) && menu.label !== 'İLETİŞİM' && menu.label !== 'CONTACT') {
+                return (
+                  <div key={`single-${index}`}>
+                    <h4 className="font-bold text-base text-white tracking-wide">
+                      <Link href={menu.href as any} className="hover:text-white/80 transition-colors">
+                        {menu.label}
+                      </Link>
+                    </h4>
+                  </div>
+                );
+              }
+              return null;
+            })}
+
+            {/* Sosyal Medya İkonları */}
+            <div className="mt-4">
+              <h4 className="font-bold text-base mb-4 flex items-center gap-2 text-white">
+                {isEn ? 'Social Media' : 'Sosyal Medya'}
+              </h4>
+              <div className="flex flex-wrap gap-3">
+                {socialLinks.map(({ href, label, icon: Icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 hover:text-primary transition-all duration-200 flex items-center justify-center text-white"
+                  >
+                    <Icon className="w-5 h-5" />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
