@@ -35,12 +35,12 @@ export function BrandsSidebar() {
                     "block px-5 py-3 rounded-xl font-bold text-sm transition-all duration-200 whitespace-nowrap lg:whitespace-normal border-l-4",
                     isActive
                       ? "text-white shadow-md"
-                      : "text-slate-600"
+                      : ""
                   )}
                   style={{
-                    backgroundColor: isActive ? accentColor : undefined,
-                    borderLeftColor: 'transparent',
-                    color: isActive ? 'white' : undefined,
+                    backgroundColor: isActive ? accentColor : `${accentColor}0d`,
+                    borderLeftColor: isActive ? accentColor : 'transparent',
+                    color: isActive ? 'white' : accentColor,
                   }}
                   onMouseEnter={(e) => {
                     if (!isActive) {
@@ -51,8 +51,8 @@ export function BrandsSidebar() {
                   }}
                   onMouseLeave={(e) => {
                     if (!isActive) {
-                      e.currentTarget.style.backgroundColor = '';
-                      e.currentTarget.style.color = '';
+                      e.currentTarget.style.backgroundColor = `${accentColor}0d`;
+                      e.currentTarget.style.color = accentColor;
                       e.currentTarget.style.borderLeftColor = 'transparent';
                     }
                   }}

@@ -91,7 +91,7 @@ export const brands: Brand[] = [
       { value: '4', label: 'Game Jam' },
     ],
     logoAlt: 'Intechne Gaming Hub Logo',
-    accentColor: '#0369A1',
+    accentColor: '#EAB308',
   },
   {
     id: '8',
