@@ -107,37 +107,37 @@ export function StatsSection({ initialStats = [] }: StatsSectionProps) {
                   animate={isInView ? { opacity: 1, scale: 1 } : {}}
                   transition={{ delay: idx * 0.1, duration: 0.4 }}
                   className={cn(
-                    "rounded-2xl p-6 flex flex-col gap-4",
+                    "rounded-2xl p-6",
                     idx === 4 && "sm:col-span-2"
                   )}
                   style={{ backgroundColor: color.bg }}
                 >
-                  <div className="flex items-start gap-4">
-                    <div
-                      className="w-20 h-20 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: color.circleBg }}
+                  <div
+                    className="w-20 h-20 rounded-full flex items-center justify-center float-left mr-4 mb-1"
+                    style={{ backgroundColor: color.circleBg }}
+                  >
+                    <span
+                      className="font-bold text-[10px] sm:text-xs text-center leading-tight px-1 text-white"
                     >
-                      <span
-                        className="font-bold text-[10px] sm:text-xs text-center leading-tight px-1 text-white"
-                      >
-                        {stat.value}
-                      </span>
-                    </div>
-                    <div>
-                      <h4
-                        className="font-bold text-base leading-snug"
-                        style={{ color: color.isLight ? '#0F172A' : 'white' }}
-                      >
-                        {stat.title}
-                      </h4>
-                    </div>
+                      {stat.value}
+                    </span>
                   </div>
+                  
+                  <h4
+                    className="font-bold text-base leading-snug mb-2"
+                    style={{ color: color.isLight ? '#0F172A' : 'white' }}
+                  >
+                    {stat.title}
+                  </h4>
+                  
                   <p
                     className="text-xs sm:text-sm leading-relaxed"
                     style={{ color: color.isLight ? 'rgba(15,23,42,0.75)' : 'rgba(255,255,255,0.8)' }}
                   >
                     {stat.description}
                   </p>
+                  
+                  <div className="clear-both"></div>
                 </motion.div>
               );
             })}
