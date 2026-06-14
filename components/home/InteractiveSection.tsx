@@ -63,11 +63,7 @@ export function InteractiveSection({ initialItems }: InteractiveSectionProps) {
           title: isEn ? item.title_en : item.title_tr,
           subtitle: isEn ? item.description_en : item.description_tr,
           type: item.type,
-          href: item.type === 'video' && item.video_url 
-            ? item.video_url 
-            : item.type === 'report' && item.file_url 
-            ? item.file_url 
-            : '/interaktif',
+          href: `/interaktif/${item.id}`,
           imageAlt: isEn ? item.title_en : item.title_tr,
           imageUrl: item.image_url,
         };

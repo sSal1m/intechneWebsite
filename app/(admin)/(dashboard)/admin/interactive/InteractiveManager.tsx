@@ -115,7 +115,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
         description_en: descriptionEn,
         category,
         type,
-        file_url: type === 'report' ? fileUrl : undefined,
+        file_url: type === 'report' || type === 'interactive' ? fileUrl : undefined,
         video_url: type === 'video' ? videoUrl : undefined,
         image_url: imageUrl,
       };
@@ -391,9 +391,23 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
                   </div>
                 )}
 
-                {/* Cover image upload */}
-                <div className="flex flex-col gap-1.5 col-span-2">
-                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Kapak Görseli</label>
+                {type === 'interactive' && (
+                  <div className="flex flex-col gap-1.5 col-span-2">
+                    <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Etkileşimli İçerik Bağlantısı (URL)</label>
+                    <input
+                      type="url"
+                      required
+                      value={fileUrl}
+                      onChange={(e) => setFileUrl(e.target.value)}
+                      placeholder="https://..."
+                      className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
+                    />
+                  </div>
+                )}
+
+                {/* Cover image upload / Thumbnail */}
+                <div className="flex flex-col gap-1.5 col-span-2 border-t border-slate-800 pt-3 mt-1">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Kapak Görseli (Thumbnail - Opsiyonel)</label>
                   <div className="flex items-center gap-3">
                     <div className="w-16 h-12 bg-slate-950 border border-slate-800 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden">
                       {imageUrl ? (
@@ -414,7 +428,29 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
                         className="hidden"
                       />
                     </label>
+
+                    {imageUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setImageUrl('')}
+                        className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-3 py-2.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        Görseli Kaldır
+                      </button>
+                    )}
                   </div>
+                </div>
+
+                <div className="flex flex-col gap-1.5 col-span-2">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Kapak Görseli URL (Opsiyonel)</label>
+                  <input
+                    type="url"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    placeholder="https://..."
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
+                  />
                 </div>
               </div>
 

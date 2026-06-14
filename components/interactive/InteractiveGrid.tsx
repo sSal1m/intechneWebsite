@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { ArrowRight, BookOpen, MonitorPlay, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link } from '@/src/i18n/navigation';
 
 interface InteractiveItem {
   id: string | number;
@@ -22,49 +23,7 @@ const categories = [
   { id: 'projeler', label: 'Projeler', labelEn: 'Projects' },
   { id: 'raporlar', label: 'Raporlar', labelEn: 'Reports' },
   { id: 'egitimler', label: 'Eğitimler', labelEn: 'Trainings' },
-];
-
-const mockItems: InteractiveItem[] = [
-  {
-    id: 1,
-    title: 'Geleceğin Teknolojileri Raporu 2026',
-    titleEn: 'Future Technologies Report 2026',
-    category: 'raporlar',
-    categoryEn: 'Reports',
-    description: 'Intechne vizyonuyla hazırlanan teknoloji ekosistemi ve gelecek öngörülerini içeren kapsamlı analiz raporu.',
-    descriptionEn: 'Comprehensive analysis report containing technology ecosystem and future predictions prepared with Intechne vision.',
-    type: 'report',
-  },
-  {
-    id: 2,
-    title: 'Intechne Akademi Sanal Tur',
-    titleEn: 'Intechne Academy Virtual Tour',
-    category: 'interaktif',
-    categoryEn: 'Interactive',
-    description: 'Eğitim kampüsümüzü 360 derece sanal tur ile keşfedin, atölyelerimizde dijital bir gezintiye çıkın.',
-    descriptionEn: 'Discover our training campus with a 360-degree virtual tour, take a digital stroll in our workshops.',
-    type: 'interactive',
-  },
-  {
-    id: 3,
-    title: 'Otonom Sistemler Eğitim Serisi',
-    titleEn: 'Autonomous Systems Training Series',
-    category: 'egitimler',
-    categoryEn: 'Trainings',
-    description: 'Temel ve ileri seviye otonom sistemler video eğitim serisi ve interaktif simülasyon araçları.',
-    descriptionEn: 'Basic and advanced autonomous systems video training series and interactive simulation tools.',
-    type: 'video',
-  },
-  {
-    id: 4,
-    title: 'Hack The Future 2025 Analizi',
-    titleEn: 'Hack The Future 2025 Analysis',
-    category: 'projeler',
-    categoryEn: 'Projects',
-    description: 'Geçtiğimiz yılın en çarpıcı projeleri ve geliştirilen yenilikçi çözümlerin teknik incelemeleri.',
-    descriptionEn: 'Technical reviews of the most striking projects of the past year and the innovative solutions developed.',
-    type: 'report',
-  },
+  { id: 'interaktif', label: 'İnteraktif', labelEn: 'Interactive' },
 ];
 
 export function InteractiveGrid({ isEn, initialItems }: { isEn: boolean; initialItems?: any[] }) {
@@ -72,7 +31,7 @@ export function InteractiveGrid({ isEn, initialItems }: { isEn: boolean; initial
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 6;
 
-  // Map database items and merge with mock items
+  // Map database items
   let finalItems: InteractiveItem[] = initialItems && initialItems.length > 0
     ? initialItems.map((item) => {
         const catLower = item.category?.toLowerCase() || '';
@@ -82,6 +41,8 @@ export function InteractiveGrid({ isEn, initialItems }: { isEn: boolean; initial
           ? 'Reports'
           : catLower === 'egitimler'
           ? 'Trainings'
+          : catLower === 'interaktif'
+          ? 'Interactive'
           : item.category;
 
         return {
@@ -98,7 +59,7 @@ export function InteractiveGrid({ isEn, initialItems }: { isEn: boolean; initial
           videoUrl: item.video_url,
         };
       })
-    : mockItems;
+    : [];
 
   const filteredItems = finalItems.filter(
     (item) => activeTab === 'all' || item.category === activeTab
@@ -164,19 +125,10 @@ export function InteractiveGrid({ isEn, initialItems }: { isEn: boolean; initial
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
           {paginatedItems.map((item) => {
-            const targetUrl = item.type === 'video' && item.videoUrl
-              ? item.videoUrl
-              : item.type === 'report' && item.fileUrl
-              ? item.fileUrl
-              : '#';
-            const isExternal = targetUrl.startsWith('http') || targetUrl.startsWith('//');
-
             return (
-              <a
+              <Link
                 key={item.id}
-                href={targetUrl}
-                target={isExternal ? '_blank' : undefined}
-                rel={isExternal ? 'noopener noreferrer' : undefined}
+                href={`/interaktif/${item.id}` as any}
                 className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col group cursor-pointer"
               >
                 <div className="h-48 md:h-64 bg-slate-100 flex items-center justify-center relative overflow-hidden">
@@ -206,6 +158,8 @@ export function InteractiveGrid({ isEn, initialItems }: { isEn: boolean; initial
                         ? 'Raporlar' 
                         : item.category === 'egitimler' 
                         ? 'Eğitimler' 
+                        : item.category === 'interaktif'
+                        ? 'İnteraktif'
                         : item.category)}
                   </span>
                 </div>
@@ -223,7 +177,7 @@ export function InteractiveGrid({ isEn, initialItems }: { isEn: boolean; initial
                     <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-2 transition-transform" />
                   </div>
                 </div>
-              </a>
+              </Link>
             );
           })}
         </div>

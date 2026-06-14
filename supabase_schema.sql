@@ -326,8 +326,12 @@ INSERT INTO sliders (title_tr, title_en, description_tr, description_en, button_
 );
 
 -- F. İnteraktif Yayınlar Seed Verisi
-INSERT INTO interactive (title_tr, title_en, description_tr, description_en, category, type, video_url) VALUES
-('Intechne Robotik Eko-Sistemi Tanıtım Videosu', 'Intechne Robotics Eco-System Introduction Video', 'Intechne bünyesinde kurulan ve yürütülen robotik ligleri, festivaller ve akademi programlarının genel ekosistem tanıtım belgeseli.', 'A general ecosystem documentary of robotics leagues, festivals, and academy programs established and managed under Intechne.', 'projeler', 'video', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+INSERT INTO interactive (title_tr, title_en, description_tr, description_en, category, type, file_url, video_url) VALUES
+('Geleceğin Teknolojileri Raporu 2026', 'Future Technologies Report 2026', 'Intechne vizyonuyla hazırlanan teknoloji ekosistemi ve gelecek öngörülerini içeren kapsamlı analiz raporu.', 'Comprehensive analysis report containing technology ecosystem and future predictions prepared with Intechne vision.', 'raporlar', 'report', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf-test.pdf', NULL),
+('Intechne Akademi Sanal Tur', 'Intechne Academy Virtual Tour', 'Eğitim kampüsümüzü 360 derece sanal tur ile keşfedin, atölyelerimizde dijital bir gezintiye çıkın.', 'Discover our training campus with a 360-degree virtual tour, take a digital stroll in our workshops.', 'interaktif', 'interactive', 'https://embed.windy.com', NULL),
+('Otonom Sistemler Eğitim Serisi', 'Autonomous Systems Training Series', 'Temel ve ileri seviye otonom sistemler video eğitim serisi ve interaktif simülasyon araçları.', 'Basic and advanced autonomous systems video training series and interactive simulation tools.', 'egitimler', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ'),
+('Hack The Future 2025 Analizi', 'Hack The Future 2025 Analysis', 'Geçtiğimiz yılın en çarpıcı projeleri ve geliştirilen yenilikçi çözümlerin teknik incelemeleri.', 'Technical reviews of the most striking projects of the past year and the innovative solutions developed.', 'projeler', 'report', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf-test.pdf', NULL),
+('Intechne Robotik Eko-Sistemi Tanıtım Videosu', 'Intechne Robotics Eco-System Introduction Video', 'Intechne bünyesinde kurulan ve yürütülen robotik ligleri, festivaller ve akademi programlarının genel ekosistem tanıtım belgeseli.', 'A general ecosystem documentary of robotics leagues, festivals, and academy programs established and managed under Intechne.', 'projeler', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ');
 
 -- H. MİGRASYON SORGUSU (MEVCUT VERİTABANINA UYGULAMAK İÇİN)
 -- Mevcut veritabanında bu kolonu eklemek için Supabase SQL Editor'de aşağıdaki satırı çalıştırın:

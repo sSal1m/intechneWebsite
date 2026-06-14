@@ -1,10 +1,12 @@
 import { InteractiveGrid } from '@/components/interactive/InteractiveGrid';
 import { getInteractiveItems } from '@/src/actions/interactive';
 
-export const dynamic = 'force-dynamic';
-
 interface PageProps {
   params: Promise<{ locale: string }>;
+}
+
+export async function generateStaticParams() {
+  return [{ locale: 'tr' }, { locale: 'en' }];
 }
 
 export async function generateMetadata() {

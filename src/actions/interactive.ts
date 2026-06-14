@@ -1,13 +1,41 @@
 'use server';
 
-import { createClient } from '@/src/utils/supabase/server';
+import { createClient as createServerClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { moveToTrash } from './trash-bin';
 import { extractStoragePath } from '@/src/utils/storage';
+import { notFound } from 'next/navigation';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+
+function createPublicClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const isValidUrl = url && (url.startsWith('http://') || url.startsWith('https://'));
+  const isPlaceholder = !key || key.includes('your-supabase');
+
+  if (!isValidUrl || isPlaceholder) {
+    return new Proxy({}, {
+      get(target, prop): any {
+        if (prop === 'from') {
+          return () => ({
+            select: () => ({
+              order: () => Promise.resolve({ data: [], error: null }),
+              eq: () => ({
+                single: () => Promise.resolve({ data: null, error: null })
+              })
+            })
+          });
+        }
+        return () => {};
+      }
+    }) as any;
+  }
+  return createSupabaseClient(url, key);
+}
 
 export async function getInteractiveItems(category?: string) {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     let query = supabase.from('interactive').select('*').order('created_at', { ascending: false });
 
     if (category && category !== 'all') {
@@ -23,6 +51,28 @@ export async function getInteractiveItems(category?: string) {
   }
 }
 
+export async function getInteractiveItemById(id: string) {
+  try {
+    const supabase = createPublicClient();
+    const { data, error } = await supabase
+      .from('interactive')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error || !data) {
+      notFound();
+    }
+    return data;
+  } catch (error: any) {
+    if (error?.message === 'NEXT_NOT_FOUND' || error?.digest === 'NEXT_NOT_FOUND') {
+      throw error;
+    }
+    console.error('getInteractiveItemById error:', error);
+    notFound();
+  }
+}
+
 export async function createInteractiveItem(formData: {
   title_tr: string;
   title_en: string;
@@ -35,7 +85,7 @@ export async function createInteractiveItem(formData: {
   image_url?: string;
 }) {
   try {
-    const supabase = await createClient();
+    const supabase = await createServerClient();
 
     // Verify auth
     const { data: { user } } = await supabase.auth.getUser();
@@ -61,6 +111,10 @@ export async function createInteractiveItem(formData: {
     if (error) throw new Error(error.message);
 
     revalidatePath('/[locale]/interaktif', 'page');
+    if (data && data[0]) {
+      revalidatePath(`/[locale]/interaktif/${data[0].id}`);
+    }
+    revalidatePath('/[locale]/interaktif/[id]', 'page');
     revalidatePath('/');
     revalidatePath('/[locale]', 'layout');
     return { success: true, data };
@@ -85,7 +139,7 @@ export async function updateInteractiveItem(
   }
 ) {
   try {
-    const supabase = await createClient();
+    const supabase = await createServerClient();
 
     // Verify auth
     const { data: { user } } = await supabase.auth.getUser();
@@ -110,6 +164,8 @@ export async function updateInteractiveItem(
     if (error) throw new Error(error.message);
 
     revalidatePath('/[locale]/interaktif', 'page');
+    revalidatePath(`/[locale]/interaktif/${id}`);
+    revalidatePath('/[locale]/interaktif/[id]', 'page');
     revalidatePath('/');
     revalidatePath('/[locale]', 'layout');
     return { success: true, data };
@@ -121,7 +177,7 @@ export async function updateInteractiveItem(
 
 export async function deleteInteractiveItem(id: string, imageUrl?: string, fileUrl?: string) {
   try {
-    const supabase = await createClient();
+    const supabase = await createServerClient();
 
     // Verify auth
     const { data: { user } } = await supabase.auth.getUser();
@@ -152,6 +208,8 @@ export async function deleteInteractiveItem(id: string, imageUrl?: string, fileU
     if (dbError) throw new Error(dbError.message);
 
     revalidatePath('/[locale]/interaktif', 'page');
+    revalidatePath(`/[locale]/interaktif/${id}`);
+    revalidatePath('/[locale]/interaktif/[id]', 'page');
     revalidatePath('/');
     revalidatePath('/[locale]', 'layout');
     return { success: true };
