@@ -6,6 +6,7 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Tabloları bağımlılık sırasına göre sil (temiz kurulum için)
+DROP TABLE IF EXISTS trash_bin;
 DROP TABLE IF EXISTS news;
 DROP TABLE IF EXISTS news_categories;
 DROP TABLE IF EXISTS sliders;
@@ -145,8 +146,8 @@ CREATE POLICY "Ziyaretciler yayinlari okuyabilir" ON interactive FOR SELECT USIN
 CREATE POLICY "Ziyaretciler haberleri okuyabilir" ON news FOR SELECT USING (true);
 CREATE POLICY "Ziyaretciler kurumsal kimligi okuyabilir" ON corporate_identity FOR SELECT USING (true);
 
--- Politikalar: İletişim Formu Mesaj Ekleme Yetkisi (Kamuya Açık)
-CREATE POLICY "Ziyaretciler mesaj iletebilir" ON messages FOR INSERT WITH CHECK (true);
+-- Politikalar: İletişim Formu Mesaj Ekleme Yetkisi (Kamuya Açık - Anonim dahil)
+CREATE POLICY "Ziyaretciler mesaj iletebilir" ON messages FOR INSERT TO public WITH CHECK (true);
 
 -- Politikalar: Sıkı Admin Yetkileri (Tüm Tablolar)
 -- auth.jwt() ->> 'email' alanının kesinlikle 'admin@intechne.com.tr' olması gerekir.
@@ -180,10 +181,18 @@ CREATE POLICY "Admin haberleri yonetebilir" ON news
     USING ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr')
     WITH CHECK ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr');
 
-CREATE POLICY "Admin mesajlari yonetebilir" ON messages
-    FOR ALL TO authenticated
+CREATE POLICY "Admin mesajlari okuyabilir" ON messages
+    FOR SELECT TO authenticated
+    USING ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr');
+
+CREATE POLICY "Admin mesajlari guncelleyebilir" ON messages
+    FOR UPDATE TO authenticated
     USING ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr')
     WITH CHECK ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr');
+
+CREATE POLICY "Admin mesajlari silebilir" ON messages
+    FOR DELETE TO authenticated
+    USING ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr');
 
 CREATE POLICY "Admin kurumsal kimligi yonetebilir" ON corporate_identity
     FOR ALL TO authenticated
