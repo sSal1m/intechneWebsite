@@ -12,21 +12,20 @@ interface Partner {
 }
 
 const partners: Partner[] = [
-  { name: 'ADENTE Advanced Engineering Technologies', initials: 'AD' },
-  { name: 'Armelsan', initials: 'AR' },
-  { name: 'Bottobo Robotics', initials: 'BO' },
-  { name: 'Bağcılar Belediyesi', initials: 'BB' },
-  { name: 'İstanbul Gedik Üniversitesi', initials: 'GÜ', logoUrl: '/gedik-logo.jpg' },
-  { name: 'Co Print 3D Printing Technologies', initials: 'CP' },
-  { name: 'Esenler Belediyesi', initials: 'EB' },
-  { name: 'Papara', initials: 'PA' },
-  { name: 'Pendik Belediyesi', initials: 'PB' },
-  { name: 'RISE-X Technology', initials: 'RX' },
-  { name: 'Teknopark İstanbul', initials: 'TI' },
-  { name: 'Turkcell', initials: 'TC', logoUrl: '/turkcell-logo.png' },
-  { name: 'Ümraniye Belediyesi', initials: 'ÜB' },
-  { name: 'Yalova Organize Sanayi Bölgesi', initials: 'YO' },
-  { name: 'Ziraat Bankası', initials: 'ZB' },
+  { name: 'ADENTE Advanced Engineering Technologies', initials: 'AD', logoUrl: '/isbirliklerimiz/ADENTE-Advanced-Engineering-Technologies-logo.png' },
+  { name: 'Armelsan', initials: 'AR', logoUrl: '/isbirliklerimiz/Armelsan-logo.png' },
+  { name: 'Bottobo Robotics', initials: 'BO', logoUrl: '/isbirliklerimiz/Bottobo-Robotics-logo.png' },
+  { name: 'Bağcılar Belediyesi', initials: 'BB', logoUrl: '/isbirliklerimiz/bagcilar-belediyesi-logo.png' },
+  { name: 'İstanbul Gedik Üniversitesi', initials: 'GÜ', logoUrl: '/isbirliklerimiz/istanbul-gedik-üniversitesi-logo.png' },
+  { name: 'Co Print 3D Printing Technologies', initials: 'CP', logoUrl: '/isbirliklerimiz/Co-Print-logo.png' },
+  { name: 'Esenler Belediyesi', initials: 'EB', logoUrl: '/isbirliklerimiz/esenler-belediyesi-logo.png' },
+  { name: 'Pendik Belediyesi', initials: 'PB', logoUrl: '/isbirliklerimiz/pendik-belediyesi-logo.png' },
+  { name: 'RISE-X Technology', initials: 'RX', logoUrl: '/isbirliklerimiz/RISE-X-Technology-logo.png' },
+  { name: 'Tatlıköy', initials: 'TK', logoUrl: '/isbirliklerimiz/tatlikoy-logo.png' },
+  { name: 'Teknopark İstanbul', initials: 'TI', logoUrl: '/isbirliklerimiz/teknopark-istanbul-logo.png' },
+  { name: 'Turkcell', initials: 'TC', logoUrl: '/isbirliklerimiz/turkcell-logo.webp' },
+  { name: 'Yalova Organize Sanayi Bölgesi', initials: 'YO', logoUrl: '/isbirliklerimiz/Yalova-Organize-Sanayi-Bolgesi-logo.png' },
+  { name: 'Yalova Teknopark', initials: 'YT', logoUrl: '/isbirliklerimiz/yalova-teknopark-logo.png' },
 ];
 
 export function IsbirliklerimizClient({ locale }: { locale: string }) {
@@ -106,10 +105,8 @@ export function IsbirliklerimizClient({ locale }: { locale: string }) {
                   key={partner.name}
                   className="flex flex-col items-center justify-center text-center cursor-default group"
                 >
-                  {/* Initials / Logo Container */}
-                  <div className={`w-full max-w-[384px] h-48 overflow-hidden flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300 mb-4 ${
-                    partner.logoUrl ? 'p-1 bg-transparent' : 'rounded-2xl bg-white text-[#15a3b0] font-black text-5xl'
-                  }`}>
+                  {/* Logo Container */}
+                  <div className="w-full max-w-[384px] h-48 overflow-hidden flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300 mb-4 rounded-2xl p-6">
                     {partner.logoUrl ? (
                       <img 
                         src={partner.logoUrl} 
@@ -117,7 +114,7 @@ export function IsbirliklerimizClient({ locale }: { locale: string }) {
                         className="w-full h-full object-contain" 
                       />
                     ) : (
-                      partner.initials
+                      <span className="text-[#15a3b0] font-black text-5xl">{partner.initials}</span>
                     )}
                   </div>
 
