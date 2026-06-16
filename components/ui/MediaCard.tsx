@@ -44,9 +44,15 @@ export function MediaCard({ item, className }: MediaCardProps) {
   const imageUrl = item.imageUrl || (item as any).image_url;
   const isExternal = item.href.startsWith('http') || item.href.startsWith('//');
 
+  // Convert dynamic interaktif paths to next-intl object format
+  const interaktifMatch = item.href.match(/^\/interaktif\/(.+)$/);
+  const linkHref = interaktifMatch
+    ? { pathname: '/interaktif/[id]' as any, params: { id: interaktifMatch[1] } }
+    : item.href as any;
+
   return (
     <Link
-      href={item.href as any}
+      href={linkHref}
       target={isExternal ? '_blank' : undefined}
       rel={isExternal ? 'noopener noreferrer' : undefined}
       className={cn('block bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group', className)}

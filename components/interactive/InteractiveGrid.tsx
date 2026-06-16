@@ -170,7 +170,7 @@ export function InteractiveGrid({
                   return (
                     <Link
                       key={item.id}
-                      href={`/interaktif/${item.id}` as any}
+                      href={{ pathname: '/interaktif/[id]' as any, params: { id: String(item.id) } }}
                       className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col group cursor-pointer"
                     >
                       <div className="h-48 md:h-64 bg-slate-100 flex items-center justify-center relative overflow-hidden">

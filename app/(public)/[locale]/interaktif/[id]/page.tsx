@@ -1,5 +1,5 @@
 import { Link } from '@/src/i18n/navigation';
-import { getInteractiveItemById, getInteractiveItems } from '@/src/actions/interactive';
+import { getInteractiveItemById } from '@/src/actions/interactive';
 import { notFound } from 'next/navigation';
 import {
   Clock,
@@ -12,27 +12,10 @@ import {
   Download
 } from 'lucide-react';
 
-export const dynamicParams = true;
+export const dynamic = 'force-dynamic';
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>;
-}
-
-export async function generateStaticParams() {
-  const locales = ['tr', 'en'];
-  try {
-    const items = await getInteractiveItems();
-    const params: { locale: string; id: string }[] = [];
-    locales.forEach((locale) => {
-      items.forEach((item: any) => {
-        params.push({ locale, id: item.id.toString() });
-      });
-    });
-    return params;
-  } catch (error) {
-    console.error('Error generating static params:', error);
-    return [];
-  }
 }
 
 function getYoutubeEmbedUrl(url: string) {
