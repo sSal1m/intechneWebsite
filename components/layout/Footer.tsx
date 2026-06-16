@@ -93,7 +93,7 @@ export function Footer({ locale }: FooterProps) {
             <div className="space-y-3">
               <p className="text-white/70 text-sm leading-relaxed">
                 <strong className="text-white">{isEn ? 'Address' : 'Adres'}:</strong>{' '}
-                İstanbul/Türkiye
+                Ünalan Mahallesi Ünalan Caddesi No:1 İç Kapı:1 Üsküdar, 34906 Pendik/İstanbul
               </p>
               <p className="text-white/70 text-sm lg:text-xs xl:text-sm">
                 <strong className="text-white">Email:</strong>{' '}
@@ -180,19 +180,19 @@ export function Footer({ locale }: FooterProps) {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-white/60 text-xs">
             <span>© 2026 {isEn ? 'INTECHNE TECHNOLOGY' : 'INTECHNE TEKNOLOJİ'}</span>
             <span className="hidden sm:block">|</span>
-            <a 
-              href="https://drive.google.com/file/d/1l9YG0k9t0mWb1G2AzjiO16oY3K6ZdpGe/view?usp=drive_link" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://drive.google.com/file/d/1l9YG0k9t0mWb1G2AzjiO16oY3K6ZdpGe/view?usp=drive_link"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hover:text-white transition-colors"
             >
               {isEn ? 'PRIVACY POLICY' : 'GİZLİLİK POLİTİKASI'}
             </a>
             <span className="hidden sm:block">|</span>
-            <a 
-              href="https://drive.google.com/file/d/1l9YG0k9t0mWb1G2AzjiO16oY3K6ZdpGe/view?usp=drive_link" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://drive.google.com/file/d/1l9YG0k9t0mWb1G2AzjiO16oY3K6ZdpGe/view?usp=drive_link"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hover:text-white transition-colors"
             >
               {isEn ? 'KVKK AYDINLATMA METNİ' : 'KVKK AYDINLATMA METNİ'}
