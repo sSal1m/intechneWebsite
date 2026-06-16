@@ -58,7 +58,7 @@ export function TeamGrid({ isEn, initialMembers = [] }: TeamGridProps) {
         email: m.email ? (m.email.startsWith('mailto:') ? m.email : `mailto:${m.email}`) : '#',
         image_url: m.image_url,
       }))
-    : teamMembers;
+    : [];
 
   return (
     <div className="w-full">
