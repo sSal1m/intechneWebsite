@@ -34,6 +34,8 @@ export function NewsSection({ initialNews }: { initialNews?: any[] }) {
       }))
     : [];
 
+  if (finalNews.length === 0) return null;
+
   const featured = finalNews[0];
   const secondary = finalNews.slice(1);
 
