@@ -1,6 +1,6 @@
 import { Link } from '@/src/i18n/navigation';
 import { getNewsById } from '@/src/actions/news';
-import { newsItems } from '@/src/data/news';
+
 import { Clock, ArrowLeft, Calendar } from 'lucide-react';
 import { ShareButtons } from '@/components/news/ShareButtons';
 
@@ -10,17 +10,7 @@ interface PageProps {
   params: Promise<{ locale: string; id: string }>;
 }
 
-export async function generateStaticParams() {
-  const locales = ['tr', 'en'];
-  const ids = ['1', '2', '3', '4', '5'];
-  const params: { locale: string; id: string }[] = [];
-  locales.forEach((locale) => {
-    ids.forEach((id) => {
-      params.push({ locale, id });
-    });
-  });
-  return params;
-}
+
 
 export default async function HaberDetailPage({ params }: PageProps) {
   const { locale, id } = await params;
@@ -33,24 +23,7 @@ export default async function HaberDetailPage({ params }: PageProps) {
     newsItem = await getNewsById(id);
   }
 
-  // 2. If not found, check static fallback
-  if (!newsItem) {
-    const staticItem = newsItems.find((item) => item.id === id);
-    if (staticItem) {
-      newsItem = {
-        id: staticItem.id,
-        title_tr: staticItem.title,
-        title_en: staticItem.title,
-        excerpt_tr: staticItem.excerpt,
-        excerpt_en: staticItem.excerpt,
-        content_tr: `${staticItem.excerpt}\n\nTeknoloji ve mühendislik alanındaki son gelişmeleri takip etmeye devam edin. Intechne olarak genç yeteneklerin gelişimini ve sektörel dönüşümü destekleyen projeler üretmeye devam ediyoruz. Detaylı bilgi ve güncel duyurular için sosyal medya kanallarımızı takip edebilirsiniz.`,
-        content_en: `${staticItem.excerpt}\n\nKeep following the latest developments in technology and engineering. As Intechne, we continue to produce projects that support the development of young talents and sectoral transformation. You can follow our social media channels for detailed information and updates.`,
-        tag: staticItem.tag,
-        image_url: (staticItem as any).image_url || (staticItem as any).imageUrl || 'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg',
-        published_at: new Date().toISOString(),
-      };
-    }
-  }
+
 
   if (!newsItem) {
     return (

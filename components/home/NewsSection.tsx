@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { NewsCard } from '@/components/ui/NewsCard';
-import { newsItems } from '@/src/data/news';
+
 import { useLocale } from 'next-intl';
 import type { NewsItem } from '@/src/types/common.types';
 
@@ -32,7 +32,7 @@ export function NewsSection({ initialNews }: { initialNews?: any[] }) {
         image_url: item.image_url,
         imageAlt: isEn ? item.title_en : item.title_tr,
       }))
-    : newsItems;
+    : [];
 
   const featured = finalNews[0];
   const secondary = finalNews.slice(1);

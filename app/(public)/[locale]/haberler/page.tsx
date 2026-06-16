@@ -2,7 +2,7 @@ import { Link } from '@/src/i18n/navigation';
 import { NewsSidebar } from '@/components/news/NewsSidebar';
 import { HeadlineCard } from '@/components/news/HeadlineCard';
 import { NewsCard } from '@/components/news/NewsCard';
-import { newsItems } from '@/src/data/news';
+
 import { getNews } from '@/src/actions/news';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -44,26 +44,7 @@ export default async function HaberlerPage({
         imageAlt: isEn ? item.title_en : item.title_tr,
         image_url: item.image_url,
       }))
-    : newsItems.map((item: any) => {
-        let dateRaw = '';
-        if (item.date) {
-          const parts = item.date.split(' ');
-          if (parts.length === 3) {
-            const day = parts[0].padStart(2, '0');
-            const year = parts[2];
-            const months: Record<string, string> = {
-              'Haziran': '06', 'June': '06',
-            };
-            const month = months[parts[1]] || '06';
-            dateRaw = `${year}-${month}-${day}`;
-          }
-        }
-        return {
-          ...item,
-          publishedAtRaw: dateRaw,
-          image_url: item.imageUrl,
-        };
-      });
+    : [];
 
   // Apply Search Filter in memory
   if (search) {
