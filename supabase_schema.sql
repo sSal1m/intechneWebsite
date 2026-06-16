@@ -1,17 +1,17 @@
--- Intechne Supabase Veritabanı Şeması ve Başlangıç Verileri (Seed Data)
--- Bu betik, tabloları oluşturur, Satır Düzeyinde Güvenliği (RLS) aktif eder,
--- admin@intechne.com.tr e-postasına özel politikaları yazar ve hiyerarşik sıralamada seed verilerini ekler.
+-- Intechne Supabase Veritabanı Şeması
+-- Bu betik, tabloları oluşturur, Satır Düzeyinde Güvenliği (RLS) aktif eder
+-- ve admin@intechne.com.tr e-postasına özel politikaları yazar.
 
 -- UUID fonksiyonları için uzantıyı etkinleştir
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Tabloları bağımlılık sırasına göre sil (temiz kurulum için)
+-- Tabloları bağımlılık sırasına göre sil (Sıfırdan temiz kurulum yapabilmek için)
 DROP TABLE IF EXISTS trash_bin;
-DROP TABLE IF EXISTS news;
+DROP TABLE IF EXISTS news; -- Önce bağımlı tablo silinmeli (foreign key hatası almamak için)
 DROP TABLE IF EXISTS news_categories;
-DROP TABLE IF EXISTS sliders;
 DROP TABLE IF EXISTS stats;
 DROP TABLE IF EXISTS team;
+DROP TABLE IF EXISTS sliders;
 DROP TABLE IF EXISTS interactive;
 DROP TABLE IF EXISTS messages;
 DROP TABLE IF EXISTS corporate_identity;
@@ -200,147 +200,6 @@ CREATE POLICY "Admin kurumsal kimligi yonetebilir" ON corporate_identity
     WITH CHECK ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr');
 
 
--- 4. HİYERARŞİK SIRALAMADA BAŞLANGIÇ VERİLERİ (SEED DATA)
-
--- A. Haber Kategorileri Seed Verisi
-INSERT INTO news_categories (slug, name_tr, name_en) VALUES
-('kategori-1', 'Girişimcilik ve İnovasyon', 'Entrepreneurship and Innovation'),
-('kategori-2', 'Havacılık ve Uzay', 'Aerospace and Aviation'),
-('kategori-3', 'Robotik ve Donanım', 'Robotics and Hardware'),
-('kategori-4', 'Yazılım ve Yapay Zeka', 'Software and AI'),
-('kategori-5', 'Eğitim ve Atölyeler', 'Education and Workshops'),
-('kategori-6', 'Etkinlik ve Festivaller', 'Events and Festivals');
-
--- B. İstatistikler Seed Verisi
-INSERT INTO stats (value_tr, value_en, label_tr, label_en, order_index) VALUES
-('30', '30', 'Eğitim Sayısı', 'Number of Trainings', 1),
-('5000', '5000', 'Intechne Akademi Öğrencisi', 'Intechne Academy Students', 2),
-('10.000', '10.000', 'Cezeri Robot Ligi Yarışmacı', 'Cezeri Robot League Competitors', 3),
-('35', '35', 'Toplam Etkinlik Sayısı', 'Total Number of Events', 4),
-('30', '30', 'Paydaş Kurum', 'Partner Institutions', 5);
-
--- C. Haberler Seed Verisi
-INSERT INTO news (title_tr, title_en, excerpt_tr, excerpt_en, content_tr, content_en, tag, category_slug, image_url, published_at) VALUES
-(
-  'Yıldız Robot Yarışları Tasarım Hackathon’u Başlıyor!',
-  'Yildiz Robot Races Design Hackathon is Starting!',
-  'Genç tasarımcıların ve yazılımcıların sınırlarını zorlayacağı Yıldız Robot Yarışları Tasarım Hackathon’u heyecanı başlıyor.',
-  'The excitement of the Yildiz Robot Races Design Hackathon, where young designers and developers will push their limits, is starting.',
-  'Genç tasarımcıların ve yazılımcıların sınırlarını zorlayacağı Yıldız Robot Yarışları Tasarım Hackathon’u heyecanı başlıyor.\n\nTeknoloji ve mühendislik alanındaki son gelişmeleri takip etmeye devam edin. Intechne olarak genç yeteneklerin gelişimini ve sektörel dönüşümü destekleyen projeler üretmeye devam ediyoruz. Detaylı bilgi ve güncel duyurular için sosyal medya kanallarımızı takip edebilirsiniz.',
-  'The excitement of the Yildiz Robot Races Design Hackathon, where young designers and developers will push their limits, is starting.\n\nKeep following the latest developments in technology and engineering. As Intechne, we continue to produce projects that support the development of young talents and sectoral transformation. You can follow our social media channels for detailed information and updates.',
-  'Öne Çıkan',
-  'kategori-3',
-  'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg',
-  NOW() - INTERVAL '1 day'
-),
-(
-  'Gaziantep Drone Fest 26-27 Haziran’da Festival Park’ta!',
-  'Gaziantep Drone Fest is on June 26-27 at Festival Park!',
-  'Hız, teknoloji ve heyecan dolu Gaziantep Drone Fest, bu yıl 26-27 Haziran tarihlerinde Festival Park’ta kapılarını açıyor.',
-  'Gaziantep Drone Fest, full of speed, technology, and excitement, opens its doors this year on June 26-27 at Festival Park.',
-  'Hız, teknoloji ve heyecan dolu Gaziantep Drone Fest, bu yıl 26-27 Haziran tarihlerinde Festival Park’ta kapılarını açıyor.\n\nTeknoloji ve mühendislik alanındaki son gelişmeleri takip etmeye devam edin. Intechne olarak genç yeteneklerin gelişimini ve sektörel dönüşümü destekleyen projeler üretmeye devam ediyoruz. Detaylı bilgi ve güncel duyurular için sosyal medya kanallarımızı takip edebilirsiniz.',
-  'Gaziantep Drone Fest, full of speed, technology, and excitement, opens its doors this year on June 26-27 at Festival Park.\n\nKeep following the latest developments in technology and engineering. As Intechne, we continue to produce projects that support the development of young talents and sectoral transformation. You can follow our social media channels for detailed information and updates.',
-  'Duyuru',
-  'kategori-2',
-  'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg',
-  NOW()
-),
-(
-  'Intechne Akademi Yeni Dönem Başvuruları Kabul Edilmeye Başlandı',
-  'Applications for the New Semester of Intechne Academy Have Started',
-  'Uygulamalı eğitimlerle donanımlı teknoloji uzmanları yetiştiren Intechne Akademi yeni dönem kayıt detayları duyuruldu.',
-  'The registration details for the new semester of Intechne Academy, which trains technology experts equipped with hands-on training, have been announced.',
-  'Uygulamalı eğitimlerle donanımlı teknoloji uzmanları yetiştiren Intechne Akademi yeni dönem kayıt detayları duyuruldu.\n\nTeknoloji ve mühendislik alanındaki son gelişmeleri takip etmeye devam edin. Intechne olarak genç yeteneklerin gelişimini ve sektörel dönüşümü destekleyen projeler üretmeye devam ediyoruz. Detaylı bilgi ve güncel duyurular için sosyal medya kanallarımızı takip edebilirsiniz.',
-  'The registration details for the new semester of Intechne Academy, which trains technology experts equipped with hands-on training, have been announced.\n\nKeep following the latest developments in technology and engineering. As Intechne, we continue to produce projects that support the development of young talents and sectoral transformation. You can follow our social media channels for detailed information and updates.',
-  'Akademi',
-  'kategori-5',
-  'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg',
-  NOW() - INTERVAL '4 days'
-),
-(
-  'Robonex Robot Ligi Bölgesel Eleme Sonuçları Açıklandı',
-  'Robonex Robot League Regional Qualifiers Results Announced',
-  'Türkiye genelinde düzenlenen bölgesel elemelerin ardından büyük finale katılmaya hak kazanan robot takımları belli oldu.',
-  'Following the regional qualifiers held across Turkey, the robot teams qualified for the grand final have been determined.',
-  'Türkiye genelinde düzenlenen bölgesel elemelerin ardından büyük finale katılmaya hak kazanan robot takımları belli oldu.\n\nTeknoloji ve mühendislik alanındaki son gelişmeleri takip etmeye devam edin. Intechne olarak genç yeteneklerin gelişimini ve sektörel dönüşümü destekleyen projeler üretmeye devam ediyoruz. Detaylı bilgi ve güncel duyurular için sosyal medya kanallarımızı takip edebilirsiniz.',
-  'Following the regional qualifiers held across Turkey, the robot teams qualified for the grand final have been determined.\n\nKeep following the latest developments in technology and engineering. As Intechne, we continue to produce projects that support the development of young talents and sectoral transformation. You can follow our social media channels for detailed information and updates.',
-  'Robotik',
-  'kategori-3',
-  'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg',
-  NOW() - INTERVAL '7 days'
-),
-(
-  'Tech & Chill Fest 2026 Biletleri Biletix Üzerinden Satışa Sunuldu',
-  'Tech & Chill Fest 2026 Tickets Go on Sale via Biletix',
-  'Sosyal yaşam ile teknolojinin harmanlandığı, e-spor ve konserlerle dolu festivalde yerinizi şimdiden alın.',
-  'Take your place now in the festival filled with e-sports and concerts, where social life blends with technology.',
-  'Sosyal yaşam ile teknolojinin harmanlandığı, e-spor ve konserlerle dolu festivalde yerinizi şimdiden alın.\n\nTeknoloji ve mühendislik alanındaki son gelişmeleri takip etmeye devam edin. Intechne olarak genç yeteneklerin gelişimini ve sektörel dönüşümü destekleyen projeler üretmeye devam ediyoruz. Detaylı bilgi ve güncel duyurular için sosyal medya kanallarımızı takip edebilirsiniz.',
-  'Take your place now in the festival filled with e-sports and concerts, where social life blends with technology.\n\nKeep following the latest developments in technology and engineering. As Intechne, we continue to produce projects that support the development of young talents and sectoral transformation. You can follow our social media channels for detailed information and updates.',
-  'Festival',
-  'kategori-6',
-  'https://cdnv2.t3vakfi.org/media/uploaded/tKaytpNNCgZDfg5AfqjShfrLQbSh6juk.jpg',
-  NOW() - INTERVAL '11 days'
-);
-
--- D. Ekip Üyeleri Seed Verisi
-INSERT INTO team (name, role_tr, role_en, email, linkedin_url, order_index) VALUES
-('Ömer Akbulut', 'Genel Koordinatör', 'General Coordinator', 'omer.akbulut@intechne.com.tr', 'https://linkedin.com/', 1),
-('Seha Salim', 'Teknik Koordinatör', 'Technical Coordinator', 'seha.salim@intechne.com.tr', 'https://linkedin.com/', 2);
-
--- E. Slaytlar Seed Verisi
-INSERT INTO sliders (title_tr, title_en, description_tr, description_en, button_label_tr, button_label_en, href, stats, order_index) VALUES
-(
-  'Cezeri Robot Ligi',
-  'Cezeri Robot League',
-  'Mühendisliği kıyasıya bir spora dönüştürmek ve Türkiye''deki genç yetenekleri küresel rekabete hazırlamak hedefiyle düzenlenen devasa bir robotik ligidir.',
-  'A massive robotics league organized with the goal of turning engineering into a competitive sport and preparing young talents in Turkey for global competition.',
-  'Daha Fazla Bilgi',
-  'More Info',
-  '/projelerimiz/cezeri-robot-ligi',
-  '[{"value": "3. Yıl", "label": ""}, {"value": "6", "label": "Yarışma"}, {"value": "10.000", "label": "Yarışmacı"}]'::jsonb,
-  1
-),
-(
-  'Intechne Akademi',
-  'Intechne Academy',
-  'Genç yetenekleri teorik eğitimin sınırlarından çıkarıp gerçek dünya projeleriyle buluşturmak ve sektöre donanımlı mühendisler kazandırmak hedefiyle kurulan uygulamalı teknoloji akademisidir.',
-  'An applied technology academy founded with the goal of taking young talents out of the limits of theoretical education and bringing them together with real-world projects.',
-  'Daha Fazla Bilgi',
-  'More Info',
-  '/projelerimiz/intechne-akademi',
-  '[{"value": "5", "label": "İl"}, {"value": "30+", "label": "Atölye"}, {"value": "5.000+", "label": "Öğrenci"}]'::jsonb,
-  2
-),
-(
-  '2026 Vex Robotics Türkiye Şampiyonası',
-  '2026 Vex Robotics Turkey Championship',
-  'Dünyanın en prestijli STEM programlarından birini Türkiye arenasına taşıyarak, genç yeteneklerin mekanik tasarım ve takım çalışması becerilerini küresel standartlarda test ettiği ulusal robotik şampiyonasıdır.',
-  'A national robotics championship that tests the mechanical design and teamwork skills of young talents at global standards by carrying one of the world''s most prestigious STEM programs into the Turkey arena.',
-  'Daha Fazla Bilgi',
-  'More Info',
-  '/projelerimiz/cezeri-robot-ligi',
-  '[{"value": "18", "label": "şehir"}, {"value": "3500", "label": "Yarışmacı"}]'::jsonb,
-  3
-),
-(
-  'Robonex Robot Ligi',
-  'Robonex Robot League',
-  'Yeni nesil otonom sistemler ve robotik teknolojilerin kıyasıya yarıştığı, genç mühendisleri geleceğin teknolojilerine hazırlamak hedefiyle düzenlenen dinamik bir rekabet arenasıdır.',
-  'A dynamic competition arena organized with the goal of preparing young engineers for the technologies of the future, where new generation autonomous systems and robotics technologies compete fiercely.',
-  'Daha Fazla Bilgi',
-  'More Info',
-  '/projelerimiz/robonex-robot-ligi',
-  '[{"value": "1. Yıl", "label": ""}, {"value": "3", "label": "Yarışma"}, {"value": "6000", "label": "Yarışmacı"}]'::jsonb,
-  4
-);
-
--- F. İnteraktif Yayınlar Seed Verisi
-INSERT INTO interactive (title_tr, title_en, description_tr, description_en, category, type, file_url, video_url) VALUES
-('Geleceğin Teknolojileri Raporu 2026', 'Future Technologies Report 2026', 'Intechne vizyonuyla hazırlanan teknoloji ekosistemi ve gelecek öngörülerini içeren kapsamlı analiz raporu.', 'Comprehensive analysis report containing technology ecosystem and future predictions prepared with Intechne vision.', 'raporlar', 'report', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf-test.pdf', NULL),
-('Intechne Akademi Sanal Tur', 'Intechne Academy Virtual Tour', 'Eğitim kampüsümüzü 360 derece sanal tur ile keşfedin, atölyelerimizde dijital bir gezintiye çıkın.', 'Discover our training campus with a 360-degree virtual tour, take a digital stroll in our workshops.', 'interaktif', 'interactive', 'https://embed.windy.com', NULL),
-('Otonom Sistemler Eğitim Serisi', 'Autonomous Systems Training Series', 'Temel ve ileri seviye otonom sistemler video eğitim serisi ve interaktif simülasyon araçları.', 'Basic and advanced autonomous systems video training series and interactive simulation tools.', 'egitimler', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ'),
-('Hack The Future 2025 Analizi', 'Hack The Future 2025 Analysis', 'Geçtiğimiz yılın en çarpıcı projeleri ve geliştirilen yenilikçi çözümlerin teknik incelemeleri.', 'Technical reviews of the most striking projects of the past year and the innovative solutions developed.', 'projeler', 'report', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf-test.pdf', NULL),
-('Intechne Robotik Eko-Sistemi Tanıtım Videosu', 'Intechne Robotics Eco-System Introduction Video', 'Intechne bünyesinde kurulan ve yürütülen robotik ligleri, festivaller ve akademi programlarının genel ekosistem tanıtım belgeseli.', 'A general ecosystem documentary of robotics leagues, festivals, and academy programs established and managed under Intechne.', 'projeler', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ');
 
 -- H. MİGRASYON SORGUSU (MEVCUT VERİTABANINA UYGULAMAK İÇİN)
 -- Mevcut veritabanında bu kolonu eklemek için Supabase SQL Editor'de aşağıdaki satırı çalıştırın:

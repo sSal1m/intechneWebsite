@@ -4,7 +4,6 @@ import { useState, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { MediaCard } from '@/components/ui/MediaCard';
-import { mediaItems } from '@/src/data/interactive';
 import type { MediaItem } from '@/src/types/common.types';
 import { useLocale } from 'next-intl';
 import { Link } from '@/src/i18n/navigation';
@@ -68,7 +67,7 @@ export function InteractiveSection({ initialItems }: InteractiveSectionProps) {
           imageUrl: item.image_url,
         };
       })
-    : mediaItems;
+    : [];
 
   const filtered: MediaItem[] =
     activeCategory === 'Tümü'
