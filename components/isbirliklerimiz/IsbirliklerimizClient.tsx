@@ -27,6 +27,11 @@ const partners: Partner[] = [
   { name: 'Papara', initials: 'PP', logoUrl: '/isbirliklerimiz/papara-logo.png' },
   { name: 'Yalova Organize Sanayi Bölgesi', initials: 'YO', logoUrl: '/isbirliklerimiz/Yalova-Organize-Sanayi-Bolgesi-logo.png' },
   { name: 'Yalova Teknopark', initials: 'YT', logoUrl: '/isbirliklerimiz/yalova-teknopark-logo.png' },
+  { name: 'Ümraniye Belediyesi', initials: 'ÜB', logoUrl: '/isbirliklerimiz/Umraniye-Belediyesi-Logo.png' },
+  { name: 'Ziraat Bankası', initials: 'ZB', logoUrl: '/isbirliklerimiz/Ziraat-Bankası-Logo.png' },
+  { name: 'Acun Medya', initials: 'AM', logoUrl: '/isbirliklerimiz/Acun-Medya-Logo.png' },
+  { name: 'Kadıköy Belediyesi', initials: 'KB', logoUrl: '/isbirliklerimiz/Kadıköy-Belediyesi-Logo.png' },
+  { name: 'Etiya', initials: 'ET', logoUrl: '/isbirliklerimiz/Etiya-Logo.png' },
 ];
 
 export function IsbirliklerimizClient({ locale }: { locale: string }) {

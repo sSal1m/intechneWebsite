@@ -23,11 +23,11 @@ export function BrandLogoCard({ name, slug, locale, className }: BrandLogoCardPr
     >
       <div className="w-full flex-1 flex items-center justify-center min-h-0">
         {logoUrl ? (
-          <div className="w-full h-full flex items-center justify-center p-1">
+          <div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center bg-white">
             <img
               src={logoUrl}
               alt={name}
-              className="w-full h-full object-contain"
+              className="w-full h-full object-cover rounded-full"
             />
           </div>
         ) : (
