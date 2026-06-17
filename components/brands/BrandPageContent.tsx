@@ -141,7 +141,6 @@ const brandDetails: Record<
   },
   'intechne-akademi': {
     icon: BookOpen,
-    videoUrl: 'https://www.youtube.com/embed/lwVJD7K-LT8',
     gallery: [
       '/gallery/Intechne-Akademi-Galeri-Gorselleri/Intechne-Akademi-Galeri-Gorseli-1.JPG',
       '/gallery/Intechne-Akademi-Galeri-Gorselleri/Intechne-Akademi-Galeri-Gorseli-2.JPG',
@@ -356,9 +355,7 @@ export function BrandPageContent({ slug, locale }: BrandPageContentProps) {
             </span>
           </>
         )}
-        <h2 className="text-xl md:text-2xl font-bold mt-1 relative z-10 text-center text-white/95">
-          {brand.name}
-        </h2>
+
       </div>
 
       {/* 2. Dynamic statistics bar / Status message */}
