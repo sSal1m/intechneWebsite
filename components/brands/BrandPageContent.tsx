@@ -333,19 +333,13 @@ export function BrandPageContent({ slug, locale }: BrandPageContentProps) {
           backgroundColor: accentColor
         }}
       >
-        {/* Decorative Grid Pattern Overlay */}
-        <div 
-          className="absolute inset-0 opacity-10 bg-repeat bg-center" 
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='none' stroke='%23808080' stroke-width='1'/%3E%3C/svg%3E")`
-          }}
-        />
+
         
         {brand.logoUrl ? (
           <img
             src={brand.logoUrl}
             alt={brand.name}
-            className="w-28 h-28 md:w-36 md:h-36 object-contain mb-3 relative z-10 transition-transform duration-300 hover:scale-105"
+            className="h-full object-contain py-0 relative z-10 transition-transform duration-300 hover:scale-105"
           />
         ) : (
           <>
