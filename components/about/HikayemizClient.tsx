@@ -20,24 +20,24 @@ const timelineEvents: TimelineEvent[] = [
   },
   {
     year: '2022',
-    titleTr: 'Uluslararası Lisanslar ve İlk Turnuvalar',
-    titleEn: 'International Licenses and First Tournaments',
-    descTr: 'VEX Robotics ve Drone Soccer alanlarında Türkiye resmi organizatörlüğü lisansları alındı. İlk bölgesel turnuvalar düzenlenerek yüzlerce öğrenci, uluslararası standartta bir robotik yarışmasıyla ilk kez buluştu.',
-    descEn: 'Official national organizer licenses for VEX Robotics and Drone Soccer were acquired. The first regional tournaments were organized, introducing hundreds of students to international standard robotics competitions for the first time.'
+    titleTr: 'Saha Tecrübesi ve İlk Turnuvalar',
+    titleEn: 'Field Experience and the First Tournaments',
+    descTr: 'FRC off-season turnuvaları düzenlenerek saha organizasyon tecrübesi kazanıldı. Bu turnuvalarla yüzlerce öğrenci, robotik yarışma ortamıyla ilk kez buluştu.',
+    descEn: 'FRC Off-season tournaments were organized to gain field management and event operations experience. Through these tournaments, hundreds of students were introduced to the robotics competition environment for the first time.'
   },
   {
     year: '2023',
-    titleTr: 'Ekosistem Büyüyor: RoboNex ve Yeni Ortaklıklar',
-    titleEn: 'Ecosystem Grows: RoboNex and New Partnerships',
-    descTr: 'Türkiye\'ye özgü robotik lig formatı RoboNex hayata geçirildi. Teknopark İstanbul bünyesinde Ar-Ge faaliyetleri başlatıldı. İstanbul Gedik Üniversitesi ile stratejik iş birliği kurularak akademi-saha bağlantısı güçlendirildi.',
-    descEn: 'RoboNex, a Turkey-specific robotics league format, was launched. R&D activities were initiated at Technopark Istanbul. Strategic cooperation was established with Istanbul Gedik University, strengthening the academy-field link.'
+    titleTr: 'Ekosistem Büyüyor: Robocube ve Yeni Ortaklıklar',
+    titleEn: 'Growing the Ecosystem: RoboCube and New Partnerships',
+    descTr: 'Türkiye\'ye özgü robotik lig formatı Robocube hayata geçirildi. Teknopark İstanbul bünyesinde Ar-Ge faaliyetleri başlatıldı. İstanbul Gedik Üniversitesi ile stratejik iş birliği kurularak akademi-saha bağlantısı güçlendirildi.',
+    descEn: 'RoboCube, a robotics league format tailored to Türkiye, was launched. R&D activities were initiated within Teknopark Istanbul, and a strategic partnership with Istanbul Gedik University was established to strengthen the connection between academia and hands-on robotics practice.'
   },
   {
     year: '2024',
     titleTr: 'ARENO: Yapay Zekayı Sahaya Taşımak',
     titleEn: 'ARENO: Bringing AI to the Field',
-    descTr: 'Yarışma alanlarındaki hakemlik süreçlerini otomatikleştirmek amacıyla geliştirilen ARENO projesi Ar-Ge aşamasına girdi. Vex Robotics Türkiye Şampiyonası düzenlendi. Gedik Holding GearUP programıyla stratejik yatırım süreci başladı.',
-    descEn: 'The ARENO project, developed to automate refereeing processes in competition areas, entered the R&D phase. The Vex Robotics Turkey Championship was held. Strategic investment process started with the Gedik Holding GearUP program.'
+    descTr: 'Yarışma alanlarındaki hakemlik süreçlerini otomatikleştirmek amacıyla geliştirilen ARENO projesi Ar-Ge aşamasına girdi. Vex Robotics Türkiye Şampiyonası düzenlendi.',
+    descEn: 'The ARENO project, developed to automate refereeing processes in robotics competitions, entered the R&D phase. The VEX Robotics Türkiye Championship was successfully organized, further expanding the national robotics ecosystem.'
   },
   {
     year: '2025',
@@ -50,8 +50,8 @@ const timelineEvents: TimelineEvent[] = [
     year: '2026',
     titleTr: 'Ürün, Ekosistem, Büyüme',
     titleEn: 'Product, Ecosystem, Growth',
-    descTr: 'Gedik Holding GearUP yatırımı tamamlandı. ARENO ve TechApp ürünleri piyasaya hazırlık aşamasına geldi. Intechne bugün; aktif robotik ligleri, iki özgün teknoloji ürünü ve genişleyen kurumsal ortaklıklarıyla büyümeye devam ediyor.',
-    descEn: 'Gedik Holding GearUP investment was completed. ARENO and TechApp products reached the market preparation stage. Intechne today continues to grow with active robotics leagues, two unique technology products, and expanding corporate partnerships.'
+    descTr: 'The ARENO project, developed to automate refereeing processes in robotics competitions, entered the R&D phase. The VEX Robotics Türkiye Championship was successfully organized, further expanding the national robotics ecosystem.',
+    descEn: 'The ARENO project, developed to automate refereeing processes in robotics competitions, entered the R&D phase. The VEX Robotics Türkiye Championship was organized, marking another significant milestone in the growth of the national robotics ecosystem.'
   }
 ];
 
@@ -98,9 +98,8 @@ export function HikayemizClient({ locale }: { locale: string }) {
 
                 {/* Left/Right Card spacing on Desktop */}
                 <div
-                  className={`w-full pl-12 md:pl-0 md:w-[calc(50%-2rem)] ${
-                    isEven ? 'md:text-right md:order-1' : 'md:text-left md:order-3 md:ml-auto'
-                  }`}
+                  className={`w-full pl-12 md:pl-0 md:w-[calc(50%-2rem)] ${isEven ? 'md:text-right md:order-1' : 'md:text-left md:order-3 md:ml-auto'
+                    }`}
                 >
                   <div className="bg-white p-6 rounded-2xl border border-neutral-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-default">
                     <span className="text-3xl font-black text-red-600 block mb-2">{event.year}</span>
