@@ -23,7 +23,8 @@ const partners: Partner[] = [
   { name: 'RISE-X Technology', initials: 'RX', logoUrl: '/isbirliklerimiz/RISE-X-Technology-logo.png' },
   { name: 'Tatlıköy', initials: 'TK', logoUrl: '/isbirliklerimiz/tatlikoy-logo.png' },
   { name: 'Teknopark İstanbul', initials: 'TI', logoUrl: '/isbirliklerimiz/teknopark-istanbul-logo.png' },
-  { name: 'Turkcell', initials: 'TC', logoUrl: '/isbirliklerimiz/turkcell-logo.webp' },
+  { name: 'Turkcell', initials: 'TC', logoUrl: '/isbirliklerimiz/turkcell-logo.png' },
+  { name: 'Papara', initials: 'PP', logoUrl: '/isbirliklerimiz/papara-logo.png' },
   { name: 'Yalova Organize Sanayi Bölgesi', initials: 'YO', logoUrl: '/isbirliklerimiz/Yalova-Organize-Sanayi-Bolgesi-logo.png' },
   { name: 'Yalova Teknopark', initials: 'YT', logoUrl: '/isbirliklerimiz/yalova-teknopark-logo.png' },
 ];
