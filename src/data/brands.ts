@@ -13,7 +13,7 @@ export const brands: Brand[] = [
     ],
     logoAlt: 'Cezeri Robot Ligi Logo',
     accentColor: '#4f2567',
-    logoUrl: '/cezeri-logo.jpg',
+    logoUrl: '/brands/Cezeri-Robot-Ligi-Logo.png',
   },
   {
     id: '2',
@@ -27,6 +27,7 @@ export const brands: Brand[] = [
     ],
     logoAlt: 'Robonex Robot Ligi Logo',
     accentColor: '#f65b00',
+    logoUrl: '/brands/Robonex-Robot-Ligi-Logo.png',
   },
   {
     id: '3',
@@ -53,6 +54,7 @@ export const brands: Brand[] = [
     ],
     logoAlt: 'Drone Cup Logo',
     accentColor: '#0F5D3F',
+    logoUrl: '/brands/Drone-Cup-Logo.png',
   },
   {
     id: '5',
@@ -66,6 +68,7 @@ export const brands: Brand[] = [
     ],
     logoAlt: 'Hack the Future Maratonları Logo',
     accentColor: '#A90432',
+    logoUrl: '/brands/Hack-the-Future-Logo.png',
   },
   {
     id: '6',
@@ -79,6 +82,7 @@ export const brands: Brand[] = [
     ],
     logoAlt: 'Intechne Girişim Kulübü Logo',
     accentColor: '#94A3B8',
+    logoUrl: '/brands/Intechne-Giriş-Kulübü-Logo.png',
   },
   {
     id: '7',
@@ -92,6 +96,7 @@ export const brands: Brand[] = [
     ],
     logoAlt: 'Tech & Chill Fest Logo',
     accentColor: '#1E3A8A',
+    logoUrl: '/brands/Tech-and-Chill-Logo.png',
   },
   {
     id: '8',
@@ -105,6 +110,7 @@ export const brands: Brand[] = [
     ],
     logoAlt: 'Intechne Gaming Hub Logo',
     accentColor: '#EAB308',
+    logoUrl: '/brands/Intechne-Gaming-Hub-Logo.png',
   },
 ];
 

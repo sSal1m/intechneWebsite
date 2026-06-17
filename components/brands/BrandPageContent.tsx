@@ -293,7 +293,7 @@ export function BrandPageContent({ slug, locale }: BrandPageContentProps) {
 
   return (
     <div className="space-y-8 lg:space-y-12">
-      {/* 1. Main visual banner placeholder */}
+      {/* 1. Main visual banner placeholder / Logo showcase */}
       <div 
         className="w-full h-[262px] rounded-2xl relative overflow-hidden flex flex-col justify-center items-center text-white px-6 shadow-sm border border-slate-100"
         style={{
@@ -308,11 +308,21 @@ export function BrandPageContent({ slug, locale }: BrandPageContentProps) {
           }}
         />
         
-        <BrandIcon className="w-16 h-16 mb-4 relative z-10 animate-pulse text-white/90" />
-        <span className="text-xs font-semibold uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full relative z-10">
-          {isEn ? 'BRAND VISUAL REPRESENTATION' : 'MARKA TEMSİLİ GÖRSELİ'}
-        </span>
-        <h2 className="text-xl md:text-2xl font-bold mt-2 relative z-10 text-center text-white/95">
+        {brand.logoUrl ? (
+          <img
+            src={brand.logoUrl}
+            alt={brand.name}
+            className="w-28 h-28 md:w-36 md:h-36 object-contain mb-3 relative z-10 transition-transform duration-300 hover:scale-105"
+          />
+        ) : (
+          <>
+            <BrandIcon className="w-16 h-16 mb-4 relative z-10 animate-pulse text-white/90" />
+            <span className="text-xs font-semibold uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full relative z-10 mb-2">
+              {isEn ? 'BRAND VISUAL REPRESENTATION' : 'MARKA TEMSİLİ GÖRSELİ'}
+            </span>
+          </>
+        )}
+        <h2 className="text-xl md:text-2xl font-bold mt-1 relative z-10 text-center text-white/95">
           {brand.name}
         </h2>
       </div>

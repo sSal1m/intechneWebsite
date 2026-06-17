@@ -22,17 +22,19 @@ export function BrandLogoCard({ name, slug, locale, className }: BrandLogoCardPr
       )}
     >
       <div className="w-full flex-1 flex items-center justify-center min-h-0">
-        <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-slate-50 border border-slate-200/60 shadow-inner flex-shrink-0">
-          {logoUrl ? (
+        {logoUrl ? (
+          <div className="w-full h-full flex items-center justify-center p-1">
             <img
               src={logoUrl}
               alt={name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
             />
-          ) : (
+          </div>
+        ) : (
+          <div className="w-11 h-11 rounded-full overflow-hidden flex items-center justify-center bg-slate-50 border border-slate-200/60 shadow-inner flex-shrink-0">
             <span className="text-slate-400 text-xs font-bold">{name.slice(0, 2)}</span>
-          )}
-        </div>
+          </div>
+        )}
       </div>
       <span className="text-[10px] font-semibold text-slate-500 text-center leading-tight max-w-full line-clamp-1 mt-1.5">
         {name}
