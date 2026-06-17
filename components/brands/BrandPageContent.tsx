@@ -1,8 +1,8 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { brands } from '@/src/data/brands';
-import { Play, Image as ImageIcon, Award, Calendar, Users, Cpu, Rocket, BookOpen, Joystick, Zap } from 'lucide-react';
+import { Play, Image as ImageIcon, Award, Calendar, Users, Cpu, Rocket, BookOpen, Joystick, Zap, X } from 'lucide-react';
 
 interface BrandPageContentProps {
   slug: string;
@@ -18,18 +18,28 @@ const brandDetails: Record<
       vizyon: string;
       kapsam: string;
       sections: { title: string; content: string }[];
+      statusMessage?: string;
     };
     en: {
       nedir: string;
       vizyon: string;
       kapsam: string;
       sections: { title: string; content: string }[];
+      statusMessage?: string;
     };
     icon: any;
+    videoUrl?: string;
+    gallery?: string[];
   }
 > = {
   'cezeri-robot-ligi': {
     icon: Cpu,
+    videoUrl: 'https://www.youtube.com/embed/lwVJD7K-LT8',
+    gallery: [
+      '/gallery/Cezeri-Robot-Ligi-Galeri-Gorselleri/Cezeri-Robot-Ligi-Galeri-Gorseli-1.JPG',
+      '/gallery/Cezeri-Robot-Ligi-Galeri-Gorselleri/Cezeri-Robot-Ligi-Galeri-Gorseli-2.JPG',
+      '/gallery/Cezeri-Robot-Ligi-Galeri-Gorselleri/Cezeri-Robot-Ligi-Galeri-Gorseli-3.JPG'
+    ],
     tr: {
       nedir: 'Intechne ekosisteminin güçlü bir parçası olan Cezeri Robot Ligi; uluslararası standartlardaki robotik yarışmaları, kıyasıya geçen otonom donanım mücadeleleri, teknoloji atölyeleri ve inovasyon odaklı etkinlikler gibi birçok faaliyete ev sahipliği yaparak gençlerde mühendisliğe olan ilgiyi heyecan verici bir spor tutkusuna dönüştürmeyi ve yeteneklerin potansiyelini sahada keşfetmeyi amaçlamaktadır.',
       vizyon: 'Ligi’n temel amacı; genç yeteneklerin potansiyelini kağıt üzerindeki sınavlardan çıkarıp sahadaki kriz anlarında ölçmek, mühendisliği kıyasıya bir spora dönüştürmek ve "Maker" ruhuyla "Teknoloji Üreten Bir Türkiye" hedefine doğrudan yetenek kazandırmaktır.',
@@ -61,6 +71,12 @@ const brandDetails: Record<
   },
   'robonex-robot-ligi': {
     icon: Cpu,
+    videoUrl: 'https://www.youtube.com/embed/62cl95cEm4A',
+    gallery: [
+      '/gallery/Robonex-Robot-Ligi-Galeri-Gorselleri/Robonex-Robot-Ligi-Galeri-Gorseli-1.JPG',
+      '/gallery/Robonex-Robot-Ligi-Galeri-Gorselleri/Robonex-Robot-Ligi-Galeri-Gorseli-2.JPG',
+      '/gallery/Robonex-Robot-Ligi-Galeri-Gorselleri/Robonex-Robot-Ligi-Galeri-Gorseli-3.JPG'
+    ],
     tr: {
       nedir: 'Intechne\'nin yeni nesil teknoloji vizyonunu sahaya yansıtan Robonex Robot Ligi; fütüristik otonom sistem mücadeleleri, yapay zeka destekli robotik yarışmaları ve ileri teknoloji etkinlikleri gibi birçok faaliyete ev sahipliği yaparak genç mühendisleri geleceğin global inovasyon yarışına en iyi şekilde hazırlamayı temel alır.',
       vizyon: 'Ligi’n vizyonu; Türkiye\'nin küresel ölçekte derin teknoloji (deep-tech) üreten öncü bir topluma dönüşmesine katkı sağlamak ve geleceğin donanım mimarlarını bugünden keşfetmektir.',
@@ -93,9 +109,10 @@ const brandDetails: Record<
   'tech-chill-fest': {
     icon: Zap,
     tr: {
-      nedir: 'Intechne ekosisteminin amiral gemisi etkinliği olan Tech & Chill Fest; gündüzleri teknoloji hackathonları, robotik finalleri ve inovasyon atölyeleri, akşamları ise canlı müzik performansları ve e-spor turnuvaları gibi birçok faaliyete ev sahipliği yaparak teknolojinin sosyal yaşamla kusursuzca bütünleştiği dinamik bir buluşma noktası yaratır.',
+      nedir: 'Intechne ekosisteminin amiral gemisi etkinliği olan Tech & Chill Fest; gündüzleri teknoloji hackathonları, robotik finalleri and inovasyon atölyeleri, akşamları ise canlı müzik performansları ve e-spor turnuvaları gibi birçok faaliyete ev sahipliği yaparak teknolojinin sosyal yaşamla kusursuzca bütünleştiği dinamik bir buluşma noktası yaratır.',
       vizyon: 'Festivalin vizyonu, teknolojiyi sadece "ciddi ve laboratuvarlara hapsolmuş" bir disiplin olmaktan çıkarıp, gençlerin sosyal hayatının merkezine, bir "yaşam tarzı" olarak yerleştirmektir.',
       kapsam: 'Festival alanı iki ana kutba ayrılır: "Tech" bölgesi ve "Chill" bölgesi. Tech alanı; donanım prototiplerinin sergilendiği, Cezeri ve Robonex final maçlarının yapıldığı, 3D yazıcı atölyelerinin ve yatırımcı sunumlarının gerçekleştirildiği inovasyon merkezidir. Chill alanı ise; oyun stüdyolarının (Intechne Gaming Hub), VR/AR deneyim alanlarının, e-spor sahnelerinin, dinlenme alanlarının dev konser sahnelerinin yer aldığı sosyal etkileşim merkezidir.',
+      statusMessage: 'Festival Çok Yakında!',
       sections: [
         { title: 'Tech & Chill Fest Nedir?', content: 'Tech & Chill Fest, "gündüz üret, gece kutla" mottosuyla hayata geçirilen, Türkiye’nin en yeni nesil ve eğlenceli teknoloji festivalidir. Gelenekselleşmiş, sıkıcı fuar konseptlerini yıkarak teknolojiyi dinamik bir gençlik festivaliyle harmanlar. Ziyaretçiler ve yarışmacılar gündüz saatlerinde otonom robotların finallerini izleyip derin teknoloji (deep-tech) hackathonlarında ter dökerken; akşam saatlerinde konserler, ışık şovları, DJ performansları ve dev ekranlarda oynanan e-spor turnuvalarıyla stres atarlar.' },
         { title: 'Amacı ve Vizyonu', content: 'Festivalin vizyonu, teknolojiyi sadece "ciddi ve laboratuvarlara hapsolmuş" bir disiplin olmaktan çıkarıp, gençlerin sosyal hayatının merkezine, bir "yaşam tarzı" olarak yerleştirmektir. Tech & Chill Fest, inovasyon yapan gençlerin aynı zamanda eğlenmeyi de bilen, çok yönlü ve vizyoner bir Maker toplumu oluşturmasına öncülük etmeyi amaçlar.' },
@@ -110,10 +127,11 @@ const brandDetails: Record<
       nedir: 'Tech & Chill Fest, the flagship event of the Intechne ecosystem, hosts many activities such as technology hackathons, robotics finals, and innovation workshops during the day, and live music performances and e-sports tournaments in the evening, creating a dynamic meeting point where technology integrates seamlessly with social life.',
       vizyon: 'The vision of the festival is to lift technology from being just a serious, laboratory-bound discipline and place it at the center of youth\'s social life as a lifestyle.',
       kapsam: 'The festival area is divided into two main poles: the "Tech" zone and the "Chill" zone.',
+      statusMessage: 'Festival Coming Very Soon!',
       sections: [
         { title: 'What is Tech & Chill Fest?', content: 'Tech & Chill Fest, launched under the motto "produce by day, celebrate by night," is Turkey\'s newest and most entertaining technology festival. It shatters traditional, boring fair concepts by blending technology with a dynamic youth festival. Visitors and competitors watch the finals of autonomous robots and sweat it out in deep-tech hackathons during the day, while relieving stress in the evening with concerts, light shows, DJ performances, and e-sports tournaments played on giant screens.' },
         { title: 'Goal and Vision', content: 'The vision of the festival is to lift technology from being just a serious, laboratory-bound discipline and place it at the center of youth\'s social life as a lifestyle. Tech & Chill Fest aims to lead the creation of a versatile and visionary Maker community of youth who innovate while knowing how to have fun.' },
-        { title: 'What Fields Does It Cover?', content: 'The festival area is divided into two main poles: the "Tech" zone and the "Chill" zone. The Tech area is the innovation center where hardware prototypes are exhibited, Cezeri and Robonex final matches are held, 3D printer workshops, and investor pitches are conducted. The Chill area is the social interaction center housing game studios (Intechne Gaming Hub), VR/AR experience zones, e-sports stages, lounge areas, and giant concert stages.' },
+        { title: 'What Fields Do It Cover?', content: 'The festival area is divided into two main poles: the "Tech" zone and the "Chill" zone. The Tech area is the innovation center where hardware prototypes are exhibited, Cezeri and Robonex final matches are held, 3D printer workshops, and investor pitches are conducted. The Chill area is the social interaction center housing game studios (Intechne Gaming Hub), VR/AR experience zones, e-sports stages, lounge areas, and giant concert stages.' },
         { title: 'What are the Events Within the Scope of the Festival?', content: '• Daytime Program: Hack The Future Marathons finals, Intechne Entrepreneurship Club "Demo Day" presentations, hardware community meetups, drone races. \n• Nighttime Program: Live concerts by national artists, e-sports championship matches, open-air cinema, digital art (mapping) shows.' },
         { title: 'Who Can Participate?', content: 'From high school and university students to young professionals, gaming enthusiasts (gamers) to hardware manufacturers, anyone looking for technology and entertainment together can be a part of the festival.' },
         { title: 'Application and Participation Process', content: 'Festival tickets and event registrations are carried out through the official website. While the finalists of the hackathon and robotics competitions are directly among the VIP participants of the festival, general visitors enter the area via online ticketing or on-campus invitations during designated periods.' },
@@ -123,6 +141,12 @@ const brandDetails: Record<
   },
   'intechne-akademi': {
     icon: BookOpen,
+    videoUrl: 'https://www.youtube.com/embed/lwVJD7K-LT8',
+    gallery: [
+      '/gallery/Intechne-Akademi-Galeri-Gorselleri/Intechne-Akademi-Galeri-Gorseli-1.JPG',
+      '/gallery/Intechne-Akademi-Galeri-Gorselleri/Intechne-Akademi-Galeri-Gorseli-2.JPG',
+      '/gallery/Intechne-Akademi-Galeri-Gorselleri/Intechne-Akademi-Galeri-Gorseli-3.JPG'
+    ],
     tr: {
       nedir: 'Intechne ekosisteminin uygulamalı eğitim üssü olan Intechne Akademi; inovasyon atölyeleri, donanım ve yazılım eğitimleri, maker kampları ve proje odaklı mentorluk programları gibi birçok faaliyete ev sahipliği yaparak gençlerin teorik bilgilerini sahanın gerçekliğiyle harmanlayan yenilikçi bir öğrenme ortamı sunar.',
       vizyon: 'Temel amaç; çocukları yalnızca teknoloji tüketicisi olmaktan çıkarıp, kendi donanımını üretebilen "Maker" kültürüne sahip yenilikçi bireylere dönüştürmektir.',
@@ -158,6 +182,7 @@ const brandDetails: Record<
       nedir: 'Intechne ekosisteminin gökyüzündeki fütüristik rekabet arenası olan Drone Cup; yüksek hızlı profesyonel drone yarışları, tamamen havada oynanan nefes kesici drone futbolu mücadeleleri, aerodinamik tasarım atölyeleri ve ileri mühendislik etkinlikleri gibi birçok faaliyete ev sahipliği yaparak gençlerdeki havacılık tutkusunu teknolojiyle buluşturun benzersiz bir deneyim sunmaktadır.',
       vizyon: 'Temel amaç; havacılık tutkusunu erken yaşlarda bir inovasyon kıvılcımına dönüştürmek ve Türkiye’yi otonom hava araçları (İHA) alanında küresel liderlerden biri yapacak insan kaynağını yetiştirmektir.',
       kapsam: 'Radyo frekans (RF) sistemleri, fırçasız motor teknolojileri, aerodinamik şase tasarımı, FPV görüntü aktarım sistemleri ve "Drone Futbolu" gibi yeni nesil havacılık sporlarını kapsar.',
+      statusMessage: '1.Sezon 2026’da!',
       sections: [
         { title: 'Drone Cup Nedir?', content: 'Drone Cup, geleneksel yer çekimi sınırlarını aşarak otonom ve manuel uçuş teknolojilerini profesyonel bir spora dönüştüren ulusal drone şampiyonasıdır. Hızın ve reflekslerin sınırlarını zorlayan FPV (First Person View) yarışlarından, strateji ve takım çalışması gerektiren yüksek temaslı "Drone Futbolu"na (Drone Soccer) kadar geniş bir yelpazeyi barındırır. Katılımcılar, kendi tasarlayıp lehimledikleri hava araçlarıyla özel olarak tasarlanmış kafesli arenalarda ter dökerler.' },
         { title: 'Amacı ve Vizyonu', content: 'Temel amaç; havacılık tutkusunu erken yaşlarda bir inovasyon kıvılcımına dönüştürmek ve Türkiye’yi otonom hava araçları (İHA) alanında küresel liderlerden biri yapacak insan kaynağını yetiştirmektir. Drone Cup, gençleri hazır drone\'lar kullanmak yerine; aerodinamik hesaplamalar yapmaya, motor-ESC (Hız kontrolcüsü) optimizasyonlarını kurmaya ve havacılık mühendisliğine teşvik eder.' },
@@ -172,10 +197,11 @@ const brandDetails: Record<
       nedir: 'Hosting many activities such as high-speed professional drone races, breathtaking drone soccer matches played entirely in the air, aerodynamic design workshops, and advanced engineering events, Drone Cup, the futuristic competition arena of the Intechne ecosystem in the sky, offers a unique experience that combines the passion for aviation in youth with technology.',
       vizyon: 'The primary goal is to turn the passion for aviation into an innovation spark at an early age and to raise the human resource that will make Turkey one of the global leaders in the field of autonomous aerial vehicles (UAVs).',
       kapsam: 'It covers new generation aviation sports such as radio frequency (RF) systems, brushless motor technologies, aerodynamic chassis design, FPV image transmission systems, and "Drone Soccer".',
+      statusMessage: 'Season 1 in 2026!',
       sections: [
         { title: 'What is Drone Cup?', content: 'Drone Cup is a national drone championship that transcends traditional gravity boundaries, turning autonomous and manual flight technologies into a professional sport. It spans a wide range from FPV (First Person View) races that push the limits of speed and reflexes, to high-contact "Drone Soccer" that requires strategy and teamwork. Participants sweat it out in specially designed caged arenas with aircraft they design and solder themselves.' },
         { title: 'Purpose and Vision', content: 'The primary goal is to turn the passion for aviation into an innovation spark at an early age and to raise the human resource that will make Turkey one of the global leaders in the field of autonomous aerial vehicles (UAVs). Drone Cup encourages young people to make aerodynamic calculations, set up motor-ESC (speed controller) optimizations, and pursue aerospace engineering rather than using off-the-shelf drones.' },
-        { title: 'What Fields Does It Cover?', content: 'It covers new generation aviation sports such as radio frequency (RF) systems, brushless motor technologies, aerodynamic chassis design, FPV image transmission systems, and "Drone Soccer". It also hosts simulation flights and soldering workshops in the event areas.' },
+        { title: 'What Fields Do It Cover?', content: 'It covers new generation aviation sports such as radio frequency (RF) systems, brushless motor technologies, aerodynamic chassis design, FPV image transmission systems, and "Drone Soccer". It also hosts simulation flights and soldering workshops in the event areas.' },
         { title: 'What are Its Competitions?', content: 'FPV Speed Races, where competitors race against seconds on obstacle courses, and the fully strategy-based Drone Soccer League, where teams try to hover, block their opponents, and pass through special rings (goals), are the heart of this organization.' },
         { title: 'Who Can Participate?', content: 'Middle school, high school, and university students interested in aviation and drone systems, as well as licensed/unlicensed professional FPV pilots, can join the tournament in their own age and class groups by forming their teams.' },
         { title: 'How Does the Application Process Work?', content: 'Team and pilot registrations are carried out through the official Drone Cup portal. Teams are included in the fixture after approvals of the technical specifications (motor power, chassis size, propeller type) prepared in accordance with safety guidelines and determined hardware restrictions.' },
@@ -189,6 +215,7 @@ const brandDetails: Record<
       nedir: 'Intechne Girişim Kulübü, teknolojik projelerin ticarileşmesini ve sürdürülebilir iş modellerine dönüşmesini hedefleyen bir kuluçka ve girişimcilik merkezidir.',
       vizyon: 'Gençlerin teknoloji odaklı fikirlerini küresel pazara hitap eden start-up\'lara dönüştürmesini sağlamaktır.',
       kapsam: 'Mentorluk desteği, yatırımcı buluşmaları, iş geliştirme eğitimleri ve girişimcilik zirveli.',
+      statusMessage: '1.Dönem Başvuruları Yakında Başlıyor!',
       sections: [
         { title: 'Intechne Girişim Kulübü Nedir?', content: 'Intechne Girişim Kulübü, teknoloji tabanlı fikirleri olan öğrencileri ve genç girişimcileri iş dünyasıyla buluşturan, projelerini ticarileştirilebilir iş modellerine dönüştürmelerine yardım eden bir inkübasyon ekosistemidir. Kulüp bünyesinde girişimcilik eğitimleri, finansal ve hukuki mentorluk destekleri sağlanır.' },
         { title: 'Fikirden Küresel Girişime', content: 'Teknoloji üreten gençlerin en büyük zorluklarından biri olan projenin ticarileşmesi sürecine odaklanan kulüp, yıl boyunca düzenlediği Demo Day etkinlikleri ve yatırımcı buluşmaları ile start-up\'ların tohum yatırımlara ulaşmasını kolaylaştırır.' }
@@ -198,6 +225,7 @@ const brandDetails: Record<
       nedir: 'Intechne Entrepreneurship Club is an incubation and entrepreneurship center that aims to commercialize technological projects and transform them into sustainable business models.',
       vizyon: 'To enable young people to transform their technology-oriented ideas into start-ups that appeal to the global market.',
       kapsam: 'Mentorship support, investor meetups, business development training, and entrepreneurship summits.',
+      statusMessage: 'Term 1 Applications Starting Soon!',
       sections: [
         { title: 'What is Intechne Entrepreneurship Club?', content: 'Intechne Entrepreneurship Club is an incubation ecosystem that brings students and young entrepreneurs with technology-based ideas together with the business world, helping them transform their projects into commercializable business models. Entrepreneurship training, financial and legal mentoring support are provided within the club.' },
         { title: 'From Idea to Global Startup', content: 'Focusing on the project commercialization process, one of the biggest challenges for tech-producing youth, the club facilitates startups\' access to seed investments through Demo Day events and investor meetups organized throughout the year.' }
@@ -210,6 +238,7 @@ const brandDetails: Record<
       nedir: 'Intechne ekosisteminin dijital dünyadaki interaktif rekabet ve üretim üssü olan Intechne Gaming Hub; strateji odaklı e-spor turnuvaları, oyun geliştirme maratonları (game jams), sanal gerçeklik (VR) atölyeleri ve dijital inovasyon etkinlikleri gibi birçok faaliyete ev sahipliği yaparak gençlerdeki oyun oynama tutkusunu teknoloji tasarlama gücüne dönüştürmeyi amaçlamaktadır.',
       vizyon: 'Hub\'ın vizyonu; Türkiye’yi küresel oyun sektöründe (Gaming Industry) sadece bir pazar değil, aynı zamanda güçlü bir üretici konumuna getirmektir.',
       kapsam: 'Profesyonel e-spor turnuvaları, oyun motoru (Unity/Unreal Engine) eğitimleri, oyun tasarımı (Game Design), karakter animasyonu, sanal/artırılmış gerçeklik (VR/AR) teknolojileri ve oyun sektörü odaklı Start-up girişimciliğini kapsar.',
+      statusMessage: '1.Sezon Yakında Başlıyor!',
       sections: [
         { title: 'Intechne Gaming Hub Nedir?', content: 'Intechne Gaming Hub, e-sporun rekabetçi doğasını oyun geliştirmenin (Game Dev) yaratıcı süreciyle tek bir çatı altında birleştiren dijital bir ekosistemdir. Sadece oyun oynayanları değil, oyunun evrenini tasarlayanları, kodlayanları ve dijital sanatçıları bir araya getirir. Büyük e-spor arenalarında finaller düzenlerken, arka planda "Game Jam" etkinlikleriyle Türkiye\'nin yeni nesil oyun stüdyolarının temellerini atar.' },
         { title: 'Amacı ve Vizyonu', content: 'Hub\'ın vizyonu; Türkiye’yi küresel oyun sektöründe (Gaming Industry) sadece bir pazar değil, aynı zamanda güçlü bir üretici konumuna getirmektir. Tüketici profilindeki gençlerin e-spor tutkusunu bir kıvılcım olarak kullanıp, onları yazılım, 3D modelleme ve dijital hikaye anlatıcılığı alanlarına yönlendirmeyi hedefler.' },
@@ -224,10 +253,11 @@ const brandDetails: Record<
       nedir: 'Intechne Gaming Hub, the interactive competition and production base of the Intechne ecosystem in the digital world, aims to transform the passion for gaming in youth into the power of technology design by hosting activities such as strategy-oriented e-sports tournaments, game jams, VR workshops, and digital innovation events.',
       vizyon: 'The hub\'s vision is to make Turkey not just a market but a powerful producer in the global gaming industry.',
       kapsam: 'It covers professional e-sports tournaments, game engine (Unity/Unreal Engine) training, game design, character animation, virtual/augmented reality (VR/AR) technologies, and game-centric Startup entrepreneurship.',
+      statusMessage: 'Season 1 Starting Soon!',
       sections: [
         { title: 'What is Intechne Gaming Hub?', content: 'Intechne Gaming Hub is a digital ecosystem combining the competitive nature of e-sports with the creative process of game development under a single roof. It brings together game players, universe designers, programmers, and digital artists. While organizing finals in huge e-sports arenas, it lays the foundations of Turkey\'s new generation game studios behind the scenes through Game Jam events.' },
         { title: 'Purpose and Vision', content: 'The hub\'s vision is to make Turkey not just a market but a powerful producer in the global gaming industry. Using the e-sports passion of young consumers as a spark, it aims to direct them to software, 3D modeling, and digital storytelling.' },
-        { title: 'What Fields Does It Cover?', content: 'It covers professional e-sports tournaments, game engine (Unity/Unreal Engine) training, game design, character animation, virtual/augmented reality (VR/AR) technologies, and game-centric Startup entrepreneurship. It also offers infrastructure and hardware support to game studios.' },
+        { title: 'What Fields Do It Cover?', content: 'It covers professional e-sports tournaments, game engine (Unity/Unreal Engine) training, game design, character animation, virtual/augmented reality (VR/AR) technologies, and game-centric Startup entrepreneurship. It also offers infrastructure and hardware support to game studios.' },
         { title: 'What are Its Events?', content: 'National e-sports championships between high schools and universities, 48-hour Game Jam (game development) marathons, talks with game industry professionals (Publishers/Developers), and show matches played on giant stages within Tech & Chill Fest.' },
         { title: 'Who Can Participate?', content: 'Professional and amateur e-sports players, game developers, programmers, 3D artists, sound designers, and all youth interested in the gaming world can join.' },
         { title: 'How Does the Application Process Work?', content: 'Teams register for online fixtures for e-sports tournaments and reach physical finals by passing digital eliminations. For game development events, applications are made through online platforms with developer or designer roles.' },
@@ -241,6 +271,7 @@ const brandDetails: Record<
       nedir: 'Intechne ekosisteminin sınırları zorlayan vizyoner yazılım ve üretim arenası olan Hack the Future Maratonları; kesintisiz kodlama hackathonları, derin teknoloji (deep-tech) odaklı hızlı prototipleme yarışmaları, yapay zeka geliştirme kampları ve ileri düzey problem çözme etkinlikleri gibi birçok faaliyete ev sahipliği yaparak gençlerin analitik zekasını inovatif projelere dönüştürmeyi amaçlamaktadır.',
       vizyon: 'Temel amaç; geleceğin sorunlarına bugünden teknolojik çözümler üreten yenilikçi bir nesil yetiştirmektir.',
       kapsam: 'Maratonlar; Nesnelerin İnterneti (IoT), akıllı şehirler, siber güvenlik, finansal teknolojiler (FinTech), sağlık teknolojileri, oyunlaştırma ve sürdürülebilirlik odaklı yazılım-donanım entegrasyonu alanlarını kapsar.',
+      statusMessage: '1.Sezon Yakında Başlıyor!',
       sections: [
         { title: 'Hack The Future Maratonları Nedir?', content: 'Hack the Future, yazılımcıları, tasarımcıları ve mühendisleri 24 ila 48 saat süren kesintisiz geliştirme kamplarında bir araya getiren "Hızlı Üretim ve İnovasyon" etkinlikleri serisidir. Katılımcılar, kendilerine verilen global veya sektörel bir problemi kısıtlı bir süre içinde çözmek için uykusuz kalarak kod yazar, 3D tasarımlar yapar ve fikirlerini çalışan bir prototipe dönüştürürler. Bu etkinlikler, stres altında takım çalışmasının ve hızlı karar almanın en üst düzeyde test edildiği teknoloji maratonlarıdır.' },
         { title: 'Amacı ve Vizyonu', content: 'Temel amaç; geleceğin sorunlarına bugünden teknolojik çözümler üreten yenilikçi bir nesil yetiştirmektir. Hack the Future, gençleri uzun süren teorik planlamalardan sıyırıp, "Hemen Başla ve Üret" (Lean Start-up) felsefesiyle hızlı prototipleme yapmaya teşvik eder.' },
@@ -255,6 +286,7 @@ const brandDetails: Record<
       nedir: 'Hack the Future Marathons, the visionary software and production arena of the Intechne ecosystem that pushes boundaries, aims to transform the analytical intelligence of youth into innovative projects by hosting activities such as non-stop coding hackathons, deep-tech rapid prototyping competitions, AI development bootcamps, and advanced problem-solving events.',
       vizyon: 'The primary goal is to raise an innovative generation that produces technological solutions to future problems starting today.',
       kapsam: 'Marathons cover areas of software-hardware integration focused on Internet of Things (IoT), smart cities, cybersecurity, financial technologies (FinTech), health technologies, gamification, and sustainability.',
+      statusMessage: 'Season 1 Starting Soon!',
       sections: [
         { title: 'What are Hack the Future Marathons?', content: 'Hack the Future is a series of "Rapid Production and Innovation" events bringing together programmers, designers, and engineers in continuous development camps lasting 24 to 48 hours. Participants stay awake, write code, make 3D designs, and transform their ideas into working prototypes to solve a designated global or industrial problem within a limited time. These events are technology marathons where teamwork under stress and rapid decision-making are tested at the highest level.' },
         { title: 'Goal and Vision', content: 'The primary goal is to raise an innovative generation that produces technological solutions to future problems starting today. Hack the Future strips young people of lengthy theoretical planning and encourages them to do rapid prototyping with a "Start Now and Produce" (Lean Start-up) philosophy.' },
@@ -270,6 +302,8 @@ const brandDetails: Record<
 
 export function BrandPageContent({ slug, locale }: BrandPageContentProps) {
   const isEn = locale === 'en';
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   
   const brand = useMemo(() => {
     return brands.find((b) => b.slug === slug);
@@ -327,27 +361,33 @@ export function BrandPageContent({ slug, locale }: BrandPageContentProps) {
         </h2>
       </div>
 
-      {/* 2. Dynamic statistics bar */}
-      {brand.stats && brand.stats.length > 0 && (
+      {/* 2. Dynamic statistics bar / Status message */}
+      {((brand.stats && brand.stats.length > 0) || activeDetails.statusMessage) && (
         <div 
-          className="rounded-2xl py-6 px-4 md:px-8 text-white shadow-md relative overflow-hidden flex items-center justify-center bg-cover bg-no-repeat bg-center"
+          className="rounded-2xl py-6 px-4 md:px-8 text-white shadow-md relative overflow-hidden flex items-center justify-center bg-cover bg-no-repeat bg-center min-h-[92px]"
           style={{
             backgroundColor: accentColor
           }}
         >
-          {/* Inner stats columns */}
-          <div className="grid grid-cols-3 w-full max-w-4xl mx-auto gap-4 divide-x divide-white/20 text-center">
-            {brand.stats.map((stat, idx) => (
-              <div key={idx} className="flex flex-col items-center justify-center">
-                <span className="text-xs md:text-sm font-semibold uppercase text-white/80 block mb-1">
-                  {stat.label || (isEn ? 'LEAGUE YEAR' : 'LİG YILI')}
-                </span>
-                <span className="text-xl md:text-3xl font-black tracking-tight block">
-                  {stat.value}
-                </span>
-              </div>
-            ))}
-          </div>
+          {activeDetails.statusMessage ? (
+            <div className="text-center font-black text-lg md:text-2xl tracking-wide uppercase select-none">
+              {activeDetails.statusMessage}
+            </div>
+          ) : (
+            /* Inner stats columns */
+            <div className="grid grid-cols-3 w-full max-w-4xl mx-auto gap-4 divide-x divide-white/20 text-center">
+              {brand.stats.map((stat, idx) => (
+                <div key={idx} className="flex flex-col items-center justify-center">
+                  <span className="text-xs md:text-sm font-semibold uppercase text-white/80 block mb-1">
+                    {stat.label || (isEn ? 'LEAGUE YEAR' : 'LİG YILI')}
+                  </span>
+                  <span className="text-xl md:text-3xl font-black tracking-tight block">
+                    {stat.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -373,60 +413,85 @@ export function BrandPageContent({ slug, locale }: BrandPageContentProps) {
         </div>
       </div>
 
-      {/* 4. Interactive Video Placeholder */}
-      <div className="space-y-4">
-        <h3 className="text-lg md:text-xl font-black text-slate-800" style={{ color: accentColor }}>
-          {isEn ? 'Introduction Video' : 'Tanıtım Videosu'}
-        </h3>
-        <div 
-          className="aspect-video w-full rounded-2xl relative overflow-hidden bg-slate-900 group cursor-pointer border border-slate-100 flex items-center justify-center transition-all duration-300 hover:shadow-lg"
-        >
-          {/* Mock thumbnail flat color with grid */}
-          <div className="absolute inset-0 bg-slate-950 opacity-90"></div>
-          <div 
-            className="absolute inset-0 opacity-5 bg-repeat bg-center" 
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect width='16' height='16' fill='none' stroke='%23808080' stroke-width='1'/%3E%3C/svg%3E")`
-            }}
-          />
-          
-          {/* Centered play button layout */}
-          <div className="relative z-10 flex flex-col items-center gap-3">
-            <div 
-              className="w-16 h-16 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110"
-              style={{ color: accentColor }}
-            >
-              <Play className="w-8 h-8 fill-current translate-x-0.5" />
-            </div>
-            <span className="text-white/80 font-bold text-xs uppercase tracking-widest relative z-10 group-hover:text-white">
-              {isEn ? 'WATCH PROMO VIDEO (PLACEHOLDER)' : 'TANITIM VİDEOSUNU İZLE (TEMSİLİ)'}
-            </span>
+      {/* 4. YouTube Embed Video */}
+      {details.videoUrl && (
+        <div className="space-y-4">
+          <h3 className="text-lg md:text-xl font-black text-slate-800" style={{ color: accentColor }}>
+            {isEn ? 'Introduction Video' : 'Tanıtım Videosu'}
+          </h3>
+          <div className="aspect-video w-full rounded-2xl overflow-hidden border border-slate-100 shadow-lg">
+            <iframe
+              src={details.videoUrl}
+              title={isEn ? 'Introduction Video' : 'Tanıtım Videosu'}
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
           </div>
         </div>
-      </div>
+      )}
 
-      {/* 5. Styled Photo Gallery Row Placeholder */}
+      {/* 5. Photo Gallery */}
       <div className="space-y-4">
         <h3 className="text-lg md:text-xl font-black text-slate-800" style={{ color: accentColor }}>
           {isEn ? 'Photo Gallery' : 'Fotoğraf Galerisi'}
         </h3>
         
-        {/* Horizontally scrolling gallery cards resembling a swiper */}
+        {/* Gallery Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[1, 2, 3].map((val) => (
-            <div 
-              key={val}
-              className="h-48 rounded-2xl relative overflow-hidden bg-slate-100 border border-slate-200/60 flex items-center justify-center group cursor-default shadow-sm hover:shadow-md transition-shadow duration-300"
-            >
-              <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors duration-300"></div>
-              <ImageIcon className="w-10 h-10 text-slate-400 group-hover:scale-110 transition-transform duration-300" />
-              <span className="absolute bottom-3 left-4 text-xs font-semibold text-slate-500 bg-white/80 backdrop-blur-sm px-2 py-0.5 rounded border border-slate-100">
-                {isEn ? `Gallery Image ${val}` : `Galeri Görseli ${val}`}
-              </span>
-            </div>
-          ))}
+          {details.gallery && details.gallery.length > 0 ? (
+            details.gallery.map((imgUrl, val) => (
+              <div 
+                key={val}
+                onClick={() => setSelectedImage(imgUrl)}
+                className="h-48 rounded-2xl relative overflow-hidden bg-slate-100 border border-slate-200/60 group cursor-pointer shadow-sm hover:shadow-md transition-all duration-300"
+              >
+                <img
+                  src={imgUrl}
+                  alt={isEn ? `Gallery Image ${val + 1}` : `Galeri Görseli ${val + 1}`}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/5 group-hover:bg-black/20 transition-colors duration-300"></div>
+              </div>
+            ))
+          ) : (
+            [1, 2, 3].map((val) => (
+              <div 
+                key={val}
+                className="h-48 rounded-2xl relative overflow-hidden bg-slate-100 border border-slate-200/60 flex items-center justify-center group cursor-default shadow-sm hover:shadow-md transition-shadow duration-300"
+              >
+                <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors duration-300"></div>
+                <ImageIcon className="w-10 h-10 text-slate-400 group-hover:scale-110 transition-transform duration-300" />
+              </div>
+            ))
+          )}
         </div>
       </div>
+
+      {/* Lightbox Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[999] flex items-center justify-center p-4 transition-all duration-300"
+          onClick={() => setSelectedImage(null)}
+        >
+          <button 
+            className="absolute top-6 right-6 text-white hover:text-slate-300 bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors duration-200"
+            onClick={() => setSelectedImage(null)}
+          >
+            <X className="w-8 h-8" />
+          </button>
+          <div 
+            className="relative max-w-5xl max-h-[90vh] overflow-hidden rounded-xl shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={selectedImage}
+              alt="Enlarged gallery view"
+              className="w-full h-full object-contain max-h-[85vh] rounded-lg"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
