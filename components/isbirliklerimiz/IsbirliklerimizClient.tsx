@@ -12,26 +12,26 @@ interface Partner {
 }
 
 const partners: Partner[] = [
+  { name: 'Acun Medya', initials: 'AM', logoUrl: '/isbirliklerimiz/Acun-Medya-Logo.png' },
   { name: 'ADENTE Advanced Engineering Technologies', initials: 'AD', logoUrl: '/isbirliklerimiz/ADENTE-Advanced-Engineering-Technologies-logo.png' },
   { name: 'Armelsan', initials: 'AR', logoUrl: '/isbirliklerimiz/Armelsan-logo.png' },
-  { name: 'Bottobo Robotics', initials: 'BO', logoUrl: '/isbirliklerimiz/Bottobo-Robotics-logo.png' },
   { name: 'Bağcılar Belediyesi', initials: 'BB', logoUrl: '/isbirliklerimiz/bagcilar-belediyesi-logo.png' },
-  { name: 'İstanbul Gedik Üniversitesi', initials: 'GÜ', logoUrl: '/isbirliklerimiz/istanbul-gedik-üniversitesi-logo.png' },
+  { name: 'Bottobo Robotics', initials: 'BO', logoUrl: '/isbirliklerimiz/Bottobo-Robotics-logo.png' },
   { name: 'Co Print 3D Printing Technologies', initials: 'CP', logoUrl: '/isbirliklerimiz/Co-Print-logo.png' },
   { name: 'Esenler Belediyesi', initials: 'EB', logoUrl: '/isbirliklerimiz/esenler-belediyesi-logo.png' },
+  { name: 'Etiya', initials: 'ET', logoUrl: '/isbirliklerimiz/Etiya-Logo.png' },
+  { name: 'İstanbul Gedik Üniversitesi', initials: 'GÜ', logoUrl: '/isbirliklerimiz/istanbul-gedik-üniversitesi-logo.png' },
+  { name: 'Kadıköy Belediyesi', initials: 'KB', logoUrl: '/isbirliklerimiz/Kadıköy-Belediyesi-Logo.png' },
+  { name: 'Papara', initials: 'PP', logoUrl: '/isbirliklerimiz/papara-logo.png' },
   { name: 'Pendik Belediyesi', initials: 'PB', logoUrl: '/isbirliklerimiz/pendik-belediyesi-logo.png' },
   { name: 'RISE-X Technology', initials: 'RX', logoUrl: '/isbirliklerimiz/RISE-X-Technology-logo.png' },
   { name: 'Tatlıköy', initials: 'TK', logoUrl: '/isbirliklerimiz/tatlikoy-logo.png' },
   { name: 'Teknopark İstanbul', initials: 'TI', logoUrl: '/isbirliklerimiz/teknopark-istanbul-logo.png' },
   { name: 'Turkcell', initials: 'TC', logoUrl: '/isbirliklerimiz/turkcell-logo.png' },
-  { name: 'Papara', initials: 'PP', logoUrl: '/isbirliklerimiz/papara-logo.png' },
+  { name: 'Ümraniye Belediyesi', initials: 'ÜB', logoUrl: '/isbirliklerimiz/Umraniye-Belediyesi-Logo.png' },
   { name: 'Yalova Organize Sanayi Bölgesi', initials: 'YO', logoUrl: '/isbirliklerimiz/Yalova-Organize-Sanayi-Bolgesi-logo.png' },
   { name: 'Yalova Teknopark', initials: 'YT', logoUrl: '/isbirliklerimiz/yalova-teknopark-logo.png' },
-  { name: 'Ümraniye Belediyesi', initials: 'ÜB', logoUrl: '/isbirliklerimiz/Umraniye-Belediyesi-Logo.png' },
   { name: 'Ziraat Bankası', initials: 'ZB', logoUrl: '/isbirliklerimiz/Ziraat-Bankası-Logo.png' },
-  { name: 'Acun Medya', initials: 'AM', logoUrl: '/isbirliklerimiz/Acun-Medya-Logo.png' },
-  { name: 'Kadıköy Belediyesi', initials: 'KB', logoUrl: '/isbirliklerimiz/Kadıköy-Belediyesi-Logo.png' },
-  { name: 'Etiya', initials: 'ET', logoUrl: '/isbirliklerimiz/Etiya-Logo.png' },
 ];
 
 export function IsbirliklerimizClient({ locale }: { locale: string }) {
