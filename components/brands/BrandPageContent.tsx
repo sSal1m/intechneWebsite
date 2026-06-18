@@ -148,16 +148,16 @@ const brandDetails: Record<
     ],
     tr: {
       nedir: 'Intechne ekosisteminin uygulamalı eğitim üssü olan Intechne Akademi; inovasyon atölyeleri, donanım ve yazılım eğitimleri, maker kampları ve proje odaklı mentorluk programları gibi birçok faaliyete ev sahipliği yaparak gençlerin teorik bilgilerini sahanın gerçekliğiyle harmanlayan yenilikçi bir öğrenme ortamı sunar.',
-      vizyon: 'Temel amaç; çocukları yalnızca teknoloji tüketicisi olmaktan çıkarıp, kendi donanımını üretebilen "Maker" kültürüne sahip yenilikçi bireylere dönüştürmektir.',
-      kapsam: 'Akademi müfredatı, teknolojinin en kritik ve uygulamalı alanlarını kapsar. İlkokul seviyesinde algoritmik düşünce, çarklar/dişliler ve blok kodlama ile başlayan süreç; lisede endüstriyel sensör okuma ve otonom drone dinamiklerine uzanır.',
+      vizyon: 'Temel amaç; çocukları yalnızca teknoloji tüketicisi olmaktan çıkarıp, kendi donanımını üretebilen "Maker" kültürüne sahip yenilikçi bireylere dönüştürmektir. Intechne Akademi, yetenekleri erken yaşta tespit ederek onlara Start-up disiplini aşılamayı ve milli teknoloji hamlesine donanımlı, kriz yönetebilen, ticari vizyona sahip küresel çapta mühendisler kazandırmayı hedefler.',
+      kapsam: 'Akademi müfredatı, teknolojinin en kritik ve uygulamalı alanlarını kapsar. İlkokul seviyesinde algoritmik düşünce, çarklar/dişliler ve blok kodlama ile başlayan süreç; ortaokulda gerçek elektronik kartlar, güvenli lehimleme ve şase mukavemeti tasarımıyla devam eder. Lise seviyesinde ise endüstriyel sensör okuma, otonom drone dinamikleri, yapay zeka tabanlı görüntü işleme ve Business Model Canvas (İş Modeli) gibi tamamen sektörün içinden alanları kapsar.',
       sections: [
         { title: 'Intechne Akademi Nedir?', content: 'Intechne Akademi, geleceğin mühendislerini ve derin teknoloji kurucularını laboratuvarlardan çıkarıp gerçek dünya projeleriyle buluşturmak amacıyla kurulan "A Plus" bir teknoloji ve girişimcilik okuludur. İlkokuldan liseye kadar uzanan eğitim modeliyle Akademi; geleneksel tahta başı ezberini reddeder. Bunun yerine 3D tasarım, lehimleme, sensör entegrasyonu, uç bilişim (Edge-AI) ve girişimcilik gibi yetkinlikleri, öğrencilerin bizzat dokunarak ve hata yaparak öğrendiği haftalık yoğun Bootcamp (Kamp) formatlarıyla sunar.' },
-        { title: 'Intechne Akademi’nin Amacı ve Vizyonu', content: 'Temel amaç; çocukları yalnızca teknoloji tüketicisi olmaktan çıkarıp, kendi donanımını üretebilen "Maker" kültürüne sahip yenilikçi bireylere dönüştürmektir. Intechne Akademi, yetenekleri erken yaşta tespit ederek onlara Start-up disiplini aşılamayı ve milli teknoloji hamlesine donanımlı, kriz yönetebilen, ticari vizyona sahip küresel çapta mühendisler kazandırmayı hedefler.' },
+        { title: "Intechne Akademi'nin Amacı ve Vizyonu", content: 'Temel amaç; çocukları yalnızca teknoloji tüketicisi olmaktan çıkarıp, kendi donanımını üretebilen "Maker" kültürüne sahip yenilikçi bireylere dönüştürmektir. Intechne Akademi, yetenekleri erken yaşta tespit ederek onlara Start-up disiplini aşılamayı ve milli teknoloji hamlesine donanımlı, kriz yönetebilen, ticari vizyona sahip küresel çapta mühendisler kazandırmayı hedefler.' },
         { title: 'Intechne Akademi Hangi Alanları Kapsar?', content: 'Akademi müfredatı, teknolojinin en kritik ve uygulamalı alanlarını kapsar. İlkokul seviyesinde algoritmik düşünce, çarklar/dişliler ve blok kodlama ile başlayan süreç; ortaokulda gerçek elektronik kartlar, güvenli lehimleme ve şase mukavemeti tasarımıyla devam eder. Lise seviyesinde ise endüstriyel sensör okuma, otonom drone dinamikleri, yapay zeka tabanlı görüntü işleme ve Business Model Canvas (İş Modeli) gibi tamamen sektörün içinden alanları kapsar.' },
-        { title: 'Akademi Programları Nelerdir?', content: 'Eğitimler, yaş gruplarının bilişsel ve fiziksel becerilerine göre üç ana programda birleşir:\n• Robocube Kaşifleri (7-10 Yaş): Algoritma mantığı, motorsal beceriler, temel 3D üretim ve bilgisayarsız/blok kodlama üzerine kurulu merak uyandırıcı atölyeler.\n• Arena Mühendisleri (11-14 Yaş): Elektronik lehimleme, mikrodenetleyiciler (Arduino vb.), C/C++ metin kodlama ve Cezeri Robot Ligi simülasyonlarına hazırlık odaklı yoğun teknik eğitimler.\n• Deep-Tech Kurucuları (15-18 Yaş): Raspberry Pi/Jetson kullanımı, Python ile bilgisayarlı görü, drone mekaniği ve laboratuvar projelerini "Pitch Deck" hazırlayarak ticari bir ürüne dönüştürme (Start-up) eğitimleri.' },
+        { title: 'Akademi Programları Nelerdir?', content: 'Eğitimler, yaş gruplarının bilişsel ve fiziksel becerilerine göre üç ana programda birleşir:\n\n- **Robocube Kaşifleri (7-10 Yaş):** Algoritma mantığı, motorsal beceriler, temel 3D üretim ve bilgisayarsız/blok kodlama üzerine kurulu merak uyandırıcı atölyeler.\n- **Arena Mühendisleri (11-14 Yaş):** Elektronik lehimleme, mikrodenetleyiciler (Arduino vb.), C/C++ metin kodlama ve Cezeri Robot Ligi simülasyonlarına hazırlık odaklı yoğun teknik eğitimler.\n- **Deep-Tech Kurucuları (15-18 Yaş):** Raspberry Pi/Jetson kullanımı, Python ile bilgisayarlı görü, drone mekaniği ve laboratuvar projelerini "Pitch Deck" hazırlayarak ticari bir ürüne dönüştürme (Start-up) eğitimleri.' },
         { title: 'Kimler Katılabilir?', content: 'Intechne Akademi, teknolojiye, üretmeye ve donanıma meraklı 7-18 yaş arası tüm öğrencilere açıktır. Bilgi seviyesinden bağımsız olarak, öğrenmeye ve takım çalışmasına yatkın olan her çocuk/genç, kendi yaş grubuna ve yetkinlik seviyesine uygun "Bootcamp" veya uzun dönemli eğitim programlarına dahil olabilir.' },
         { title: 'Başvuru Süreci Nasıl İşler?', content: 'Veliler ve öğrenciler, akademi kayıt takvimini web sitesi ve Instagram hesabı (@intechneakademi) üzerinden takip edebilir. Ön kayıt formunun doldurulmasının ardından, öğrencilerin ilgi alanlarını ve seviyelerini belirlemek amacıyla kısa bir mülakat/oryantasyon süreci gerçekleştirilir. Uygun program belirlendikten sonra aylık/sezonluk atölye kayıtları tamamlanır.' },
-        { title: 'Sunulan Fırsatlar ve Destekler', content: 'Intechne Akademi öğrencileri, yalnızca eğitim almakla kalmaz, Intechne’nin devasa etkinlik ekosisteminin doğrudan bir parçası olurlar. Öğrenciler, Cezeri, Robonex ve Drone Cup arenalarına öncelikli katılım hakkı kazanır. Lise grubu öğrencileri "Demo Day" etkinliklerinde geliştirdikleri projeleri profesyonel jürilere sunarak melek yatırımcı ekosistemiyle erken yaşta tanışır. Başarılı mezunlara, Intechne teknoloji liglerinde staj, asistan eğitmenlik fırsatları ve portfolyolarını güçlendirecek proje doğrulama sertifikaları sunulur.' }
+        { title: 'Sunulan Fırsatlar ve Destekler', content: 'Intechne Akademi öğrencileri, yalnızca eğitim almakla kalmaz, Intechne\'nin devasa etkinlik ekosisteminin doğrudan bir parçası olurlar. Öğrenciler, Cezeri, Robonex ve Drone Cup arenalarına öncelikli katılım hakkı kazanır. Lise grubu öğrencileri "Demo Day" etkinliklerinde geliştirdikleri projeleri profesyonel jürilere sunarak melek yatırımcı ekosistemiyle erken yaşta tanışır. Başarılı mezunlara, Intechne teknoloji liglerinde staj, asistan eğitmenlik fırsatları ve portfolyolarını güçlendirecek proje doğrulama sertifikaları sunulur.' }
       ]
     },
     en: {
@@ -168,7 +168,7 @@ const brandDetails: Record<
         { title: 'What is Intechne Academy?', content: 'Intechne Academy is an "A Plus" technology and entrepreneurship school established to bring future engineers and deep-tech founders out of labs and meet them with real-world projects. With a curriculum spanning from primary to high school, the Academy rejects traditional chalkboard memorization. Instead, it offers competencies like 3D design, soldering, sensor integration, Edge-AI, and entrepreneurship in weekly intensive Bootcamp formats where students learn by touching and making mistakes.' },
         { title: 'Purpose and Vision of Intechne Academy', content: 'The primary goal is to turn children from just being technology consumers into innovative individuals with a "Maker" culture who can produce their own hardware. Intechne Academy aims to identify talents at an early age, instill a startup discipline, and supply the national technology move with equipped global engineers who can manage crises and have commercial vision.' },
         { title: 'What Fields Does Intechne Academy Cover?', content: 'The academy curriculum covers the most critical and applied areas of technology. The process begins with algorithmic thinking, gears/wheels, and block coding at the primary school level, continuing in middle school with real electronic cards, safe soldering, and chassis durability design. At the high school level, it covers industrial sensor reading, autonomous drone dynamics, computer vision, and business model canvas directly from the industry.' },
-        { title: 'What are the Academy Programs?', content: 'Education is combined under three main programs based on the cognitive and physical skills of age groups:\n• Robocube Explorers (Ages 7-10): Curiosity-inducing workshops built on algorithm logic, motor skills, basic 3D production, and computerless/block coding.\n• Arena Engineers (Ages 11-14): Intensive technical training focusing on electronic soldering, microcontrollers (Arduino, etc.), C/C++ text coding, and preparation for Cezeri Robot League simulations.\n• Deep-Tech Founders (Ages 15-18): Training on Raspberry Pi/Jetson usage, computer vision with Python, drone mechanics, and transforming laboratory projects into commercial products (Startups) by preparing a "Pitch Deck".' },
+        { title: 'What are the Academy Programs?', content: 'Education is combined under three main programs based on the cognitive and physical skills of age groups:\n• **Robocube Explorers (Ages 7-10):** Curiosity-inducing workshops built on algorithm logic, motor skills, basic 3D production, and computerless/block coding.\n• **Arena Engineers (Ages 11-14):** Intensive technical training focusing on electronic soldering, microcontrollers (Arduino, etc.), C/C++ text coding, and preparation for Cezeri Robot League simulations.\n• **Deep-Tech Founders (Ages 15-18):** Training on Raspberry Pi/Jetson usage, computer vision with Python, drone mechanics, and transforming laboratory projects into commercial products (Startups) by preparing a "Pitch Deck".' },
         { title: 'Who Can Participate?', content: 'Intechne Academy is open to all students between the ages of 7-18 who are interested in technology, producing, and hardware. Independent of their prior knowledge level, any child or youth prone to learning and teamwork can be included in Bootcamps or long-term training programs suitable for their age and competence level.' },
         { title: 'How Does the Application Process Work?', content: 'Parents and students can follow the academy registration calendar on the website and Instagram account (@intechneakademi). After filling out the pre-registration form, a short interview/orientation process is conducted to determine the interests and levels of the students. Once the appropriate program is determined, monthly/seasonal workshop registrations are completed.' },
         { title: 'Opportunities and Supports Offered', content: 'Intechne Academy students not only receive training but also become direct parts of Intechne\'s massive event ecosystem. Students gain priority participation rights in Cezeri, Robonex, and Drone Cup arenas. High school students present their developed projects to professional juries during "Demo Day" events and meet the angel investor ecosystem at an early age. Successful graduates are offered internships in Intechne technology leagues, assistant instructor opportunities, and project validation certificates to strengthen their portfolios.' }
@@ -299,11 +299,54 @@ const brandDetails: Record<
   }
 };
 
+function renderContent(text: string): React.ReactNode {
+  const lines = text.split('\n');
+
+  const parseInline = (str: string) => {
+    const parts = str.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={index} className="font-extrabold text-slate-900">{part.slice(2, -2)}</strong>;
+      }
+      if (part.startsWith('*') && part.endsWith('*')) {
+        return <strong key={index} className="font-extrabold text-slate-900">{part.slice(1, -1)}</strong>;
+      }
+      return part;
+    });
+  };
+
+  return (
+    <div className="space-y-3">
+      {lines.map((line, idx) => {
+        const trimmed = line.trim();
+        if (!trimmed) return null;
+
+        if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
+          const content = trimmed.replace(/^[-•]\s*/, '');
+          return (
+            <ul key={idx} className="list-disc pl-5 my-1 text-sm md:text-base text-slate-600">
+              <li className="leading-relaxed">
+                {parseInline(content)}
+              </li>
+            </ul>
+          );
+        }
+
+        return (
+          <p key={idx} className="text-sm md:text-base leading-relaxed text-justify text-slate-650">
+            {parseInline(line)}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 export function BrandPageContent({ slug, locale }: BrandPageContentProps) {
   const isEn = locale === 'en';
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  
+
   const brand = useMemo(() => {
     return brands.find((b) => b.slug === slug);
   }, [slug]);
@@ -327,14 +370,14 @@ export function BrandPageContent({ slug, locale }: BrandPageContentProps) {
   return (
     <div className="space-y-8 lg:space-y-12">
       {/* 1. Main visual banner placeholder / Logo showcase */}
-      <div 
+      <div
         className="w-full h-[262px] rounded-2xl relative overflow-hidden flex flex-col justify-center items-center text-white px-6 shadow-sm border border-slate-100"
         style={{
           backgroundColor: accentColor
         }}
       >
 
-        
+
         {brand.logoUrl ? (
           <img
             src={brand.logoUrl}
@@ -354,7 +397,7 @@ export function BrandPageContent({ slug, locale }: BrandPageContentProps) {
 
       {/* 2. Dynamic statistics bar / Status message */}
       {((brand.stats && brand.stats.length > 0) || activeDetails.statusMessage) && (
-        <div 
+        <div
           className="rounded-2xl py-6 px-4 md:px-8 text-white shadow-md relative overflow-hidden flex items-center justify-center bg-cover bg-no-repeat bg-center min-h-[92px]"
           style={{
             backgroundColor: accentColor
@@ -396,9 +439,9 @@ export function BrandPageContent({ slug, locale }: BrandPageContentProps) {
               <h3 className="text-lg md:text-xl font-black text-slate-800" style={{ color: accentColor }}>
                 {section.title}
               </h3>
-              <p className="text-sm md:text-base leading-relaxed text-justify text-slate-600">
-                {section.content}
-              </p>
+              <div className="text-sm md:text-base leading-relaxed text-slate-600">
+                {renderContent(section.content)}
+              </div>
             </div>
           ))}
         </div>
@@ -427,12 +470,12 @@ export function BrandPageContent({ slug, locale }: BrandPageContentProps) {
         <h3 className="text-lg md:text-xl font-black text-slate-800" style={{ color: accentColor }}>
           {isEn ? 'Photo Gallery' : 'Fotoğraf Galerisi'}
         </h3>
-        
+
         {/* Gallery Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {details.gallery && details.gallery.length > 0 ? (
             details.gallery.map((imgUrl, val) => (
-              <div 
+              <div
                 key={val}
                 onClick={() => setSelectedImage(imgUrl)}
                 className="h-48 rounded-2xl relative overflow-hidden bg-slate-100 border border-slate-200/60 group cursor-pointer shadow-sm hover:shadow-md transition-all duration-300"
@@ -447,7 +490,7 @@ export function BrandPageContent({ slug, locale }: BrandPageContentProps) {
             ))
           ) : (
             [1, 2, 3].map((val) => (
-              <div 
+              <div
                 key={val}
                 className="h-48 rounded-2xl relative overflow-hidden bg-slate-100 border border-slate-200/60 flex items-center justify-center group cursor-default shadow-sm hover:shadow-md transition-shadow duration-300"
               >
@@ -461,17 +504,17 @@ export function BrandPageContent({ slug, locale }: BrandPageContentProps) {
 
       {/* Lightbox Modal */}
       {selectedImage && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[999] flex items-center justify-center p-4 transition-all duration-300"
           onClick={() => setSelectedImage(null)}
         >
-          <button 
+          <button
             className="absolute top-6 right-6 text-white hover:text-slate-300 bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors duration-200"
             onClick={() => setSelectedImage(null)}
           >
             <X className="w-8 h-8" />
           </button>
-          <div 
+          <div
             className="relative max-w-5xl max-h-[90vh] overflow-hidden rounded-xl shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
