@@ -10,7 +10,7 @@ export function NewsCard({ news }: { news: NewsItem }) {
 
   return (
     <article className="bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group overflow-hidden">
-      <figure className="w-full h-[200px] overflow-hidden relative">
+      <figure className="w-full aspect-[4/3] overflow-hidden relative">
         <Link href={news.href as any} className="block w-full h-full">
           <div className="absolute inset-0 bg-[#15a3b0]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
           {hasImage ? (
