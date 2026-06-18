@@ -17,7 +17,7 @@ export function NewsCard({ item, variant, className }: NewsCardProps) {
   if (variant === 'featured') {
     return (
       <div className={cn('bg-white rounded-2xl overflow-hidden h-full flex flex-col', className)}>
-        <div className="relative aspect-[16/10] overflow-hidden">
+        <div className="relative aspect-[4/3] overflow-hidden">
           {item.tag && (
             <span className="absolute top-4 left-4 z-10 bg-brand-yellow text-brand-dark text-xs font-bold px-3 py-1.5 rounded-md">
               {item.tag}
@@ -52,7 +52,7 @@ export function NewsCard({ item, variant, className }: NewsCardProps) {
 
   return (
     <div className={cn('bg-white rounded-2xl overflow-hidden flex flex-col', className)}>
-      <div className="relative aspect-video overflow-hidden">
+      <div className="relative aspect-[4/3] overflow-hidden">
         {imageUrl ? (
           <img src={imageUrl} alt={item.title} className="w-full h-full object-cover" />
         ) : (
