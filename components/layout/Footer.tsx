@@ -93,7 +93,7 @@ export function Footer({ locale }: FooterProps) {
             <div className="space-y-3">
               <p className="text-white/70 text-sm leading-relaxed">
                 <strong className="text-white">{isEn ? 'Address' : 'Adres'}:</strong>{' '}
-                Ünalan Mahallesi Ünalan Caddesi No:1 İç Kapı:1 Üsküdar, 34906 Pendik/İstanbul
+                Ünalan Mahallesi Ünalan Caddesi No:1 İç Kapı:1 Üsküdar, 34906 Üsküdar/İstanbul
               </p>
               <p className="text-white/70 text-sm lg:text-xs xl:text-sm">
                 <strong className="text-white">Email:</strong>{' '}
