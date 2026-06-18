@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link } from '@/src/i18n/navigation';
 import { getNewsById } from '@/src/actions/news';
 
@@ -10,7 +11,52 @@ interface PageProps {
   params: Promise<{ locale: string; id: string }>;
 }
 
+function renderInlineMarkdown(text: string): React.ReactNode[] {
+  const regex = /(\*.*?\*|_.*?_)/g;
+  const parts = text.split(regex);
 
+  return parts.map((part, index) => {
+    if (part.startsWith('*') && part.endsWith('*')) {
+      return <strong key={index} className="font-extrabold text-slate-900">{part.slice(1, -1)}</strong>;
+    } else if (part.startsWith('_') && part.endsWith('_')) {
+      return <em key={index} className="italic text-slate-800">{part.slice(1, -1)}</em>;
+    }
+    return part;
+  });
+}
+
+function parseTextWithMarkdown(text: string, key: number) {
+  const lines = text.split('\n');
+  const isBulletList = lines.length > 0 && lines.every(line => {
+    const trimmed = line.trim();
+    return trimmed === '' || trimmed.startsWith('- ') || trimmed.startsWith('* ');
+  });
+
+  if (isBulletList) {
+    return (
+      <ul key={key} className="list-disc pl-6 mb-6 space-y-2 text-slate-650 text-lg font-medium">
+        {lines.map((line, lIdx) => {
+          const trimmed = line.trim();
+          if (trimmed === '') return null;
+          // Support both "- " and "* " prefixes
+          const prefixLength = trimmed.startsWith('- ') || trimmed.startsWith('* ') ? 2 : 0;
+          const content = trimmed.substring(prefixLength);
+          return (
+            <li key={lIdx} className="leading-relaxed">
+              {renderInlineMarkdown(content)}
+            </li>
+          );
+        })}
+      </ul>
+    );
+  }
+
+  return (
+    <p key={key} className="text-slate-600 leading-relaxed text-lg font-medium mb-6 whitespace-pre-line">
+      {renderInlineMarkdown(text)}
+    </p>
+  );
+}
 
 export default async function HaberDetailPage({ params }: PageProps) {
   const { locale, id } = await params;
@@ -155,12 +201,8 @@ export default async function HaberDetailPage({ params }: PageProps) {
               );
             }
 
-            // Default text rendering
-            return (
-              <p key={idx} className="text-slate-600 leading-relaxed text-lg font-medium mb-6 whitespace-pre-line">
-                {paragraph}
-              </p>
-            );
+            // Default text rendering with markdown support
+            return parseTextWithMarkdown(paragraph, idx);
           })}
         </article>
       </div>

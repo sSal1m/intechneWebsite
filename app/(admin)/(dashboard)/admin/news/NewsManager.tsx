@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useRef } from 'react';
 import { createNews, updateNews, deleteNews } from '@/src/actions/news';
-import { Trash2, Edit, Plus, X, Upload, FileText, Search, ExternalLink } from 'lucide-react';
+import { Trash2, Edit, Plus, X, Upload, FileText, Search, ExternalLink, Bold, Italic, List } from 'lucide-react';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 interface NewsItem {
@@ -52,7 +52,49 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
   const [excerptEn, setExcerptEn] = useState('');
   const [contentTr, setContentTr] = useState('');
   const [contentEn, setContentEn] = useState('');
-  const [tag, setTag] = useState('');
+
+  const contentTrRef = useRef<HTMLTextAreaElement>(null);
+  const contentEnRef = useRef<HTMLTextAreaElement>(null);
+
+  function insertFormatting(
+    textareaRef: React.RefObject<HTMLTextAreaElement | null>,
+    type: 'bold' | 'italic' | 'bullet',
+    value: string,
+    setValue: (val: string) => void
+  ) {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const selectedText = text.substring(start, end);
+
+    let replacement = '';
+    if (type === 'bold') {
+      replacement = `*${selectedText || 'kalın yazılı metin'}*`;
+    } else if (type === 'italic') {
+      replacement = `_${selectedText || 'italik yazılı metin'}_`;
+    } else if (type === 'bullet') {
+      if (selectedText.includes('\n')) {
+        replacement = selectedText
+          .split('\n')
+          .map((line) => (line.trim().startsWith('- ') || line.trim().startsWith('* ') ? line : `- ${line}`))
+          .join('\n');
+      } else {
+        replacement = `\n- ${selectedText || 'madde işareti'}`;
+      }
+    }
+
+    const newValue = text.substring(0, start) + replacement + text.substring(end);
+    setValue(newValue);
+
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start, start + replacement.length);
+    }, 0);
+  }
+
   const [categorySlug, setCategorySlug] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [publishedAt, setPublishedAt] = useState('');
@@ -69,7 +111,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
     setExcerptEn('');
     setContentTr('');
     setContentEn('');
-    setTag('');
+
     setCategorySlug(categories[0]?.slug || '');
     setImageUrl('');
     setInContentMediaUrl('');
@@ -88,7 +130,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
     setExcerptEn(news.excerpt_en);
     setContentTr(news.content_tr);
     setContentEn(news.content_en);
-    setTag(news.tag || '');
+
     setCategorySlug(news.category_slug || '');
     setImageUrl(news.image_url || '');
     setInContentMediaUrl('');
@@ -160,6 +202,10 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
     e.preventDefault();
 
     startTransition(async () => {
+      // Derive tag from selected category name
+      const selectedCategory = categories.find(c => c.slug === categorySlug);
+      const derivedTag = selectedCategory ? selectedCategory.name_tr : '';
+
       const payload = {
         title_tr: titleTr,
         title_en: titleEn,
@@ -167,7 +213,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
         excerpt_en: excerptEn,
         content_tr: contentTr,
         content_en: contentEn,
-        tag,
+        tag: derivedTag,
         category_slug: categorySlug || undefined,
         image_url: imageUrl,
         published_at: new Date(publishedAt).toISOString(),
@@ -280,10 +326,10 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
                 <FileText className="w-10 h-10 text-slate-800" />
               )}
 
-              {/* Tag overlay */}
-              {news.tag && (
+              {/* Category badge overlay */}
+              {news.category_slug && (
                 <span className="absolute top-3 left-3 bg-primary text-slate-950 font-bold text-[9px] px-2 py-0.5 rounded-md uppercase tracking-wider">
-                  {news.tag}
+                  {categories.find((c) => c.slug === news.category_slug)?.name_tr || news.tag}
                 </span>
               )}
             </div>
@@ -405,24 +451,78 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
                 {/* TR / EN Main Rich Content */}
                 <div className="flex flex-col gap-1.5 col-span-2">
                   <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Haber Detay İçeriği (TR)</label>
+                  <div className="flex gap-1 bg-slate-950 border border-slate-800 border-b-0 rounded-t-xl px-3 py-1.5 items-center">
+                    <button
+                      type="button"
+                      onClick={() => insertFormatting(contentTrRef, 'bold', contentTr, setContentTr)}
+                      className="p-1.5 hover:bg-slate-900 rounded text-slate-400 hover:text-white transition-colors"
+                      title="Kalın (Bold)"
+                    >
+                      <Bold className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertFormatting(contentTrRef, 'italic', contentTr, setContentTr)}
+                      className="p-1.5 hover:bg-slate-900 rounded text-slate-400 hover:text-white transition-colors"
+                      title="İtalik (Italic)"
+                    >
+                      <Italic className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertFormatting(contentTrRef, 'bullet', contentTr, setContentTr)}
+                      className="p-1.5 hover:bg-slate-900 rounded text-slate-400 hover:text-white transition-colors"
+                      title="Madde İşareti (Bullet List)"
+                    >
+                      <List className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                   <textarea
+                    ref={contentTrRef}
                     required
-                    rows={5}
+                    rows={6}
                     value={contentTr}
                     onChange={(e) => setContentTr(e.target.value)}
                     placeholder="Haberin ana detay içeriği..."
-                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full font-mono text-xs"
+                    className="bg-slate-950 border border-slate-800 text-white rounded-b-xl rounded-t-none border-t-0 px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full font-sans text-sm"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5 col-span-2">
                   <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Haber Detay İçeriği (EN)</label>
+                  <div className="flex gap-1 bg-slate-950 border border-slate-800 border-b-0 rounded-t-xl px-3 py-1.5 items-center">
+                    <button
+                      type="button"
+                      onClick={() => insertFormatting(contentEnRef, 'bold', contentEn, setContentEn)}
+                      className="p-1.5 hover:bg-slate-900 rounded text-slate-400 hover:text-white transition-colors"
+                      title="Bold (Kalın)"
+                    >
+                      <Bold className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertFormatting(contentEnRef, 'italic', contentEn, setContentEn)}
+                      className="p-1.5 hover:bg-slate-900 rounded text-slate-400 hover:text-white transition-colors"
+                      title="Italic (İtalik)"
+                    >
+                      <Italic className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertFormatting(contentEnRef, 'bullet', contentEn, setContentEn)}
+                      className="p-1.5 hover:bg-slate-900 rounded text-slate-400 hover:text-white transition-colors"
+                      title="Bullet List (Madde İşareti)"
+                    >
+                      <List className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                   <textarea
+                    ref={contentEnRef}
                     required
-                    rows={5}
+                    rows={6}
                     value={contentEn}
                     onChange={(e) => setContentEn(e.target.value)}
                     placeholder="Main content details in English..."
-                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full font-mono text-xs"
+                    className="bg-slate-950 border border-slate-800 text-white rounded-b-xl rounded-t-none border-t-0 px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full font-sans text-sm"
                   />
                 </div>
 
@@ -502,21 +602,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
                   </select>
                 </div>
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Haber Etiketi / Badge</label>
-                  <select
-                    value={tag}
-                    onChange={(e) => setTag(e.target.value)}
-                    className="bg-slate-950 border border-slate-800 text-slate-300 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
-                  >
-                    <option value="">Seçiniz (Opsiyonel)</option>
-                    <option value="Öne Çıkan">Öne Çıkan</option>
-                    <option value="Duyuru">Duyuru</option>
-                    <option value="Akademi">Akademi</option>
-                    <option value="Robotik">Robotik</option>
-                    <option value="Festival">Festival</option>
-                  </select>
-                </div>
+
 
                 <div className="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
                   <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Yayın Tarihi</label>

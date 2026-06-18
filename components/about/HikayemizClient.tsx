@@ -50,7 +50,7 @@ const timelineEvents: TimelineEvent[] = [
     year: '2026',
     titleTr: 'Ürün, Ekosistem, Büyüme',
     titleEn: 'Product, Ecosystem, Growth',
-    descTr: 'The ARENO project, developed to automate refereeing processes in robotics competitions, entered the R&D phase. The VEX Robotics Türkiye Championship was successfully organized, further expanding the national robotics ecosystem.',
+    descTr: 'Gedik Holding GearUP yatırımı tamamlandı. ARENO ve TechApp ürünleri piyasaya hazırlık aşamasına geldi. Intechne bugün; aktif robotik ligleri, iki özgün teknoloji ürünü ve genişleyen kurumsal ortaklıklarıyla büyümeye devam ediyor.',
     descEn: 'The ARENO project, developed to automate refereeing processes in robotics competitions, entered the R&D phase. The VEX Robotics Türkiye Championship was organized, marking another significant milestone in the growth of the national robotics ecosystem.'
   }
 ];

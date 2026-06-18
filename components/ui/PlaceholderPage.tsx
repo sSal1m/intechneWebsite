@@ -1,4 +1,3 @@
-import { Link } from '@/src/i18n/navigation';
 import { cn } from '@/src/lib/utils';
 
 interface PlaceholderPageProps {
@@ -27,12 +26,6 @@ export function PlaceholderPage({ title, locale, className }: PlaceholderPagePro
         <p className="text-slate-400 mb-8 text-sm">
           {isEn ? 'Content is being prepared...' : 'İçerik hazırlanıyor...'}
         </p>
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full font-semibold text-sm hover:bg-primary-dark transition-colors"
-        >
-          {isEn ? '← Return to Homepage' : '← Ana Sayfaya Dön'}
-        </Link>
       </div>
     </div>
   );
