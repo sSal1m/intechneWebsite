@@ -15,6 +15,7 @@ export function ContactForm() {
     subject: '',
     message: '',
     kvkk: false,
+    hp_field: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,6 +32,7 @@ export function ContactForm() {
         subject: formData.subject,
         message: formData.message,
         kvkk_approved: formData.kvkk,
+        hp_field: formData.hp_field,
       });
 
       if (res.success) {
@@ -41,6 +43,7 @@ export function ContactForm() {
           subject: '',
           message: '',
           kvkk: false,
+          hp_field: '',
         });
         setTimeout(() => setIsSubmitted(false), 5000);
       } else {
@@ -79,6 +82,17 @@ export function ContactForm() {
                 {error}
               </div>
             )}
+            
+            {/* Honeypot field for spam prevention */}
+            <input
+              type="text"
+              name="hp_field"
+              value={formData.hp_field}
+              onChange={(e) => setFormData({ ...formData, hp_field: e.target.value })}
+              className="opacity-0 absolute pointer-events-none"
+              tabIndex={-1}
+              autoComplete="off"
+            />
             
             <input
               type="text"
