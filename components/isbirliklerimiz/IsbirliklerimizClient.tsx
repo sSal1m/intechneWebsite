@@ -75,7 +75,7 @@ export function IsbirliklerimizClient({ locale }: { locale: string }) {
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4.5 h-4.5" />
             <input
               type="text"
-              placeholder={isEn ? 'Search partners...' : 'İş ortaklarında ara...'}
+              placeholder={isEn ? 'Search partners...' : 'İş birliklerinde ara'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 rounded-full bg-white border border-transparent text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#15a3b0] transition-all duration-200 text-sm font-semibold shadow-sm"
