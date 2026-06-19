@@ -73,17 +73,14 @@ export function Header({ locale }: HeaderProps) {
               <LanguageSwitcher />
             </div>
 
-            {/* Mobile Hamburger & Lang */}
-            <div className="lg:hidden flex items-center gap-x-2">
-              <LanguageSwitcher />
-              <button
-                onClick={() => setMobileOpen(true)}
-                className="p-2 rounded-lg text-white hover:bg-white/10 transition-colors"
-                aria-label="Menüyü aç"
-              >
-                <Menu className="w-6 h-6" />
-              </button>
-            </div>
+            {/* Mobile Hamburger */}
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="lg:hidden p-2 rounded-lg text-white hover:bg-white/10 transition-colors"
+              aria-label="Menüyü aç"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
           </div>
         </div>
       </header>

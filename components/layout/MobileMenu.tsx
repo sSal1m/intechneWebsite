@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { isNavDropdown, type NavigationConfig } from '@/src/types/navigation.types';
 import { cn } from '@/src/lib/utils';
 import { Link } from '@/src/i18n/navigation';
+import { LanguageSwitcher } from '@/components/navigation/LanguageSwitcher';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -130,6 +131,11 @@ export function MobileMenu({ isOpen, onClose, navigation, locale }: MobileMenuPr
                     {btn.label}
                   </a>
                 ))}
+              </div>
+
+              {/* Language Switcher */}
+              <div className="mt-8 pt-6 border-t border-white/10 flex justify-center">
+                <LanguageSwitcher />
               </div>
             </div>
           </motion.div>
