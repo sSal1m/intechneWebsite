@@ -13,7 +13,8 @@ import {
   LogOut,
   FolderArchive,
   TrendingUp,
-  Trash2
+  Trash2,
+  Cpu
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -56,6 +57,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const menuItems = [
     { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { label: 'Slayt', href: '/admin/sliders', icon: Sliders },
+    { label: 'Marka Sayfaları', href: '/admin/brands', icon: Cpu },
     { label: 'İstatistik', href: '/admin/stats', icon: TrendingUp },
     { label: 'Haber', href: '/admin/news', icon: FileText },
     { label: 'Ekip', href: '/admin/team', icon: Users },

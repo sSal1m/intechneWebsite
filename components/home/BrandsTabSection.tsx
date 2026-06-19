@@ -1,60 +1,14 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { brands } from '@/src/data/brands';
 import { Link } from '@/src/i18n/navigation';
+import { createClient } from '@/src/utils/supabase/client';
 
 interface BrandsTabSectionProps {
   locale: string;
 }
-
-const statLabelTranslations: Record<string, string> = {
-  'Paydaş Kurum': 'Partner Institution',
-  'Yarışma': 'Competition',
-  'Parametre': 'Parameter',
-  'Kuruluş': 'Foundation',
-  'Yerli': 'Local',
-  'Atölye': 'Workshop',
-  'İl': 'Province',
-  'Öğrenci': 'Student',
-  'Merkez': 'Center',
-  'Ziyaretçi': 'Visitor',
-  'Girişim': 'Startup',
-  'Mentor': 'Mentor',
-  'Yıl': 'Year',
-  'Makale': 'Article',
-  'Editör': 'Editor',
-  'Başlangıç': 'Start',
-  'Dağıtılan Kart': 'Distributed Cards',
-  'Piyasaya Çıkış': 'Release Year',
-  'Yerli Üretim': 'Local Production',
-  'Okuyucu': 'Reader',
-  'Kuruluş Yılı': 'Foundation Year',
-  'Burslu Öğrenci': 'Scholarship Student',
-  'Üniversite': 'University',
-  'Desteklenen Takım': 'Supported Team',
-  'Destek Miktarı': 'Support Amount',
-  'şehir': 'Cities',
-  'Yarışmacı': 'Competitors',
-  'Etkinlik': 'Events',
-  'Katılımcı': 'Participants',
-  'Pilot': 'Pilots',
-  'Turnuva': 'Tournaments',
-  'Geliştirici': 'Developers',
-  'Game Jam': 'Game Jams',
-  'Kodlama': 'Coding',
-};
-
-const statValueTranslations: Record<string, string> = {
-  '9. Yıl': '9th Year',
-  '3. Yıl': '3rd Year',
-  '1. Yıl': '1st Year',
-  '4. Yıl': '4th Year',
-  '5. Yıl': '5th Year',
-  '5+ Yıl': '5+ Years',
-  '24 Saat': '24 Hours',
-};
 
 const brandTranslationsEn: Record<string, { name: string; shortDescription: string }> = {
   'cezeri-robot-ligi': {
@@ -95,7 +49,25 @@ export function BrandsTabSection({ locale }: BrandsTabSectionProps) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [hoveredLink, setHoveredLink] = useState(false);
+  const [dbBrandsData, setDbBrandsData] = useState<any[]>([]);
   const isEn = locale === 'en';
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const supabase = createClient();
+        const { data } = await supabase
+          .from('brand_pages')
+          .select('slug, stats, status_message_tr, status_message_en');
+        if (data) {
+          setDbBrandsData(data);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    loadData();
+  }, []);
 
   function handleTabClick(idx: number) {
     setActiveIdx(idx);
@@ -105,6 +77,12 @@ export function BrandsTabSection({ locale }: BrandsTabSectionProps) {
   const activeTranslation = brandTranslationsEn[active.slug];
   const activeName = isEn ? (activeTranslation?.name || active.name) : active.name;
   const activeDesc = isEn ? (activeTranslation?.shortDescription || active.shortDescription) : active.shortDescription;
+
+  // Retrieve dynamic statistics or status message from Database
+  const dbBrand = dbBrandsData.find((b) => b.slug === active.slug);
+  const activeStats = dbBrand ? dbBrand.stats : active.stats;
+  const statusMessage = dbBrand ? (isEn ? dbBrand.status_message_en : dbBrand.status_message_tr) : null;
+  const hasStats = activeStats && activeStats.length > 0;
 
   return (
     <section 
@@ -190,8 +168,8 @@ export function BrandsTabSection({ locale }: BrandsTabSectionProps) {
                   </Link>
                 </div>
 
-                {/* Image + Stats */}
-                <div className="relative flex justify-center items-center">
+                {/* Image + Stats / Status Message */}
+                <div className="relative flex flex-col items-center justify-center">
                   <div className="w-[220px] h-[220px] md:w-[280px] md:h-[280px] bg-white/20 rounded-[40%_60%_60%_40%/60%_40%_60%_40%] flex items-center justify-center">
                     <div className="w-[90%] h-[90%] bg-white/10 rounded-full flex items-center justify-center overflow-hidden">
                       {active.logoUrl ? (
@@ -206,23 +184,35 @@ export function BrandsTabSection({ locale }: BrandsTabSectionProps) {
                     </div>
                   </div>
 
-                  {/* Stat badges */}
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col gap-2">
-                    {active.stats.map((stat: { value: string; label: string }, sIdx: number) => {
-                      const displayLabel = isEn ? (statLabelTranslations[stat.label] || stat.label) : stat.label;
-                      return (
-                        <div key={sIdx} className="bg-white rounded-xl shadow-md px-4 py-2 text-right min-w-[100px]">
-                          <p 
-                            style={{ color: active.accentColor }}
-                            className="font-black text-base leading-none"
-                          >
-                            {isEn ? (statValueTranslations[stat.value] || stat.value) : stat.value}
-                          </p>
-                          {stat.label && <p className="text-slate-500 text-xs mt-0.5">{displayLabel}</p>}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  {/* Status message placed below the logo area if stats are empty */}
+                  {!hasStats && statusMessage && (
+                    <div className="mt-4 bg-white/20 backdrop-blur-sm rounded-xl px-5 py-2.5 text-center max-w-[240px]">
+                      <p className="text-white font-black text-xs md:text-sm leading-snug uppercase select-none">
+                        {statusMessage}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Stat badges (positioned absolutely on the right) */}
+                  {hasStats && (
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col gap-2">
+                      {activeStats.map((stat: any, sIdx: number) => {
+                        const displayLabel = isEn ? (stat.labelEn || stat.label) : (stat.label || stat.labelEn);
+                        const displayValue = isEn ? (stat.valueEn || stat.value) : (stat.value || stat.valueEn);
+                        return (
+                          <div key={sIdx} className="bg-white rounded-xl shadow-md px-4 py-2 text-right min-w-[100px]">
+                            <p 
+                              style={{ color: active.accentColor }}
+                              className="font-black text-base leading-none"
+                            >
+                              {displayValue}
+                            </p>
+                            {displayLabel && <p className="text-slate-500 text-xs mt-0.5">{displayLabel}</p>}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </motion.div>
             </AnimatePresence>
