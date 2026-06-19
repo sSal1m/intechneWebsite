@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, BookOpen, MonitorPlay, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, BookOpen, MonitorPlay, FileText, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { Link } from '@/src/i18n/navigation';
 import { InteractiveSidebar } from './InteractiveSidebar';
 
@@ -17,6 +17,7 @@ interface InteractiveItem {
   fileUrl?: string;
   videoUrl?: string;
   createdAt?: string;
+  date?: string;
 }
 
 interface InteractiveGridProps {
@@ -68,6 +69,13 @@ export function InteractiveGrid({
           fileUrl: item.file_url,
           videoUrl: item.video_url,
           createdAt: item.created_at ? item.created_at.split('T')[0] : '',
+          date: item.created_at
+            ? new Date(item.created_at).toLocaleDateString(isEn ? 'en-US' : 'tr-TR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })
+            : '',
         };
       })
     : [];
@@ -165,33 +173,33 @@ export function InteractiveGrid({
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
                 {paginatedItems.map((item) => {
                   return (
                     <Link
                       key={item.id}
                       href={{ pathname: '/interaktif/[id]' as any, params: { id: String(item.id) } }}
-                      className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col group cursor-pointer"
+                      className="bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group overflow-hidden cursor-pointer"
                     >
-                      <div className="h-48 md:h-64 bg-slate-100 flex items-center justify-center relative overflow-hidden">
-                        {/* Fallback pattern background */}
-                        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#15a3b0_1px,transparent_1px)] [background-size:16px_16px]" />
-
+                      <figure className="w-full aspect-[4/3] overflow-hidden relative">
+                        <div className="absolute inset-0 bg-[#15a3b0]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
                         {item.imageUrl ? (
                           <img
                             src={item.imageUrl}
                             alt={isEn ? item.titleEn : item.title}
-                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            loading="lazy"
                           />
                         ) : (
-                          <>
-                            {item.type === 'report' && <FileText className="w-20 h-20 text-[#15a3b0]/40 group-hover:scale-110 transition-transform duration-500" />}
-                            {item.type === 'video' && <MonitorPlay className="w-20 h-20 text-[#15a3b0]/40 group-hover:scale-110 transition-transform duration-500" />}
-                            {item.type === 'interactive' && <BookOpen className="w-20 h-20 text-[#15a3b0]/40 group-hover:scale-110 transition-transform duration-500" />}
-                          </>
+                          <div className="w-full h-full bg-gradient-to-br from-slate-50 to-slate-100 border-b border-slate-100 flex items-center justify-center relative overflow-hidden select-none">
+                            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#15a3b0_1px,transparent_1px)] [background-size:16px_16px]" />
+                            {item.type === 'report' && <FileText className="w-16 h-16 text-[#15a3b0]/40 group-hover:scale-110 transition-transform duration-500 relative z-20" />}
+                            {item.type === 'video' && <MonitorPlay className="w-16 h-16 text-[#15a3b0]/40 group-hover:scale-110 transition-transform duration-500 relative z-20" />}
+                            {item.type === 'interactive' && <BookOpen className="w-16 h-16 text-[#15a3b0]/40 group-hover:scale-110 transition-transform duration-500 relative z-20" />}
+                          </div>
                         )}
 
-                        <span className="absolute top-4 left-4 bg-white/90 backdrop-blur text-[#15a3b0] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
+                        <span className="absolute top-4 left-4 bg-white/90 backdrop-blur text-[#15a3b0] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm z-20">
                           {isEn
                             ? (item.categoryEn || item.category)
                             : (item.category === 'projeler'
@@ -204,19 +212,30 @@ export function InteractiveGrid({
                               ? 'İnteraktif'
                               : item.category)}
                         </span>
-                      </div>
+                      </figure>
 
-                      <div className="p-8 flex flex-col flex-1">
-                        <h3 className="text-2xl font-bold text-brand-navy mb-4 group-hover:text-[#15a3b0] transition-colors">
-                          {isEn ? item.titleEn : item.title}
-                        </h3>
-                        <p className="text-slate-600 leading-relaxed mb-8 flex-1">
+                      <div className="flex flex-col flex-1 p-6">
+                        {item.date && (
+                          <div className="text-slate-400 text-xs flex items-center gap-1.5 mb-3 font-medium">
+                            <Clock className="w-3.5 h-3.5" />
+                            {item.date}
+                          </div>
+                        )}
+                        <div className="flex-1 mb-4">
+                          <h5 className="font-bold text-[17px] leading-snug text-slate-800 line-clamp-2 group-hover:text-[#15a3b0] transition-colors">
+                            {isEn ? item.titleEn : item.title}
+                          </h5>
+                        </div>
+                        <p className="text-slate-500 text-sm line-clamp-2 mb-6 font-medium">
                           {isEn ? item.descriptionEn : item.description}
                         </p>
 
-                        <div className="flex items-center text-[#15a3b0] font-bold mt-auto group/btn">
-                          <span>{isEn ? 'Review' : 'İncele'}</span>
-                          <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-2 transition-transform" />
+                        <div className="flex items-center gap-2 mt-auto text-[#15a3b0] font-bold text-sm w-max">
+                          <span className="relative overflow-hidden">
+                            {isEn ? 'Review' : 'İncele'}
+                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#15a3b0] transform translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300" />
+                          </span>
+                          <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" />
                         </div>
                       </div>
                     </Link>
