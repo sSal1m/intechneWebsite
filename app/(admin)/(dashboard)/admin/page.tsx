@@ -1,5 +1,5 @@
 import { createClient } from '@/src/utils/supabase/server';
-import { Mail, FileText, Users, Sliders, ArrowRight, FolderArchive, BookOpen } from 'lucide-react';
+import { Mail, FileText, Users, Sliders, ArrowRight, FolderArchive, BookOpen, Briefcase } from 'lucide-react';
 import Link from 'next/link';
 
 export const revalidate = 0; // Disable caching for the admin dashboard home
@@ -32,6 +32,10 @@ export default async function AdminDashboardPage() {
     .from('interactive')
     .select('*', { count: 'exact', head: true });
 
+  const { count: applicationsCount } = await supabase
+    .from('job_applications')
+    .select('*', { count: 'exact', head: true });
+
   // Fetch 5 recent messages
   const { data: recentMessages } = await supabase
     .from('messages')
@@ -39,8 +43,16 @@ export default async function AdminDashboardPage() {
     .order('created_at', { ascending: false })
     .limit(5);
 
+  // Fetch 5 recent job applications
+  const { data: recentApplications } = await supabase
+    .from('job_applications')
+    .select('*, job_positions(title_tr)')
+    .order('created_at', { ascending: false })
+    .limit(5);
+
   const stats = [
     { label: 'Gelen Mesajlar', value: messagesCount || 0, href: '/admin/messages', icon: Mail, color: 'text-primary bg-primary/10' },
+    { label: 'Gelen Başvurular', value: applicationsCount || 0, href: '/admin/careers', icon: Briefcase, color: 'text-violet-400 bg-violet-400/10' },
     { label: 'Haber Sayısı', value: newsCount || 0, href: '/admin/news', icon: FileText, color: 'text-emerald-400 bg-emerald-400/10' },
     { label: 'Ekip Üyeleri', value: teamCount || 0, href: '/admin/team', icon: Users, color: 'text-amber-400 bg-amber-400/10' },
     { label: 'Aktif Slaytlar', value: slidersCount || 0, href: '/admin/sliders', icon: Sliders, color: 'text-indigo-400 bg-indigo-400/10' },
@@ -59,7 +71,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {stats.map((stat, idx) => {
           const Icon = stat.icon;
           return (
@@ -82,47 +94,98 @@ export default async function AdminDashboardPage() {
         })}
       </div>
 
-      {/* Recent Messages Area */}
-      <div className="bg-slate-950 rounded-2xl border border-slate-800 p-6 max-w-4xl shadow-xl">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="font-bold text-white text-base flex items-center gap-2">
-            <Mail className="w-5 h-5 text-primary" />
-            Son Gelen Mesajlar
-          </h3>
-          <Link
-            href="/admin/messages"
-            className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
-          >
-            Tümünü Gör
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+      {/* Two Columns for Messages and Applications */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl">
+        {/* Recent Messages Area */}
+        <div className="bg-slate-950 rounded-2xl border border-slate-800 p-6 shadow-xl">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="font-bold text-white text-base flex items-center gap-2">
+              <Mail className="w-5 h-5 text-primary" />
+              Son Gelen Mesajlar
+            </h3>
+            <Link
+              href="/admin/messages"
+              className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+            >
+              Tümünü Gör
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {recentMessages && recentMessages.length > 0 ? (
+            <div className="flex flex-col gap-4">
+              {recentMessages.map((msg: any) => (
+                <div
+                  key={msg.id}
+                  className="bg-slate-900/50 hover:bg-slate-900 border border-slate-800/60 rounded-xl p-4 transition-colors flex flex-col justify-between gap-3"
+                >
+                  <div className="flex flex-col gap-1">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                      <span className="font-bold text-sm text-white">{msg.name}</span>
+                      <span className="text-slate-500 text-xs truncate">{msg.email}</span>
+                    </div>
+                    <p className="text-slate-400 text-xs line-clamp-2">{msg.message}</p>
+                  </div>
+                  <span className="text-slate-500 text-[10px] font-bold uppercase self-end">
+                    {new Date(msg.created_at).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-slate-500 text-sm">
+              Henüz gelen bir mesaj bulunmuyor.
+            </div>
+          )}
         </div>
 
-        {recentMessages && recentMessages.length > 0 ? (
-          <div className="flex flex-col gap-4">
-            {recentMessages.map((msg: any) => (
-              <div
-                key={msg.id}
-                className="bg-slate-900/50 hover:bg-slate-900 border border-slate-800/60 rounded-xl p-4 transition-colors flex flex-col sm:flex-row justify-between sm:items-center gap-3"
-              >
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-3">
-                    <span className="font-bold text-sm text-white">{msg.name}</span>
-                    <span className="text-slate-500 text-xs">{msg.email}</span>
+        {/* Recent Applications Area */}
+        <div className="bg-slate-950 rounded-2xl border border-slate-800 p-6 shadow-xl">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="font-bold text-white text-base flex items-center gap-2">
+              <Briefcase className="w-5 h-5 text-violet-400" />
+              Son Gelen Başvurular
+            </h3>
+            <Link
+              href="/admin/careers"
+              className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+            >
+              Tümünü Gör
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {recentApplications && recentApplications.length > 0 ? (
+            <div className="flex flex-col gap-4">
+              {recentApplications.map((app: any) => {
+                const positionTitle = app.position_title_tr || app.job_positions?.title_tr || 'Kapatılmış / Silinmiş Pozisyon';
+                return (
+                  <div
+                    key={app.id}
+                    className="bg-slate-900/50 hover:bg-slate-900 border border-slate-800/60 rounded-xl p-4 transition-colors flex flex-col justify-between gap-3"
+                  >
+                    <div className="flex flex-col gap-1">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                        <span className="font-bold text-sm text-white">{app.name}</span>
+                        <span className="text-slate-500 text-xs truncate">{app.email}</span>
+                      </div>
+                      <p className="text-slate-400 text-xs font-medium mt-1">
+                        Pozisyon: <span className="text-violet-400 font-bold">{positionTitle}</span>
+                      </p>
+                    </div>
+                    <span className="text-slate-500 text-[10px] font-bold uppercase self-end">
+                      {new Date(app.created_at).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })}
+                    </span>
                   </div>
-                  <p className="text-slate-400 text-xs line-clamp-1">{msg.message}</p>
-                </div>
-                <span className="text-slate-500 text-[10px] font-bold uppercase self-start sm:self-center">
-                  {new Date(msg.created_at).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })}
-                </span>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-8 text-slate-500 text-sm">
-            Henüz gelen bir mesaj bulunmuyor.
-          </div>
-        )}
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-slate-500 text-sm">
+              Henüz gelen bir başvuru bulunmuyor.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

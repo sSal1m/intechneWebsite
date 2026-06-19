@@ -3,6 +3,7 @@
 import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { moveToTrash } from './trash-bin';
 
 // Zod schemas for validation
 const positionSchema = z.object({
@@ -42,14 +43,19 @@ async function checkAdmin(supabase: any) {
 // JOB POSITIONS (AÇIK POZİSYONLAR) ACTIONS
 // ----------------------------------------------------
 
-export async function getJobPositions() {
+export async function getJobPositions(onlyActive = false) {
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase
+    let query = supabase
       .from('job_positions')
       .select('*')
       .order('order_index', { ascending: true });
 
+    if (onlyActive) {
+      query = query.eq('is_active', true);
+    }
+
+    const { data, error } = await query;
     if (error) throw new Error(error.message);
     return data || [];
   } catch (error: any) {
@@ -114,6 +120,19 @@ export async function deleteJobPosition(id: string) {
     const supabase = await createClient();
     await checkAdmin(supabase);
 
+    // Fetch original position data
+    const { data: positionItem, error: fetchError } = await supabase
+      .from('job_positions')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !positionItem) throw new Error(fetchError?.message || 'Pozisyon bulunamadı');
+
+    // Move to trash
+    const trashResult = await moveToTrash('job_positions', id, positionItem, []);
+    if (!trashResult.success) throw new Error(trashResult.error);
+
     const { error } = await supabase
       .from('job_positions')
       .delete()
@@ -157,6 +176,19 @@ export async function submitJobApplication(rawFormData: FormData) {
 
     const validated = applicationSchema.parse(parsedData);
 
+    const supabase = await createClient();
+
+    // Fetch position details to store titles in application
+    const { data: positionData, error: positionError } = await supabase
+      .from('job_positions')
+      .select('title_tr, title_en')
+      .eq('id', validated.position_id)
+      .single();
+
+    if (positionError || !positionData) {
+      throw new Error('Başvurulan pozisyon bulunamadı.');
+    }
+
     // 3. File validation
     const file = rawFormData.get('cv') as File | null;
     if (!file) {
@@ -185,7 +217,6 @@ export async function submitJobApplication(rawFormData: FormData) {
     const cvPath = `${validated.position_id}/${uniqueFilename}`;
 
     // 5. Upload file to private Supabase Storage bucket 'cv_uploads'
-    const supabase = await createClient();
     const fileBuffer = Buffer.from(await file.arrayBuffer());
 
     const { error: uploadError } = await supabase.storage
@@ -206,11 +237,14 @@ export async function submitJobApplication(rawFormData: FormData) {
       .insert([
         {
           position_id: validated.position_id,
+          original_position_id: validated.position_id,
           name: validated.name,
           email: validated.email,
           phone: validated.phone,
           cover_letter: validated.cover_letter,
           cv_path: cvPath,
+          position_title_tr: positionData.title_tr,
+          position_title_en: positionData.title_en,
         }
       ]);
 
@@ -238,7 +272,7 @@ export async function getJobApplications() {
 
     const { data, error } = await supabase
       .from('job_applications')
-      .select('*, job_positions(title_tr, title_en)')
+      .select('*, job_positions(title_tr, title_en, is_active)')
       .order('created_at', { ascending: false });
 
     if (error) throw new Error(error.message);
@@ -246,6 +280,70 @@ export async function getJobApplications() {
   } catch (error: any) {
     console.error('getJobApplications error:', error);
     return [];
+  }
+}
+
+export async function deleteJobApplication(id: string) {
+  try {
+    const supabase = await createClient();
+    await checkAdmin(supabase);
+
+    // Fetch the application to get original data and file path
+    const { data: applicationItem, error: fetchError } = await supabase
+      .from('job_applications')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !applicationItem) throw new Error(fetchError?.message || 'Başvuru bulunamadı');
+
+    // Collect CV file path
+    const filePaths: string[] = [];
+    if (applicationItem.cv_path) {
+      filePaths.push(applicationItem.cv_path);
+    }
+
+    // Move to trash
+    const trashResult = await moveToTrash('job_applications', id, applicationItem, filePaths);
+    if (!trashResult.success) throw new Error(trashResult.error);
+
+    // Delete from DB
+    const { error: deleteError } = await supabase
+      .from('job_applications')
+      .delete()
+      .eq('id', id);
+
+    if (deleteError) throw new Error(deleteError.message);
+
+    revalidatePath('/admin/careers');
+    return { success: true };
+  } catch (error: any) {
+    console.error('deleteJobApplication error:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function toggleJobPositionStatus(id: string, isActive: boolean) {
+  try {
+    const supabase = await createClient();
+    await checkAdmin(supabase);
+
+    const { data, error } = await supabase
+      .from('job_positions')
+      .update({ is_active: isActive })
+      .eq('id', id)
+      .select();
+
+    if (error) throw new Error(error.message);
+
+    // On-Demand Revalidation
+    revalidatePath('/');
+    revalidatePath('/[locale]/kariyer', 'page');
+
+    return { success: true, data };
+  } catch (error: any) {
+    console.error('toggleJobPositionStatus error:', error);
+    return { success: false, error: error.message };
   }
 }
 

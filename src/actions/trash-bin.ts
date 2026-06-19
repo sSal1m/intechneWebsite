@@ -32,20 +32,28 @@ async function pruneExpiredTrash(supabase: any) {
     // Fetch expired items to clean up storage files
     const { data: expiredItems } = await supabase
       .from('trash_bin')
-      .select('file_paths')
+      .select('entity_type, file_paths')
       .lt('deleted_at', expiredTime);
 
     if (expiredItems && expiredItems.length > 0) {
-      // Collect all storage files to remove
-      const allPaths: string[] = [];
+      // Collect storage files to remove grouped by bucket
+      const assetPaths: string[] = [];
+      const cvPaths: string[] = [];
       for (const item of expiredItems) {
         if (item.file_paths && Array.isArray(item.file_paths)) {
-          allPaths.push(...item.file_paths);
+          if (item.entity_type === 'job_applications') {
+            cvPaths.push(...item.file_paths);
+          } else {
+            assetPaths.push(...item.file_paths);
+          }
         }
       }
 
-      if (allPaths.length > 0) {
-        await supabase.storage.from('intechne-assets').remove(allPaths);
+      if (assetPaths.length > 0) {
+        await supabase.storage.from('intechne-assets').remove(assetPaths);
+      }
+      if (cvPaths.length > 0) {
+        await supabase.storage.from('cv_uploads').remove(cvPaths);
       }
       
       // Delete from DB
@@ -117,6 +125,14 @@ export async function restoreFromTrash(trashId: string) {
 
     if (restoreError) throw new Error(restoreError.message);
 
+    // If it was a job position, restore the connection in job_applications
+    if (trashItem.entity_type === 'job_positions') {
+      await supabase
+        .from('job_applications')
+        .update({ position_id: trashItem.original_data.id })
+        .eq('original_position_id', trashItem.original_data.id);
+    }
+
     // Delete from trash_bin
     const { error: deleteError } = await supabase
       .from('trash_bin')
@@ -155,7 +171,8 @@ export async function deletePermanently(trashId: string) {
 
     // Remove from storage
     if (trashItem.file_paths && Array.isArray(trashItem.file_paths) && trashItem.file_paths.length > 0) {
-      await supabase.storage.from('intechne-assets').remove(trashItem.file_paths);
+      const bucketName = trashItem.entity_type === 'job_applications' ? 'cv_uploads' : 'intechne-assets';
+      await supabase.storage.from(bucketName).remove(trashItem.file_paths);
     }
 
     // Delete from trash_bin
@@ -191,6 +208,9 @@ function triggerRevalidation(entityType: string) {
     } else if (entityType === 'messages') {
       revalidatePath('/admin');
       revalidatePath('/admin/messages');
+    } else if (entityType === 'job_positions' || entityType === 'job_applications') {
+      revalidatePath('/admin/careers');
+      revalidatePath('/[locale]/kariyer', 'page');
     }
   } catch (e) {
     console.error('triggerRevalidation error:', e);

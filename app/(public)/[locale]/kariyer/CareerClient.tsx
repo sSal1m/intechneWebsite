@@ -216,25 +216,7 @@ export function CareerClient({ isEn, positions }: CareerClientProps) {
         </div>
       </section>
 
-      {/* 2. Application Process Section */}
-      <section className="bg-slate-50/50 rounded-[40px] border border-slate-100 p-8 md:p-16 flex flex-col gap-12">
-        <div className="text-center max-w-3xl mx-auto flex flex-col gap-3">
-          <h2 className="text-3xl md:text-4xl font-black text-[#111111]">{t.processTitle}</h2>
-          <p className="text-slate-600 font-medium">{t.processSubtitle}</p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
-          {t.steps.map((step, idx) => (
-            <div key={idx} className="flex flex-col gap-4 relative">
-              <span className="text-5xl font-black text-[#01c1d3]/20 font-mono tracking-tighter">{step.num}</span>
-              <h3 className="text-lg font-bold text-[#111111]">{step.title}</h3>
-              <p className="text-slate-600 text-xs leading-relaxed font-medium">{step.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 3. Open Positions Section */}
+      {/* 2. Open Positions Section */}
       <section className="flex flex-col gap-10">
         <div className="text-center max-w-3xl mx-auto flex flex-col gap-3">
           <h2 className="text-3xl md:text-4xl font-black text-[#111111]">{t.positionsTitle}</h2>
@@ -491,6 +473,24 @@ export function CareerClient({ isEn, positions }: CareerClientProps) {
             })}
           </div>
         )}
+      </section>
+
+      {/* 3. Application Process Section */}
+      <section className="bg-slate-50/50 rounded-[40px] border border-slate-100 p-8 md:p-16 flex flex-col gap-12">
+        <div className="text-center max-w-3xl mx-auto flex flex-col gap-3">
+          <h2 className="text-3xl md:text-4xl font-black text-[#111111]">{t.processTitle}</h2>
+          <p className="text-slate-600 font-medium">{t.processSubtitle}</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+          {t.steps.map((step, idx) => (
+            <div key={idx} className="flex flex-col gap-4 relative">
+              <span className="text-5xl font-black text-[#01c1d3]/20 font-mono tracking-tighter">{step.num}</span>
+              <h3 className="text-lg font-bold text-[#111111]">{step.title}</h3>
+              <p className="text-slate-600 text-xs leading-relaxed font-medium">{step.desc}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
     </div>

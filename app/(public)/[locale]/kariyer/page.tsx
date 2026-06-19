@@ -24,7 +24,7 @@ export default async function CareersPage({ params }: PageProps) {
   const isEn = locale === 'en';
   
   // Fetch open positions from Supabase
-  const positions = await getJobPositions();
+  const positions = await getJobPositions(true);
 
   return (
     <div className="min-h-screen bg-white pb-20">

@@ -5,6 +5,8 @@ import {
   createJobPosition, 
   updateJobPosition, 
   deleteJobPosition,
+  deleteJobApplication,
+  toggleJobPositionStatus,
   generateCVDownloadUrl 
 } from '@/src/actions/careers';
 import { 
@@ -41,6 +43,7 @@ interface JobPosition {
   requirements_tr: string;
   requirements_en: string;
   order_index: number;
+  is_active?: boolean;
 }
 
 interface JobApplication {
@@ -52,9 +55,12 @@ interface JobApplication {
   cover_letter: string;
   cv_path: string;
   created_at: string;
+  position_title_tr?: string | null;
+  position_title_en?: string | null;
   job_positions: {
     title_tr: string;
     title_en: string;
+    is_active?: boolean;
   } | null;
 }
 
@@ -73,8 +79,11 @@ export function CareersManager({ initialPositions, initialApplications }: Career
   // Modals state
   const [isPosModalOpen, setIsPosModalOpen] = useState(false);
   const [editingPosition, setEditingPosition] = useState<JobPosition | null>(null);
+  // Confirm delete modal states
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [posToDelete, setPosToDelete] = useState<string | null>(null);
+  const [deleteAppConfirmOpen, setDeleteAppConfirmOpen] = useState(false);
+  const [appToDelete, setAppToDelete] = useState<string | null>(null);
 
   // Application details modal
   const [viewingApp, setViewingApp] = useState<JobApplication | null>(null);
@@ -150,6 +159,7 @@ export function CareersManager({ initialPositions, initialApplications }: Career
       requirements_tr: reqTr,
       requirements_en: reqEn,
       order_index: orderIndex,
+      is_active: editingPosition ? editingPosition.is_active : true,
     };
 
     startTransition(async () => {
@@ -196,6 +206,63 @@ export function CareersManager({ initialPositions, initialApplications }: Career
     });
   }
 
+  function handleToggleActive(id: string, newStatus: boolean) {
+    startTransition(async () => {
+      const result = await toggleJobPositionStatus(id, newStatus);
+      if (result.success) {
+        setPositions(
+          positions.map((p) => (p.id === id ? { ...p, is_active: newStatus } : p))
+        );
+      } else {
+        alert('Hata: ' + result.error);
+      }
+    });
+  }
+
+  function executeAppDelete() {
+    if (!appToDelete) return;
+    startTransition(async () => {
+      const result = await deleteJobApplication(appToDelete);
+      if (result.success) {
+        setApplications(applications.filter((a) => a.id !== appToDelete));
+        setDeleteAppConfirmOpen(false);
+      } else {
+        alert('Hata: ' + result.error);
+      }
+    });
+  }
+
+  async function handleExportToExcel() {
+    try {
+      const XLSX = await import('xlsx');
+      
+      const exportData = applications.map((app) => {
+        const date = new Date(app.created_at);
+        const formattedDate = `${String(date.getDate()).padStart(2, '0')}.${String(
+          date.getMonth() + 1
+        ).padStart(2, '0')}.${date.getFullYear()}`;
+        
+        return {
+          'Aday Adı Soyadı': app.name,
+          'E-posta': app.email,
+          'Telefon': app.phone,
+          'Başvurulan Pozisyon (TR)': app.position_title_tr || app.job_positions?.title_tr || 'Kapatılmış / Silinmiş Pozisyon',
+          'Başvurulan Pozisyon (EN)': app.position_title_en || app.job_positions?.title_en || 'Closed / Deleted Position',
+          'Pozisyon Durumu': app.job_positions ? 'Açık' : 'Kapalı',
+          'Başvuru Tarihi': formattedDate,
+          'Niyet Mektubu': app.cover_letter || 'Eklenmemiş'
+        };
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Başvurular');
+      XLSX.writeFile(workbook, 'gelen_basvurular.xlsx');
+    } catch (error: any) {
+      alert('Excel export hatası: ' + error.message);
+    }
+  }
+
   async function handleDownloadCv(cvPath: string, appId: string) {
     if (downloadingCvId) return;
     setDownloadingCvId(appId);
@@ -228,7 +295,7 @@ export function CareersManager({ initialPositions, initialApplications }: Career
           }`}
         >
           <Briefcase className="w-4 h-4" />
-          Açık Pozisyonlar ({positions.length})
+          Pozisyonlar ({positions.length})
         </button>
         <button
           onClick={() => setActiveTab('applications')}
@@ -244,88 +311,148 @@ export function CareersManager({ initialPositions, initialApplications }: Career
       </div>
 
       {/* POSITIONS TAB */}
-      {activeTab === 'positions' && (
-        <div className="flex flex-col gap-6 animate-fadeIn">
-          <div className="flex justify-between items-center">
-            <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider">
-              Aktif İş İlanları
-            </span>
-            <button
-              onClick={openAddPosModal}
-              className="bg-primary hover:bg-primary-dark text-slate-950 font-bold px-4 py-2.5 rounded-xl transition-all duration-200 text-sm flex items-center gap-2 shadow-lg shadow-primary/10"
-            >
-              <Plus className="w-4 h-4" />
-              Pozisyon Ekle
-            </button>
-          </div>
+      {activeTab === 'positions' && (() => {
+        const activePositions = positions.filter((p) => p.is_active !== false);
+        const inactivePositions = positions.filter((p) => p.is_active === false);
 
-          {positions.length === 0 ? (
-            <div className="text-center py-12 bg-slate-950 border border-slate-800 rounded-2xl text-slate-500 text-sm">
-              Henüz eklenmiş bir pozisyon bulunmamaktadır.
+        const renderPositionCard = (pos: JobPosition) => (
+          <div
+            key={pos.id}
+            className="bg-slate-950 border border-slate-800 hover:border-slate-700 transition-all rounded-2xl p-6 flex flex-col gap-4 relative group"
+          >
+            <div className="flex flex-col gap-1 pr-24">
+              <h4 className="font-bold text-white text-base">{pos.title_tr}</h4>
+              <span className="text-slate-400 text-xs">{pos.title_en}</span>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {positions.map((pos) => (
-                <div
-                  key={pos.id}
-                  className="bg-slate-950 border border-slate-800 hover:border-slate-700 transition-all rounded-2xl p-6 flex flex-col gap-4 relative group"
+
+            <div className="flex flex-wrap gap-2 text-xs border-t border-slate-900 pt-3">
+              <span className="inline-flex items-center gap-1 bg-slate-900 text-slate-300 px-2 py-1 rounded">
+                <Building2 className="w-3.5 h-3.5 text-primary" />
+                {pos.department_tr}
+              </span>
+              <span className="inline-flex items-center gap-1 bg-slate-900 text-slate-300 px-2 py-1 rounded">
+                <MapPin className="w-3.5 h-3.5 text-primary" />
+                {pos.location_tr}
+              </span>
+              <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded font-bold">
+                {pos.type_tr}
+              </span>
+            </div>
+
+            {/* Toggle switch and actions overlay */}
+            <div className="absolute right-4 top-4 flex items-center gap-3 bg-slate-950 pl-2">
+              <button
+                type="button"
+                onClick={() => handleToggleActive(pos.id, !pos.is_active)}
+                disabled={isPending}
+                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                  pos.is_active !== false ? 'bg-primary' : 'bg-slate-800'
+                }`}
+                title={pos.is_active !== false ? 'Pasifleştir / Kapat' : 'Aktifleştir / Aç'}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-slate-950 shadow ring-0 transition duration-200 ease-in-out ${
+                    pos.is_active !== false ? 'translate-x-4' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={() => openEditPosModal(pos)}
+                  className="text-slate-400 hover:text-primary p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
+                  title="Düzenle"
                 >
-                  <div className="flex flex-col gap-1 pr-16">
-                    <h4 className="font-bold text-white text-base">{pos.title_tr}</h4>
-                    <span className="text-slate-400 text-xs">{pos.title_en}</span>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2 text-xs border-t border-slate-900 pt-3">
-                    <span className="inline-flex items-center gap-1 bg-slate-900 text-slate-300 px-2 py-1 rounded">
-                      <Building2 className="w-3.5 h-3.5 text-primary" />
-                      {pos.department_tr}
-                    </span>
-                    <span className="inline-flex items-center gap-1 bg-slate-900 text-slate-300 px-2 py-1 rounded">
-                      <MapPin className="w-3.5 h-3.5 text-primary" />
-                      {pos.location_tr}
-                    </span>
-                    <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded font-bold">
-                      {pos.type_tr}
-                    </span>
-                  </div>
-
-                  {/* Actions overlay */}
-                  <div className="absolute right-4 top-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-950 pl-2">
-                    <button
-                      onClick={() => openEditPosModal(pos)}
-                      className="text-slate-400 hover:text-primary p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
-                      title="Düzenle"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        setPosToDelete(pos.id);
-                        setDeleteConfirmOpen(true);
-                      }}
-                      className="text-slate-400 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
-                      title="Sil"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  <span className="absolute bottom-4 right-4 text-[9px] font-bold text-slate-600 uppercase">
-                    Sıra: {pos.order_index}
-                  </span>
-                </div>
-              ))}
+                  <Edit className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => {
+                    setPosToDelete(pos.id);
+                    setDeleteConfirmOpen(true);
+                  }}
+                  className="text-slate-400 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
+                  title="Sil"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-          )}
-        </div>
-      )}
+
+            <span className="absolute bottom-4 right-4 text-[9px] font-bold text-slate-600 uppercase">
+              Sıra: {pos.order_index}
+            </span>
+          </div>
+        );
+
+        return (
+          <div className="flex flex-col gap-8 animate-fadeIn">
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                Tüm Pozisyonlar
+              </span>
+              <button
+                onClick={openAddPosModal}
+                className="bg-primary hover:bg-primary-dark text-slate-950 font-bold px-4 py-2.5 rounded-xl transition-all duration-200 text-sm flex items-center gap-2 shadow-lg shadow-primary/10"
+              >
+                <Plus className="w-4 h-4" />
+                Pozisyon Ekle
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-10">
+              {/* 1. Açık (Aktif) Pozisyonlar */}
+              <div className="flex flex-col gap-4">
+                <h5 className="font-bold text-[#01c1d3] text-sm uppercase tracking-wider border-l-4 border-[#01c1d3] pl-3">
+                  Açık Pozisyonlar ({activePositions.length})
+                </h5>
+                {activePositions.length === 0 ? (
+                  <div className="text-center py-8 bg-slate-950 border border-slate-800 rounded-2xl text-slate-500 text-xs">
+                    Açık pozisyon bulunmamaktadır.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {activePositions.map((pos) => renderPositionCard(pos))}
+                  </div>
+                )}
+              </div>
+
+              {/* 2. Kapalı (Pasif) Pozisyonlar */}
+              <div className="flex flex-col gap-4">
+                <h5 className="font-bold text-red-400 text-sm uppercase tracking-wider border-l-4 border-red-500/40 pl-3">
+                  Kapalı Pozisyonlar ({inactivePositions.length})
+                </h5>
+                {inactivePositions.length === 0 ? (
+                  <div className="text-center py-8 bg-slate-950 border border-slate-800 rounded-2xl text-slate-500 text-xs">
+                    Kapalı pozisyon bulunmamaktadır.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {inactivePositions.map((pos) => renderPositionCard(pos))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* APPLICATIONS TAB */}
       {activeTab === 'applications' && (
         <div className="flex flex-col gap-6 animate-fadeIn">
-          <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider">
-            Gönderilen CV ve Başvurular
-          </span>
+          <div className="flex justify-between items-center">
+            <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider">
+              Gönderilen CV ve Başvurular
+            </span>
+            {applications.length > 0 && (
+              <button
+                onClick={handleExportToExcel}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl transition-all duration-200 text-sm flex items-center gap-2 shadow-lg shadow-emerald-950/10"
+              >
+                <Download className="w-4 h-4" />
+                Excel'e Aktar
+              </button>
+            )}
+          </div>
 
           {applications.length === 0 ? (
             <div className="text-center py-12 bg-slate-950 border border-slate-800 rounded-2xl text-slate-500 text-sm">
@@ -346,7 +473,7 @@ export function CareersManager({ initialPositions, initialApplications }: Career
                   <tbody className="divide-y divide-slate-900">
                     {applications.map((app) => {
                       // Optional chaining & fallback for deleted positions as requested
-                      const positionTitle = app.job_positions?.title_tr || 'Kapatılmış / Silinmiş Pozisyon';
+                      const positionTitle = app.position_title_tr || app.job_positions?.title_tr || 'Kapatılmış / Silinmiş Pozisyon';
                       const isDeletedPos = !app.job_positions;
 
                       return (
@@ -365,9 +492,22 @@ export function CareersManager({ initialPositions, initialApplications }: Career
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <span className={`font-semibold ${isDeletedPos ? 'text-red-400 italic' : 'text-slate-200'}`}>
-                              {positionTitle}
-                            </span>
+                            <div className="flex flex-col gap-1">
+                              <span className={`font-semibold ${isDeletedPos || app.job_positions?.is_active === false ? 'text-slate-500 line-through' : 'text-slate-200'}`}>
+                                {positionTitle}
+                              </span>
+                              <div>
+                                {isDeletedPos || app.job_positions?.is_active === false ? (
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">
+                                    Kapalı
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                    Açık
+                                  </span>
+                                )}
+                              </div>
+                            </div>
                           </td>
                           <td className="px-6 py-4 text-slate-500 text-xs font-bold">
                             {new Date(app.created_at).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })}
@@ -394,6 +534,16 @@ export function CareersManager({ initialPositions, initialApplications }: Career
                                   <Download className="w-4 h-4" />
                                 )}
                                 CV
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setAppToDelete(app.id);
+                                  setDeleteAppConfirmOpen(true);
+                                }}
+                                className="text-slate-400 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
+                                title="Sil"
+                              >
+                                <Trash2 className="w-4 h-4" />
                               </button>
                             </div>
                           </td>
@@ -682,6 +832,15 @@ export function CareersManager({ initialPositions, initialApplications }: Career
         onConfirm={executePosDelete}
         title="Pozisyonu Sil"
         message="Bu iş pozisyonunu silmek istediğinize emin misiniz? Pozisyon silindiğinde, bu pozisyona ait başvuruların listelenmesindeki pozisyon bilgisi 'Kapatılmış / Silinmiş Pozisyon' olarak görünecektir."
+      />
+
+      {/* APPLICATION DELETE CONFIRMATION */}
+      <ConfirmModal
+        isOpen={deleteAppConfirmOpen}
+        onClose={() => setDeleteAppConfirmOpen(false)}
+        onConfirm={executeAppDelete}
+        title="Başvuruyu Sil"
+        message="Bu iş başvurusunu silmek istediğinize emin misiniz? Başvuru silindiğinde çöp kutusuna taşınacaktır."
       />
 
     </div>
