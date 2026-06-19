@@ -137,7 +137,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
     setCategorySlug(news.category_slug || '');
     setImageUrl(news.image_url || '');
     setInContentMediaUrl('');
-    setOrderIndex(news.order_index === 999999 || !news.order_index ? 0 : news.order_index);
+    setOrderIndex(news.order_index || 0);
     
     // Format published_at to local datetime-local format
     const dateObj = new Date(news.published_at);
@@ -225,9 +225,9 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
       };
 
       const sortNews = (a: NewsItem, b: NewsItem) => {
-        const orderA = a.order_index === 0 || !a.order_index || a.order_index === 999999 ? 999999 : a.order_index;
-        const orderB = b.order_index === 0 || !b.order_index || b.order_index === 999999 ? 999999 : b.order_index;
-        if (orderA !== orderB) return orderA - orderB;
+        const orderA = a.order_index || 0;
+        const orderB = b.order_index || 0;
+        if (orderA !== orderB) return orderB - orderA;
         return new Date(b.published_at).getTime() - new Date(a.published_at).getTime();
       };
 
@@ -346,7 +346,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
               )}
 
               <span className="absolute top-3 right-3 bg-slate-900/80 text-slate-300 border border-slate-800 font-bold text-[9px] px-2 py-0.5 rounded-md uppercase tracking-wider">
-                Sıra: {news.order_index === 999999 || !news.order_index ? 0 : news.order_index}
+                Sıra: {news.order_index || 0}
               </span>
             </div>
 

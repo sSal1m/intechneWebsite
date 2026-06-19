@@ -36,7 +36,7 @@ function createPublicClient() {
 export async function getInteractiveItems(category?: string) {
   try {
     const supabase = createPublicClient();
-    let query = supabase.from('interactive').select('*').order('order_index', { ascending: true }).order('created_at', { ascending: false });
+    let query = supabase.from('interactive').select('*').order('order_index', { ascending: false }).order('created_at', { ascending: false });
 
     if (category && category !== 'all') {
       query = query.eq('category', category);
@@ -117,7 +117,7 @@ export async function createInteractiveItem(formData: {
           file_url: formData.file_url || '',
           video_url: formData.video_url || '',
           image_url: formData.image_url || '',
-          order_index: formData.order_index === 0 || !formData.order_index ? 999999 : formData.order_index,
+          order_index: formData.order_index || 0,
         },
       ])
       .select();
@@ -167,7 +167,7 @@ export async function updateInteractiveItem(
         file_url: formData.file_url || '',
         video_url: formData.video_url || '',
         image_url: formData.image_url || '',
-        order_index: formData.order_index === 0 || !formData.order_index ? 999999 : formData.order_index,
+        order_index: formData.order_index || 0,
       })
       .eq('id', id)
       .select();

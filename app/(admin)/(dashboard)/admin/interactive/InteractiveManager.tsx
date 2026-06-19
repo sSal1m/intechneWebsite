@@ -74,7 +74,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
     setFileUrl(item.file_url || '');
     setVideoUrl(item.video_url || '');
     setImageUrl(item.image_url || '');
-    setOrderIndex(item.order_index === 999999 || !item.order_index ? 0 : item.order_index);
+    setOrderIndex(item.order_index || 0);
     setIsModalOpen(true);
   }
 
@@ -126,9 +126,9 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
       };
 
       const sortItems = (a: InteractiveItem, b: InteractiveItem) => {
-        const orderA = a.order_index === 0 || !a.order_index || a.order_index === 999999 ? 999999 : a.order_index;
-        const orderB = b.order_index === 0 || !b.order_index || b.order_index === 999999 ? 999999 : b.order_index;
-        if (orderA !== orderB) return orderA - orderB;
+        const orderA = a.order_index || 0;
+        const orderB = b.order_index || 0;
+        if (orderA !== orderB) return orderB - orderA;
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       };
 
@@ -220,7 +220,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
                 </span>
 
                 <span className="absolute top-3 right-3 bg-slate-900/80 text-slate-300 border border-slate-800 font-bold text-[9px] px-2 py-0.5 rounded-md uppercase tracking-wider">
-                  Sıra: {item.order_index === 999999 || !item.order_index ? 0 : item.order_index}
+                  Sıra: {item.order_index || 0}
                 </span>
               </div>
 

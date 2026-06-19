@@ -8,7 +8,7 @@ import { extractStoragePath } from '@/src/utils/storage';
 export async function getNews(categorySlug?: string) {
   try {
     const supabase = await createClient();
-    let query = supabase.from('news').select('*').order('order_index', { ascending: true }).order('published_at', { ascending: false });
+    let query = supabase.from('news').select('*').order('order_index', { ascending: false }).order('published_at', { ascending: false });
 
     if (categorySlug && categorySlug !== 'all') {
       query = query.eq('category_slug', categorySlug);
@@ -145,7 +145,7 @@ export async function createNews(formData: {
           category_slug: formData.category_slug || null,
           image_url: formData.image_url || '',
           published_at: formData.published_at || new Date().toISOString(),
-          order_index: formData.order_index === 0 || !formData.order_index ? 999999 : formData.order_index,
+          order_index: formData.order_index || 0,
         },
       ])
       .select();
@@ -198,7 +198,7 @@ export async function updateNews(
         category_slug: formData.category_slug || null,
         image_url: formData.image_url || '',
         published_at: formData.published_at || new Date().toISOString(),
-        order_index: formData.order_index === 0 || !formData.order_index ? 999999 : formData.order_index,
+        order_index: formData.order_index || 0,
       })
       .eq('id', id)
       .select();
