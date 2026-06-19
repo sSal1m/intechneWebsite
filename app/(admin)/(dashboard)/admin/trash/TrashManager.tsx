@@ -96,10 +96,12 @@ export function TrashManager({ initialItems }: TrashManagerProps) {
       return `${data.name} - ${data.subject || 'Konusuz Mesaj'}`;
     }
     if (item.entity_type === 'job_applications') {
-      return `${data.name} - ${data.position_title_tr || 'Pozisyon Bilgisi Yok'}`;
+      const fullName = `${data.first_name || ''} ${data.last_name || data.name || ''}`.trim();
+      return `${fullName || 'İsimsiz Aday'} - ${data.position_title_tr || 'Pozisyon Bilgisi Yok'}`;
     }
     if (item.entity_type === 'volunteers') {
-      return `${data.name_surname} (${data.phone})`;
+      const fullName = `${data.first_name || ''} ${data.last_name || data.name_surname || ''}`.trim();
+      return `${fullName || 'İsimsiz Gönüllü'} (${data.phone || ''})`;
     }
     if (item.entity_type === 'job_positions') {
       return data.title_tr || 'Başlıksız Pozisyon';

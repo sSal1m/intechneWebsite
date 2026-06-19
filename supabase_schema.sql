@@ -508,7 +508,8 @@ INSERT INTO brand_pages (
 -- volunteers Tablosu
 CREATE TABLE IF NOT EXISTS volunteers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name_surname VARCHAR(255) NOT NULL,
+    first_name VARCHAR(150) NOT NULL,
+    last_name VARCHAR(150) NOT NULL,
     birth_date DATE NOT NULL,
     gender VARCHAR(20) NOT NULL,
     phone VARCHAR(50) NOT NULL,

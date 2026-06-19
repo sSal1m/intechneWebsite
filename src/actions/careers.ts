@@ -24,7 +24,8 @@ const positionSchema = z.object({
 
 const applicationSchema = z.object({
   position_id: z.string().uuid('Geçersiz pozisyon seçimi'),
-  name: z.string().min(2, 'İsim en az 2 karakter olmalıdır').max(255).trim(),
+  first_name: z.string().min(2, 'Ad en az 2 karakter olmalıdır').max(150, 'Ad en fazla 150 karakter olabilir').trim(),
+  last_name: z.string().min(2, 'Soyad en az 2 karakter olmalıdır').max(150, 'Soyad en fazla 150 karakter olabilir').trim(),
   email: z.string().email('Geçersiz e-posta adresi').max(255).trim(),
   phone: z.string().min(7, 'Telefon numarası en az 7 karakter olmalıdır').max(30).trim(),
   cover_letter: z.string().max(2000, 'Niyet mektubu en fazla 2000 karakter olabilir').optional().default('').transform(val => val.trim()),
@@ -167,7 +168,8 @@ export async function submitJobApplication(rawFormData: FormData) {
     // 2. Parse text fields
     const parsedData = {
       position_id: rawFormData.get('position_id')?.toString() || '',
-      name: rawFormData.get('name')?.toString() || '',
+      first_name: rawFormData.get('first_name')?.toString() || '',
+      last_name: rawFormData.get('last_name')?.toString() || '',
       email: rawFormData.get('email')?.toString() || '',
       phone: rawFormData.get('phone')?.toString() || '',
       cover_letter: rawFormData.get('cover_letter')?.toString() || '',
@@ -238,7 +240,8 @@ export async function submitJobApplication(rawFormData: FormData) {
         {
           position_id: validated.position_id,
           original_position_id: validated.position_id,
-          name: validated.name,
+          first_name: validated.first_name,
+          last_name: validated.last_name,
           email: validated.email,
           phone: validated.phone,
           cover_letter: validated.cover_letter,

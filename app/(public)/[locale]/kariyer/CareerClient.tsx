@@ -69,7 +69,7 @@ export function CareerClient({ isEn, positions }: CareerClientProps) {
     nameLabel: isEn ? 'Full Name' : 'Ad Soyad',
     emailLabel: isEn ? 'Email Address' : 'E-posta Adresi',
     phoneLabel: isEn ? 'Phone Number' : 'Telefon Numarası',
-    coverLabel: isEn ? 'Cover Letter (Optional)' : 'Niyet Mektubu (Opsiyonel)',
+    coverLabel: isEn ? 'Cover Letter (Optional, Max 2000 Chars)' : 'Niyet Mektubu (Opsiyonel, Maks 2000 Karakter)',
     cvLabel: isEn ? 'Upload CV (PDF, Max 600KB)' : 'CV Yükle (PDF, Maks 600KB)',
     kvkkLabel: isEn
       ? 'I read and accept the KVKK Clarification Text.'
@@ -322,13 +322,26 @@ export function CareerClient({ isEn, positions }: CareerClientProps) {
 
                           <div className="flex flex-col gap-1.5">
                             <label className="text-slate-700 text-xs font-semibold uppercase tracking-wider">
-                              {t.nameLabel} <span className="text-red-500">*</span>
+                              {isEn ? 'First Name' : 'Ad'} <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
-                              name="name"
+                              name="first_name"
                               required
-                              placeholder={isEn ? 'John Doe' : 'Ahmet Yılmaz'}
+                              placeholder={isEn ? 'John' : 'Ahmet'}
+                              className="bg-white border border-slate-200 focus:border-[#01c1d3] text-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none w-full transition-colors"
+                            />
+                          </div>
+
+                          <div className="flex flex-col gap-1.5">
+                            <label className="text-slate-700 text-xs font-semibold uppercase tracking-wider">
+                              {isEn ? 'Last Name' : 'Soyad'} <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              name="last_name"
+                              required
+                              placeholder={isEn ? 'Doe' : 'Yılmaz'}
                               className="bg-white border border-slate-200 focus:border-[#01c1d3] text-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none w-full transition-colors"
                             />
                           </div>
@@ -346,7 +359,7 @@ export function CareerClient({ isEn, positions }: CareerClientProps) {
                             />
                           </div>
 
-                          <div className="flex flex-col gap-1.5 md:col-span-2">
+                          <div className="flex flex-col gap-1.5">
                             <label className="text-slate-700 text-xs font-semibold uppercase tracking-wider">
                               {t.phoneLabel} <span className="text-red-500">*</span>
                             </label>
@@ -366,6 +379,7 @@ export function CareerClient({ isEn, positions }: CareerClientProps) {
                             <textarea
                               name="cover_letter"
                               rows={4}
+                              maxLength={2000}
                               placeholder={isEn ? 'Tell us why you want to join Intechne...' : 'Intechne ekibine neden katılmak istediğinizi kısaca açıklayın...'}
                               className="bg-white border border-slate-200 focus:border-[#01c1d3] text-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none w-full transition-colors resize-none"
                             />

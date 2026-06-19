@@ -49,7 +49,8 @@ interface JobPosition {
 interface JobApplication {
   id: string;
   position_id: string | null;
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   cover_letter: string;
@@ -243,7 +244,8 @@ export function CareersManager({ initialPositions, initialApplications }: Career
         ).padStart(2, '0')}.${date.getFullYear()}`;
         
         return {
-          'Aday Adı Soyadı': app.name,
+          'Aday Adı': app.first_name,
+          'Aday Soyadı': app.last_name,
           'E-posta': app.email,
           'Telefon': app.phone,
           'Başvurulan Pozisyon (TR)': app.position_title_tr || app.job_positions?.title_tr || 'Kapatılmış / Silinmiş Pozisyon',
@@ -479,7 +481,7 @@ export function CareersManager({ initialPositions, initialApplications }: Career
                       return (
                         <tr key={app.id} className="hover:bg-slate-900/40 transition-colors">
                           <td className="px-6 py-4 flex flex-col gap-1">
-                            <span className="font-bold text-white">{app.name}</span>
+                            <span className="font-bold text-white">{app.first_name} {app.last_name}</span>
                             <div className="flex items-center gap-4 text-xs text-slate-500">
                               <span className="flex items-center gap-1">
                                 <Mail className="w-3.5 h-3.5" />
@@ -771,7 +773,7 @@ export function CareersManager({ initialPositions, initialApplications }: Career
               <div className="flex flex-col gap-3">
                 <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Aday Bilgileri</span>
                 <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col gap-2">
-                  <span className="text-white font-bold text-base">{viewingApp.name}</span>
+                  <span className="text-white font-bold text-base">{viewingApp.first_name} {viewingApp.last_name}</span>
                   <span className="text-slate-300 text-sm flex items-center gap-2">
                     <Mail className="w-4 h-4 text-primary" /> {viewingApp.email}
                   </span>

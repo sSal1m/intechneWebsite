@@ -15,7 +15,8 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
 
   // Localization resources
   const t = {
-    nameLabel: isEn ? 'Full Name' : 'Ad Soyad',
+    firstNameLabel: isEn ? 'First Name' : 'Ad',
+    lastNameLabel: isEn ? 'Last Name' : 'Soyad',
     birthLabel: isEn ? 'Birth Date' : 'Doğum Tarihi',
     genderLabel: isEn ? 'Gender' : 'Cinsiyet',
     genderSelect: isEn ? 'Select Gender' : 'Cinsiyet Seçiniz',
@@ -48,7 +49,8 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
     submitBtn: isEn ? 'Become a Volunteer' : 'Gönüllü Ol',
     submittingBtn: isEn ? 'Submitting...' : 'Başvuru İletiliyor...',
     successMsg: isEn ? 'Your application has been received successfully!' : 'Gönüllü başvurunuz başarıyla alınmıştır!',
-    placeholderName: isEn ? 'John Doe' : 'Ahmet Yılmaz',
+    placeholderFirstName: isEn ? 'John' : 'Ahmet',
+    placeholderLastName: isEn ? 'Doe' : 'Yılmaz',
     placeholderPhone: '0555 555 5555',
     placeholderCity: isEn ? 'Istanbul' : 'İstanbul',
     placeholderJob: isEn ? 'Student / Software Engineer' : 'Öğrenci / Yazılım Mühendisi',
@@ -97,17 +99,32 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Ad Soyad */}
+          {/* Ad */}
           <div className="flex flex-col gap-2">
             <label className="text-slate-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
               <User className="w-4 h-4 text-[#01c1d3]" />
-              {t.nameLabel} <span className="text-red-500 font-bold">*</span>
+              {t.firstNameLabel} <span className="text-red-500 font-bold">*</span>
             </label>
             <input
               type="text"
-              name="name_surname"
+              name="first_name"
               required
-              placeholder={t.placeholderName}
+              placeholder={t.placeholderFirstName}
+              className="bg-white border border-slate-200 focus:border-[#01c1d3] text-slate-800 rounded-xl px-4 py-3.5 text-sm focus:outline-none w-full transition-colors"
+            />
+          </div>
+
+          {/* Soyad */}
+          <div className="flex flex-col gap-2">
+            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <User className="w-4 h-4 text-[#01c1d3]" />
+              {t.lastNameLabel} <span className="text-red-500 font-bold">*</span>
+            </label>
+            <input
+              type="text"
+              name="last_name"
+              required
+              placeholder={t.placeholderLastName}
               className="bg-white border border-slate-200 focus:border-[#01c1d3] text-slate-800 rounded-xl px-4 py-3.5 text-sm focus:outline-none w-full transition-colors"
             />
           </div>
@@ -190,7 +207,7 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
           </div>
 
           {/* Okul/Bölüm */}
-          <div className="flex flex-col gap-2 md:col-span-2">
+          <div className="flex flex-col gap-2">
             <label className="text-slate-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
               <GraduationCap className="w-4 h-4 text-[#01c1d3]" />
               {t.schoolLabel} <span className="text-red-500 font-bold">*</span>

@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS job_positions (
     requirements_tr TEXT NOT NULL,
     requirements_en TEXT NOT NULL,
     order_index INT DEFAULT 0,
+    is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -22,11 +23,15 @@ CREATE TABLE IF NOT EXISTS job_positions (
 CREATE TABLE IF NOT EXISTS job_applications (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     position_id UUID REFERENCES job_positions(id) ON DELETE SET NULL,
-    name VARCHAR(255) NOT NULL,
+    original_position_id UUID,
+    first_name VARCHAR(150) NOT NULL,
+    last_name VARCHAR(150) NOT NULL,
     email VARCHAR(255) NOT NULL,
     phone VARCHAR(100) NOT NULL,
     cover_letter TEXT,
     cv_path TEXT NOT NULL, -- Storage bucket path
+    position_title_tr VARCHAR(255),
+    position_title_en VARCHAR(255),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

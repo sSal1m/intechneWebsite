@@ -6,7 +6,8 @@ import { revalidatePath } from 'next/cache';
 import { moveToTrash } from './trash-bin';
 
 const volunteerSchema = z.object({
-  name_surname: z.string().min(2, 'İsim en az 2 karakter olmalıdır').max(100, 'İsim en fazla 100 karakter olabilir').trim(),
+  first_name: z.string().min(2, 'Ad en az 2 karakter olmalıdır').max(150, 'Ad en fazla 150 karakter olabilir').trim(),
+  last_name: z.string().min(2, 'Soyad en az 2 karakter olmalıdır').max(150, 'Soyad en fazla 150 karakter olabilir').trim(),
   birth_date: z.string().refine(val => !isNaN(Date.parse(val)), 'Geçersiz doğum tarihi'),
   gender: z.enum(['Kadin', 'Erkek']),
   phone: z.string().min(7, 'Telefon numarası en az 7 karakter olmalıdır').max(30, 'Telefon numarası en fazla 30 karakter olabilir').trim(),
@@ -35,7 +36,8 @@ export async function submitVolunteerForm(rawFormData: FormData) {
 
   // 2. Parse fields
   const parsedData = {
-    name_surname: rawFormData.get('name_surname')?.toString() || '',
+    first_name: rawFormData.get('first_name')?.toString() || '',
+    last_name: rawFormData.get('last_name')?.toString() || '',
     birth_date: rawFormData.get('birth_date')?.toString() || '',
     gender: rawFormData.get('gender')?.toString() || '',
     phone: rawFormData.get('phone')?.toString() || '',

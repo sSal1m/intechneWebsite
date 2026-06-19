@@ -20,7 +20,8 @@ import { createClient } from '@/src/utils/supabase/client';
 
 interface Volunteer {
   id: string;
-  name_surname: string;
+  first_name: string;
+  last_name: string;
   birth_date: string;
   gender: string;
   phone: string;
@@ -120,15 +121,16 @@ export function VolunteersManager({ initialVolunteers }: VolunteersManagerProps)
         ).padStart(2, '0')}.${date.getFullYear()}`;
         
         return {
-          'Adı Soyadı': v.name_surname,
+          'Adı': v.first_name,
+          'Soyadı': v.last_name,
           'Doğum Tarihi': v.birth_date,
           'Cinsiyet': v.gender === 'Kadin' ? 'Kadın' : 'Erkek',
           'Telefon': v.phone,
           'Şehir': v.city,
           'İş/Eğitim Durumu': v.employment_status,
           'Okul/Bölüm': v.school_department,
-          'Gıda Alerjileri': v.food_allergies || 'Yok',
-          'Rahatsızlık Durumu': v.medical_conditions || 'Yok',
+          'Gıda Alerjileri': v.food_allergies || '',
+          'Rahatsızlık Durumu': v.medical_conditions || '',
           'Başvuru Tarihi': formattedDate
         };
       });
@@ -180,7 +182,7 @@ export function VolunteersManager({ initialVolunteers }: VolunteersManagerProps)
               >
                 <div className="flex justify-between items-start gap-4">
                   <div className="flex flex-col gap-1 min-w-0">
-                    <span className="font-bold text-sm text-white line-clamp-1">{v.name_surname}</span>
+                    <span className="font-bold text-sm text-white line-clamp-1">{v.first_name} {v.last_name}</span>
                     <span className="text-slate-400 text-xs flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5 text-primary" /> {v.city}
                     </span>
@@ -217,7 +219,7 @@ export function VolunteersManager({ initialVolunteers }: VolunteersManagerProps)
                     <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Aday Bilgisi</span>
                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
                       <User className="w-4 h-4 text-primary" />
-                      {selectedVolunteer.name_surname}
+                      {selectedVolunteer.first_name} {selectedVolunteer.last_name}
                     </h3>
                   </div>
 
@@ -265,14 +267,14 @@ export function VolunteersManager({ initialVolunteers }: VolunteersManagerProps)
                 <div className="flex flex-col gap-4 border-t border-slate-800/50 pt-4">
                   <div className="flex flex-col gap-1.5">
                     <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Gıda Alerjileri</span>
-                    <div className="bg-slate-900 border border-slate-800/80 rounded-xl p-4 text-xs text-slate-400">
-                      {selectedVolunteer.food_allergies || 'Gıda alerjisi bulunmuyor.'}
+                    <div className="bg-slate-900 border border-slate-800/80 rounded-xl p-4 text-xs text-slate-400 min-h-[48px]">
+                      {selectedVolunteer.food_allergies || ''}
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Rahatsızlık Durumu</span>
-                    <div className="bg-slate-900 border border-slate-800/80 rounded-xl p-4 text-xs text-slate-400">
-                      {selectedVolunteer.medical_conditions || 'Bildirilen kronik rahatsızlık bulunmuyor.'}
+                    <div className="bg-slate-900 border border-slate-800/80 rounded-xl p-4 text-xs text-slate-400 min-h-[48px]">
+                      {selectedVolunteer.medical_conditions || ''}
                     </div>
                   </div>
                 </div>
