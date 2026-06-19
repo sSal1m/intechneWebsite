@@ -1,5 +1,5 @@
 import { createClient } from '@/src/utils/supabase/server';
-import { Mail, FileText, Users, Sliders, ArrowRight } from 'lucide-react';
+import { Mail, FileText, Users, Sliders, ArrowRight, FolderArchive, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
 export const revalidate = 0; // Disable caching for the admin dashboard home
@@ -24,6 +24,14 @@ export default async function AdminDashboardPage() {
     .from('sliders')
     .select('*', { count: 'exact', head: true });
 
+  const { count: identityCount } = await supabase
+    .from('corporate_identity')
+    .select('*', { count: 'exact', head: true });
+
+  const { count: interactiveCount } = await supabase
+    .from('interactive')
+    .select('*', { count: 'exact', head: true });
+
   // Fetch 5 recent messages
   const { data: recentMessages } = await supabase
     .from('messages')
@@ -36,6 +44,8 @@ export default async function AdminDashboardPage() {
     { label: 'Haber Sayısı', value: newsCount || 0, href: '/admin/news', icon: FileText, color: 'text-emerald-400 bg-emerald-400/10' },
     { label: 'Ekip Üyeleri', value: teamCount || 0, href: '/admin/team', icon: Users, color: 'text-amber-400 bg-amber-400/10' },
     { label: 'Aktif Slaytlar', value: slidersCount || 0, href: '/admin/sliders', icon: Sliders, color: 'text-indigo-400 bg-indigo-400/10' },
+    { label: 'Kurumsal Kimlik', value: identityCount || 0, href: '/admin/identity', icon: FolderArchive, color: 'text-pink-400 bg-pink-400/10' },
+    { label: 'İnteraktif Yayınlar', value: interactiveCount || 0, href: '/admin/interactive', icon: BookOpen, color: 'text-cyan-400 bg-cyan-400/10' },
   ];
 
   return (
@@ -49,7 +59,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {stats.map((stat, idx) => {
           const Icon = stat.icon;
           return (
