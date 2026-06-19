@@ -8,14 +8,26 @@ import { extractStoragePath } from '@/src/utils/storage';
 export async function getNews(categorySlug?: string) {
   try {
     const supabase = await createClient();
-    let query = supabase.from('news').select('*').order('published_at', { ascending: false });
+    let query = supabase.from('news').select('*').order('order_index', { ascending: true }).order('published_at', { ascending: false });
 
     if (categorySlug && categorySlug !== 'all') {
       query = query.eq('category_slug', categorySlug);
     }
 
     const { data, error } = await query;
-    if (error) throw new Error(error.message);
+    if (error) {
+      // Fallback if order_index column doesn't exist in DB yet
+      if (error.code === '42703' || error.message.includes('order_index')) {
+        let fallbackQuery = supabase.from('news').select('*').order('published_at', { ascending: false });
+        if (categorySlug && categorySlug !== 'all') {
+          fallbackQuery = fallbackQuery.eq('category_slug', categorySlug);
+        }
+        const fallbackResult = await fallbackQuery;
+        if (fallbackResult.error) throw new Error(fallbackResult.error.message);
+        return fallbackResult.data || [];
+      }
+      throw new Error(error.message);
+    }
     return data || [];
   } catch (error: any) {
     console.error('getNews error:', error);
@@ -110,6 +122,7 @@ export async function createNews(formData: {
   category_slug?: string;
   image_url?: string;
   published_at?: string;
+  order_index?: number;
 }) {
   try {
     const supabase = await createClient();
@@ -132,14 +145,16 @@ export async function createNews(formData: {
           category_slug: formData.category_slug || null,
           image_url: formData.image_url || '',
           published_at: formData.published_at || new Date().toISOString(),
+          order_index: formData.order_index === 0 || !formData.order_index ? 999999 : formData.order_index,
         },
       ])
       .select();
 
     if (error) throw new Error(error.message);
 
-    revalidatePath('/[locale]/haberler', 'page');
     revalidatePath('/');
+    revalidatePath('/[locale]/haberler', 'page');
+    revalidatePath('/[locale]/haberler/[id]', 'page');
     return { success: true, data };
   } catch (error: any) {
     console.error('createNews error:', error);
@@ -160,6 +175,7 @@ export async function updateNews(
     category_slug?: string;
     image_url?: string;
     published_at?: string;
+    order_index?: number;
   }
 ) {
   try {
@@ -182,15 +198,16 @@ export async function updateNews(
         category_slug: formData.category_slug || null,
         image_url: formData.image_url || '',
         published_at: formData.published_at || new Date().toISOString(),
+        order_index: formData.order_index === 0 || !formData.order_index ? 999999 : formData.order_index,
       })
       .eq('id', id)
       .select();
 
     if (error) throw new Error(error.message);
 
-    revalidatePath('/[locale]/haberler', 'page');
-    revalidatePath(`/[locale]/haberler/${id}`, 'page');
     revalidatePath('/');
+    revalidatePath('/[locale]/haberler', 'page');
+    revalidatePath('/[locale]/haberler/[id]', 'page');
     return { success: true, data };
   } catch (error: any) {
     console.error('updateNews error:', error);

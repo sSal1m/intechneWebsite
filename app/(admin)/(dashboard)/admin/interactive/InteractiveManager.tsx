@@ -16,6 +16,7 @@ interface InteractiveItem {
   file_url?: string;
   video_url?: string;
   image_url?: string;
+  order_index?: number;
   created_at: string;
 }
 
@@ -43,6 +44,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
   const [fileUrl, setFileUrl] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [orderIndex, setOrderIndex] = useState(0);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
 
@@ -57,6 +59,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
     setFileUrl('');
     setVideoUrl('');
     setImageUrl('');
+    setOrderIndex(0);
     setIsModalOpen(true);
   }
 
@@ -71,6 +74,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
     setFileUrl(item.file_url || '');
     setVideoUrl(item.video_url || '');
     setImageUrl(item.image_url || '');
+    setOrderIndex(item.order_index === 999999 || !item.order_index ? 0 : item.order_index);
     setIsModalOpen(true);
   }
 
@@ -118,13 +122,21 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
         file_url: type === 'report' || type === 'interactive' ? fileUrl : undefined,
         video_url: type === 'video' ? videoUrl : undefined,
         image_url: imageUrl,
+        order_index: orderIndex,
+      };
+
+      const sortItems = (a: InteractiveItem, b: InteractiveItem) => {
+        const orderA = a.order_index === 0 || !a.order_index || a.order_index === 999999 ? 999999 : a.order_index;
+        const orderB = b.order_index === 0 || !b.order_index || b.order_index === 999999 ? 999999 : b.order_index;
+        if (orderA !== orderB) return orderA - orderB;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       };
 
       if (editingItem) {
         const result = await updateInteractiveItem(editingItem.id, payload);
         if (result.success && result.data) {
           const updated = result.data[0];
-          setItems(items.map((i) => (i.id === editingItem.id ? updated : i)));
+          setItems(items.map((i) => (i.id === editingItem.id ? updated : i)).sort(sortItems));
           setIsModalOpen(false);
         } else {
           alert('Güncelleme hatası: ' + result.error);
@@ -133,7 +145,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
         const result = await createInteractiveItem(payload);
         if (result.success && result.data) {
           const created = result.data[0];
-          setItems([created, ...items]);
+          setItems([created, ...items].sort(sortItems));
           setIsModalOpen(false);
         } else {
           alert('Ekleme hatası: ' + result.error);
@@ -205,6 +217,10 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
                 <span className={`absolute top-3 left-3 border text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1 ${typeInfo.color}`}>
                   <TypeIcon className="w-2.5 h-2.5" />
                   {typeInfo.label}
+                </span>
+
+                <span className="absolute top-3 right-3 bg-slate-900/80 text-slate-300 border border-slate-800 font-bold text-[9px] px-2 py-0.5 rounded-md uppercase tracking-wider">
+                  Sıra: {item.order_index === 999999 || !item.order_index ? 0 : item.order_index}
                 </span>
               </div>
 
@@ -449,6 +465,18 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
                     value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
                     placeholder="https://..."
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5 col-span-2 border-t border-slate-800 pt-3 mt-1">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Sıra Numarası (Order Index)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={orderIndex}
+                    onChange={(e) => setOrderIndex(parseInt(e.target.value) || 0)}
+                    placeholder="Varsayılan: 0"
                     className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
                   />
                 </div>

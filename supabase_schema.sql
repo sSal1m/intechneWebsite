@@ -79,6 +79,7 @@ CREATE TABLE interactive (
     file_url TEXT,
     video_url TEXT,
     image_url TEXT,
+    order_index INT DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -122,6 +123,7 @@ CREATE TABLE news (
     category_slug VARCHAR(50) REFERENCES news_categories(slug) ON DELETE SET NULL,
     image_url TEXT,
     published_at TIMESTAMPTZ DEFAULT NOW(),
+    order_index INT DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -203,8 +205,10 @@ CREATE POLICY "Admin kurumsal kimligi yonetebilir" ON corporate_identity
 
 
 -- H. MİGRASYON SORGUSU (MEVCUT VERİTABANINA UYGULAMAK İÇİN)
--- Mevcut veritabanında bu kolonu eklemek için Supabase SQL Editor'de aşağıdaki satırı çalıştırın:
+-- Mevcut veritabanında bu kolonları eklemek için Supabase SQL Editor'de aşağıdaki satırları çalıştırın:
 -- ALTER TABLE corporate_identity ADD COLUMN IF NOT EXISTS order_index INTEGER DEFAULT 0;
+-- ALTER TABLE news ADD COLUMN IF NOT EXISTS order_index INT DEFAULT 0;
+-- ALTER TABLE interactive ADD COLUMN IF NOT EXISTS order_index INT DEFAULT 0;
 
 -- I. Çöp Kutusu Tablosu ve Politikaları
 CREATE TABLE IF NOT EXISTS trash_bin (

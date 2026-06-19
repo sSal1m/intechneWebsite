@@ -17,6 +17,7 @@ interface NewsItem {
   category_slug?: string;
   image_url?: string;
   published_at: string;
+  order_index?: number;
 }
 
 interface Category {
@@ -98,6 +99,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
   const [categorySlug, setCategorySlug] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [publishedAt, setPublishedAt] = useState('');
+  const [orderIndex, setOrderIndex] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [inContentMediaUrl, setInContentMediaUrl] = useState('');
   const [inContentUploading, setInContentUploading] = useState(false);
@@ -115,6 +117,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
     setCategorySlug(categories[0]?.slug || '');
     setImageUrl('');
     setInContentMediaUrl('');
+    setOrderIndex(0);
     // Default to current local time in datetime-local format (YYYY-MM-DDTHH:MM)
     const localNow = new Date();
     localNow.setMinutes(localNow.getMinutes() - localNow.getTimezoneOffset());
@@ -134,6 +137,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
     setCategorySlug(news.category_slug || '');
     setImageUrl(news.image_url || '');
     setInContentMediaUrl('');
+    setOrderIndex(news.order_index === 999999 || !news.order_index ? 0 : news.order_index);
     
     // Format published_at to local datetime-local format
     const dateObj = new Date(news.published_at);
@@ -217,6 +221,14 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
         category_slug: categorySlug || undefined,
         image_url: imageUrl,
         published_at: new Date(publishedAt).toISOString(),
+        order_index: orderIndex,
+      };
+
+      const sortNews = (a: NewsItem, b: NewsItem) => {
+        const orderA = a.order_index === 0 || !a.order_index || a.order_index === 999999 ? 999999 : a.order_index;
+        const orderB = b.order_index === 0 || !b.order_index || b.order_index === 999999 ? 999999 : b.order_index;
+        if (orderA !== orderB) return orderA - orderB;
+        return new Date(b.published_at).getTime() - new Date(a.published_at).getTime();
       };
 
       if (editingNews) {
@@ -224,7 +236,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
         const result = await updateNews(editingNews.id, payload);
         if (result.success && result.data) {
           const updated = result.data[0];
-          setNewsList(newsList.map((n) => (n.id === editingNews.id ? updated : n)).sort((a,b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime()));
+          setNewsList(newsList.map((n) => (n.id === editingNews.id ? updated : n)).sort(sortNews));
           setIsModalOpen(false);
         } else {
           alert('Güncelleme hatası: ' + result.error);
@@ -234,7 +246,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
         const result = await createNews(payload);
         if (result.success && result.data) {
           const created = result.data[0];
-          setNewsList([created, ...newsList].sort((a,b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime()));
+          setNewsList([created, ...newsList].sort(sortNews));
           setIsModalOpen(false);
         } else {
           alert('Ekleme hatası: ' + result.error);
@@ -332,6 +344,10 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
                   {categories.find((c) => c.slug === news.category_slug)?.name_tr || news.tag}
                 </span>
               )}
+
+              <span className="absolute top-3 right-3 bg-slate-900/80 text-slate-300 border border-slate-800 font-bold text-[9px] px-2 py-0.5 rounded-md uppercase tracking-wider">
+                Sıra: {news.order_index === 999999 || !news.order_index ? 0 : news.order_index}
+              </span>
             </div>
 
             {/* Title & info */}
@@ -612,6 +628,18 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
                     value={publishedAt}
                     onChange={(e) => setPublishedAt(e.target.value)}
                     className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full cursor-pointer"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Sıra Numarası (Order Index)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={orderIndex}
+                    onChange={(e) => setOrderIndex(parseInt(e.target.value) || 0)}
+                    placeholder="Varsayılan: 0"
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
                   />
                 </div>
 

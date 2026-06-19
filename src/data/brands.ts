@@ -60,7 +60,7 @@ export const brands: Brand[] = [
     shortDescription: 'Intechne ekosisteminin sınırları zorlayan vizyoner yazılım ve üretim arenası olan Hack the Future Maratonları; kesintisiz kodlama hackathonları, derin teknoloji (deep-tech) odaklı hızlı prototipleme yarışmaları, yapay zeka geliştirme kampları ve ileri düzey problem çözme etkinlikleri gibi birçok faaliyete ev sahipliği yaparak gençlerin analitik zekasını inovatif projelere dönüştürmeyi amaçlamaktadır.',
     stats: [],
     logoAlt: 'Hack the Future Maratonları Logo',
-    accentColor: '#A90432',
+    accentColor: '',
     logoUrl: '/brands/Hack-the-Future-Logo.png',
   },
   {
