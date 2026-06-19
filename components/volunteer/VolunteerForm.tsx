@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import { submitVolunteerForm } from '@/src/actions/volunteers';
-import { User, Calendar, Users, Phone, MapPin, Briefcase, GraduationCap, AlertCircle, Sparkles } from 'lucide-react';
+import { User, Calendar, Users, Phone, MapPin, Briefcase, GraduationCap, AlertCircle, Heart } from 'lucide-react';
 
 interface VolunteerFormProps {
   isEn: boolean;
@@ -280,7 +280,7 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4" />
+                <Heart className="w-4 h-4 fill-current" />
                 {t.submitBtn}
               </>
             )}
