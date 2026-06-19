@@ -14,7 +14,8 @@ import {
   FolderArchive,
   TrendingUp,
   Trash2,
-  Cpu
+  Cpu,
+  Briefcase
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -64,6 +65,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { label: 'İnteraktif Yayınlar', href: '/admin/interactive', icon: BookOpen },
     { label: 'Kurumsal Kimlik', href: '/admin/identity', icon: FolderArchive },
     { label: 'Gelen Mesajlar', href: '/admin/messages', icon: Mail },
+    { label: 'Kariyer', href: '/admin/careers', icon: Briefcase },
     { label: 'Çöp Kutusu', href: '/admin/trash', icon: Trash2 },
   ];
 

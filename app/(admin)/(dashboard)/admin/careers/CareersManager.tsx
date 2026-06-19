@@ -1,0 +1,689 @@
+'use client';
+
+import { useState, useTransition } from 'react';
+import { 
+  createJobPosition, 
+  updateJobPosition, 
+  deleteJobPosition,
+  generateCVDownloadUrl 
+} from '@/src/actions/careers';
+import { 
+  Briefcase, 
+  Users, 
+  Plus, 
+  Edit, 
+  Trash2, 
+  X, 
+  MapPin, 
+  Building2, 
+  Download, 
+  Eye,
+  FileText,
+  Calendar,
+  Phone,
+  Mail,
+  Loader2
+} from 'lucide-react';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
+
+interface JobPosition {
+  id: string;
+  title_tr: string;
+  title_en: string;
+  department_tr: string;
+  department_en: string;
+  location_tr: string;
+  location_en: string;
+  type_tr: string;
+  type_en: string;
+  description_tr: string;
+  description_en: string;
+  requirements_tr: string;
+  requirements_en: string;
+  order_index: number;
+}
+
+interface JobApplication {
+  id: string;
+  position_id: string | null;
+  name: string;
+  email: string;
+  phone: string;
+  cover_letter: string;
+  cv_path: string;
+  created_at: string;
+  job_positions: {
+    title_tr: string;
+    title_en: string;
+  } | null;
+}
+
+interface CareersManagerProps {
+  initialPositions: JobPosition[];
+  initialApplications: JobApplication[];
+}
+
+export function CareersManager({ initialPositions, initialApplications }: CareersManagerProps) {
+  const [activeTab, setActiveTab] = useState<'positions' | 'applications'>('positions');
+  const [positions, setPositions] = useState<JobPosition[]>(initialPositions);
+  const [applications, setApplications] = useState<JobApplication[]>(initialApplications);
+  
+  const [isPending, startTransition] = useTransition();
+  
+  // Modals state
+  const [isPosModalOpen, setIsPosModalOpen] = useState(false);
+  const [editingPosition, setEditingPosition] = useState<JobPosition | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [posToDelete, setPosToDelete] = useState<string | null>(null);
+
+  // Application details modal
+  const [viewingApp, setViewingApp] = useState<JobApplication | null>(null);
+
+  // Loading state for signed URL generation
+  const [downloadingCvId, setDownloadingCvId] = useState<string | null>(null);
+
+  // Position Form State
+  const [titleTr, setTitleTr] = useState('');
+  const [titleEn, setTitleEn] = useState('');
+  const [deptTr, setDeptTr] = useState('');
+  const [deptEn, setDeptEn] = useState('');
+  const [locTr, setLocTr] = useState('');
+  const [locEn, setLocEn] = useState('');
+  const [typeTr, setTypeTr] = useState('');
+  const [typeEn, setTypeEn] = useState('');
+  const [descTr, setDescTr] = useState('');
+  const [descEn, setDescEn] = useState('');
+  const [reqTr, setReqTr] = useState('');
+  const [reqEn, setReqEn] = useState('');
+  const [orderIndex, setOrderIndex] = useState(0);
+
+  function openAddPosModal() {
+    setEditingPosition(null);
+    setTitleTr('');
+    setTitleEn('');
+    setDeptTr('');
+    setDeptEn('');
+    setLocTr('');
+    setLocEn('');
+    setTypeTr('');
+    setTypeEn('');
+    setDescTr('');
+    setDescEn('');
+    setReqTr('');
+    setReqEn('');
+    setOrderIndex(positions.length);
+    setIsPosModalOpen(true);
+  }
+
+  function openEditPosModal(pos: JobPosition) {
+    setEditingPosition(pos);
+    setTitleTr(pos.title_tr);
+    setTitleEn(pos.title_en);
+    setDeptTr(pos.department_tr);
+    setDeptEn(pos.department_en);
+    setLocTr(pos.location_tr);
+    setLocEn(pos.location_en);
+    setTypeTr(pos.type_tr);
+    setTypeEn(pos.type_en);
+    setDescTr(pos.description_tr);
+    setDescEn(pos.description_en);
+    setReqTr(pos.requirements_tr);
+    setReqEn(pos.requirements_en);
+    setOrderIndex(pos.order_index);
+    setIsPosModalOpen(true);
+  }
+
+  function handlePosSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    const payload = {
+      title_tr: titleTr,
+      title_en: titleEn,
+      department_tr: deptTr,
+      department_en: deptEn,
+      location_tr: locTr,
+      location_en: locEn,
+      type_tr: typeTr,
+      type_en: typeEn,
+      description_tr: descTr,
+      description_en: descEn,
+      requirements_tr: reqTr,
+      requirements_en: reqEn,
+      order_index: orderIndex,
+    };
+
+    startTransition(async () => {
+      if (editingPosition) {
+        // Update
+        const result = await updateJobPosition(editingPosition.id, payload);
+        if (result.success && result.data) {
+          const updated = result.data[0] as JobPosition;
+          setPositions(
+            positions
+              .map((p) => (p.id === editingPosition.id ? updated : p))
+              .sort((a, b) => a.order_index - b.order_index)
+          );
+          setIsPosModalOpen(false);
+        } else {
+          alert('Hata: ' + result.error);
+        }
+      } else {
+        // Create
+        const result = await createJobPosition(payload);
+        if (result.success && result.data) {
+          const created = result.data[0] as JobPosition;
+          setPositions(
+            [...positions, created].sort((a, b) => a.order_index - b.order_index)
+          );
+          setIsPosModalOpen(false);
+        } else {
+          alert('Hata: ' + result.error);
+        }
+      }
+    });
+  }
+
+  function executePosDelete() {
+    if (!posToDelete) return;
+    startTransition(async () => {
+      const result = await deleteJobPosition(posToDelete);
+      if (result.success) {
+        setPositions(positions.filter((p) => p.id !== posToDelete));
+        setDeleteConfirmOpen(false);
+      } else {
+        alert('Hata: ' + result.error);
+      }
+    });
+  }
+
+  async function handleDownloadCv(cvPath: string, appId: string) {
+    if (downloadingCvId) return;
+    setDownloadingCvId(appId);
+
+    try {
+      const result = await generateCVDownloadUrl(cvPath);
+      if (result.success && result.url) {
+        window.open(result.url, '_blank');
+      } else {
+        alert('CV İndirme Linki Üretilemedi: ' + result.error);
+      }
+    } catch (err: any) {
+      alert('Bir hata oluştu: ' + err.message);
+    } finally {
+      setDownloadingCvId(null);
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-6">
+      
+      {/* Sub Tabs */}
+      <div className="flex border-b border-slate-800 gap-4">
+        <button
+          onClick={() => setActiveTab('positions')}
+          className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm transition-colors border-b-2 ${
+            activeTab === 'positions'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-slate-400 hover:text-white'
+          }`}
+        >
+          <Briefcase className="w-4 h-4" />
+          Açık Pozisyonlar ({positions.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('applications')}
+          className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm transition-colors border-b-2 ${
+            activeTab === 'applications'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-slate-400 hover:text-white'
+          }`}
+        >
+          <Users className="w-4 h-4" />
+          Gelen Başvurular ({applications.length})
+        </button>
+      </div>
+
+      {/* POSITIONS TAB */}
+      {activeTab === 'positions' && (
+        <div className="flex flex-col gap-6 animate-fadeIn">
+          <div className="flex justify-between items-center">
+            <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider">
+              Aktif İş İlanları
+            </span>
+            <button
+              onClick={openAddPosModal}
+              className="bg-primary hover:bg-primary-dark text-slate-950 font-bold px-4 py-2.5 rounded-xl transition-all duration-200 text-sm flex items-center gap-2 shadow-lg shadow-primary/10"
+            >
+              <Plus className="w-4 h-4" />
+              Pozisyon Ekle
+            </button>
+          </div>
+
+          {positions.length === 0 ? (
+            <div className="text-center py-12 bg-slate-950 border border-slate-800 rounded-2xl text-slate-500 text-sm">
+              Henüz eklenmiş bir pozisyon bulunmamaktadır.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {positions.map((pos) => (
+                <div
+                  key={pos.id}
+                  className="bg-slate-950 border border-slate-800 hover:border-slate-700 transition-all rounded-2xl p-6 flex flex-col gap-4 relative group"
+                >
+                  <div className="flex flex-col gap-1 pr-16">
+                    <h4 className="font-bold text-white text-base">{pos.title_tr}</h4>
+                    <span className="text-slate-400 text-xs">{pos.title_en}</span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 text-xs border-t border-slate-900 pt-3">
+                    <span className="inline-flex items-center gap-1 bg-slate-900 text-slate-300 px-2 py-1 rounded">
+                      <Building2 className="w-3.5 h-3.5 text-primary" />
+                      {pos.department_tr}
+                    </span>
+                    <span className="inline-flex items-center gap-1 bg-slate-900 text-slate-300 px-2 py-1 rounded">
+                      <MapPin className="w-3.5 h-3.5 text-primary" />
+                      {pos.location_tr}
+                    </span>
+                    <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded font-bold">
+                      {pos.type_tr}
+                    </span>
+                  </div>
+
+                  {/* Actions overlay */}
+                  <div className="absolute right-4 top-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-950 pl-2">
+                    <button
+                      onClick={() => openEditPosModal(pos)}
+                      className="text-slate-400 hover:text-primary p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
+                      title="Düzenle"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setPosToDelete(pos.id);
+                        setDeleteConfirmOpen(true);
+                      }}
+                      className="text-slate-400 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
+                      title="Sil"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <span className="absolute bottom-4 right-4 text-[9px] font-bold text-slate-600 uppercase">
+                    Sıra: {pos.order_index}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* APPLICATIONS TAB */}
+      {activeTab === 'applications' && (
+        <div className="flex flex-col gap-6 animate-fadeIn">
+          <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider">
+            Gönderilen CV ve Başvurular
+          </span>
+
+          {applications.length === 0 ? (
+            <div className="text-center py-12 bg-slate-950 border border-slate-800 rounded-2xl text-slate-500 text-sm">
+              Henüz bir başvuru bulunmamaktadır.
+            </div>
+          ) : (
+            <div className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm text-slate-300">
+                  <thead className="bg-[#0c0c0c] text-slate-400 text-xs font-bold uppercase tracking-wider border-b border-slate-800">
+                    <tr>
+                      <th className="px-6 py-4">Aday Bilgisi</th>
+                      <th className="px-6 py-4">Başvurulan Pozisyon</th>
+                      <th className="px-6 py-4">Tarih</th>
+                      <th className="px-6 py-4 text-right">İşlemler</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-900">
+                    {applications.map((app) => {
+                      // Optional chaining & fallback for deleted positions as requested
+                      const positionTitle = app.job_positions?.title_tr || 'Kapatılmış / Silinmiş Pozisyon';
+                      const isDeletedPos = !app.job_positions;
+
+                      return (
+                        <tr key={app.id} className="hover:bg-slate-900/40 transition-colors">
+                          <td className="px-6 py-4 flex flex-col gap-1">
+                            <span className="font-bold text-white">{app.name}</span>
+                            <div className="flex items-center gap-4 text-xs text-slate-500">
+                              <span className="flex items-center gap-1">
+                                <Mail className="w-3.5 h-3.5" />
+                                {app.email}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Phone className="w-3.5 h-3.5" />
+                                {app.phone}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={`font-semibold ${isDeletedPos ? 'text-red-400 italic' : 'text-slate-200'}`}>
+                              {positionTitle}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-slate-500 text-xs font-bold">
+                            {new Date(app.created_at).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })}
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => setViewingApp(app)}
+                                className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors text-xs font-bold flex items-center gap-1"
+                                title="Detayları Gör"
+                              >
+                                <Eye className="w-4 h-4" />
+                                Detay
+                              </button>
+                              <button
+                                onClick={() => handleDownloadCv(app.cv_path, app.id)}
+                                disabled={downloadingCvId !== null}
+                                className="text-primary hover:text-white p-1.5 rounded-lg hover:bg-primary/10 disabled:bg-transparent disabled:text-slate-700 transition-colors text-xs font-bold flex items-center gap-1"
+                                title="CV Dosyasını İndir/Görüntüle (1 dk geçerli imzalı url)"
+                              >
+                                {downloadingCvId === app.id ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <Download className="w-4 h-4" />
+                                )}
+                                CV
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* POSITIONS ADD/EDIT MODAL */}
+      {isPosModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsPosModalOpen(false)} />
+          
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl relative z-10 overflow-hidden max-h-[90vh] flex flex-col">
+            <header className="px-6 py-4 border-b border-slate-800 flex justify-between items-center flex-shrink-0">
+              <h3 className="font-bold text-white text-base">
+                {editingPosition ? 'Pozisyonu Düzenle' : 'Yeni Pozisyon Ekle'}
+              </h3>
+              <button onClick={() => setIsPosModalOpen(false)} className="text-slate-400 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </header>
+
+            <form onSubmit={handlePosSubmit} className="p-6 overflow-y-auto flex-1 flex flex-col gap-4">
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Pozisyon Başlığı (TR)</label>
+                  <input
+                    type="text"
+                    required
+                    value={titleTr}
+                    onChange={(e) => setTitleTr(e.target.value)}
+                    placeholder="Yazılım Geliştirici"
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Pozisyon Başlığı (EN)</label>
+                  <input
+                    type="text"
+                    required
+                    value={titleEn}
+                    onChange={(e) => setTitleEn(e.target.value)}
+                    placeholder="Software Developer"
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Departman (TR)</label>
+                  <input
+                    type="text"
+                    required
+                    value={deptTr}
+                    onChange={(e) => setDeptTr(e.target.value)}
+                    placeholder="Teknoloji & Ar-Ge"
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Departman (EN)</label>
+                  <input
+                    type="text"
+                    required
+                    value={deptEn}
+                    onChange={(e) => setDeptEn(e.target.value)}
+                    placeholder="Technology & R&D"
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Lokasyon (TR)</label>
+                  <input
+                    type="text"
+                    required
+                    value={locTr}
+                    onChange={(e) => setLocTr(e.target.value)}
+                    placeholder="İstanbul (Hibrit)"
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Lokasyon (EN)</label>
+                  <input
+                    type="text"
+                    required
+                    value={locEn}
+                    onChange={(e) => setLocEn(e.target.value)}
+                    placeholder="Istanbul (Hybrid)"
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Çalışma Türü (TR)</label>
+                  <input
+                    type="text"
+                    required
+                    value={typeTr}
+                    onChange={(e) => setTypeTr(e.target.value)}
+                    placeholder="Tam Zamanlı"
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Çalışma Türü (EN)</label>
+                  <input
+                    type="text"
+                    required
+                    value={typeEn}
+                    onChange={(e) => setTypeEn(e.target.value)}
+                    placeholder="Full-time"
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5 col-span-2">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">İş Tanımı (TR)</label>
+                  <textarea
+                    required
+                    rows={4}
+                    value={descTr}
+                    onChange={(e) => setDescTr(e.target.value)}
+                    placeholder="Pozisyonun genel sorumluluklarını yazın..."
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full resize-none font-sans"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5 col-span-2">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">İş Tanımı (EN)</label>
+                  <textarea
+                    required
+                    rows={4}
+                    value={descEn}
+                    onChange={(e) => setDescEn(e.target.value)}
+                    placeholder="Write the responsibilities in English..."
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full resize-none font-sans"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5 col-span-2">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Gereksinimler (TR)</label>
+                  <textarea
+                    required
+                    rows={4}
+                    value={reqTr}
+                    onChange={(e) => setReqTr(e.target.value)}
+                    placeholder="Adaylarda aranan nitelikleri listeleyin..."
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full resize-none font-sans"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5 col-span-2">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Gereksinimler (EN)</label>
+                  <textarea
+                    required
+                    rows={4}
+                    value={reqEn}
+                    onChange={(e) => setReqEn(e.target.value)}
+                    placeholder="List the requirements in English..."
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full resize-none font-sans"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Listeleme Sırası</label>
+                  <input
+                    type="number"
+                    required
+                    value={orderIndex}
+                    onChange={(e) => setOrderIndex(parseInt(e.target.value) || 0)}
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
+                  />
+                </div>
+              </div>
+
+              <footer className="border-t border-slate-800 pt-5 mt-4 flex items-center justify-end gap-3 flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIsPosModalOpen(false)}
+                  className="bg-slate-950 border border-slate-800 hover:bg-slate-900 text-slate-300 font-bold px-4 py-2.5 rounded-xl text-sm transition-colors"
+                >
+                  Vazgeç
+                </button>
+                <button
+                  type="submit"
+                  disabled={isPending}
+                  className="bg-primary hover:bg-primary-dark text-slate-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-colors"
+                >
+                  {isPending ? 'Kaydediliyor...' : 'Kaydet'}
+                </button>
+              </footer>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* VIEW APPLICATION DETAILS MODAL */}
+      {viewingApp && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setViewingApp(null)} />
+          
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl relative z-10 overflow-hidden flex flex-col">
+            <header className="px-6 py-4 border-b border-slate-800 flex justify-between items-center">
+              <h3 className="font-bold text-white text-base">Başvuru Detayı</h3>
+              <button onClick={() => setViewingApp(null)} className="text-slate-400 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </header>
+
+            <div className="p-6 flex flex-col gap-6 overflow-y-auto max-h-[70vh]">
+              {/* Candidate Info */}
+              <div className="flex flex-col gap-3">
+                <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Aday Bilgileri</span>
+                <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col gap-2">
+                  <span className="text-white font-bold text-base">{viewingApp.name}</span>
+                  <span className="text-slate-300 text-sm flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-primary" /> {viewingApp.email}
+                  </span>
+                  <span className="text-slate-300 text-sm flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-primary" /> {viewingApp.phone}
+                  </span>
+                </div>
+              </div>
+
+              {/* Position */}
+              <div className="flex flex-col gap-2">
+                <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Başvurulan Pozisyon</span>
+                <span className={`font-semibold ${!viewingApp.job_positions ? 'text-red-400 italic' : 'text-white'}`}>
+                  {viewingApp.job_positions?.title_tr || 'Kapatılmış / Silinmiş Pozisyon'}
+                </span>
+              </div>
+
+              {/* Date */}
+              <div className="flex flex-col gap-2">
+                <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Başvuru Tarihi</span>
+                <span className="text-slate-300 text-sm font-semibold">
+                  {new Date(viewingApp.created_at).toLocaleString('tr-TR', { dateStyle: 'long', timeStyle: 'short' })}
+                </span>
+              </div>
+
+              {/* Cover Letter */}
+              <div className="flex flex-col gap-2">
+                <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Niyet Mektubu</span>
+                <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-line bg-slate-950 border border-slate-800 rounded-xl p-4 max-h-48 overflow-y-auto">
+                  {viewingApp.cover_letter || 'Niyet mektubu eklenmemiş.'}
+                </p>
+              </div>
+
+              {/* CV Action */}
+              <div className="border-t border-slate-800 pt-4 flex justify-end">
+                <button
+                  onClick={() => handleDownloadCv(viewingApp.cv_path, viewingApp.id)}
+                  disabled={downloadingCvId !== null}
+                  className="bg-primary hover:bg-primary-dark text-slate-950 font-bold px-4 py-2.5 rounded-xl text-sm transition-colors flex items-center gap-2"
+                >
+                  {downloadingCvId === viewingApp.id ? (
+                    <Loader2 className="w-4.5 h-4.5 animate-spin" />
+                  ) : (
+                    <Download className="w-4.5 h-4.5" />
+                  )}
+                  CV Dosyasını Aç / İndir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* POSITION DELETE CONFIRMATION */}
+      <ConfirmModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={executePosDelete}
+        title="Pozisyonu Sil"
+        message="Bu iş pozisyonunu silmek istediğinize emin misiniz? Pozisyon silindiğinde, bu pozisyona ait başvuruların listelenmesindeki pozisyon bilgisi 'Kapatılmış / Silinmiş Pozisyon' olarak görünecektir."
+      />
+
+    </div>
+  );
+}
