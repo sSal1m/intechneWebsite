@@ -139,7 +139,7 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
               type="date"
               name="birth_date"
               required
-              className="bg-white border border-slate-200 focus:border-[#01c1d3] text-slate-800 rounded-xl px-4 py-3.5 text-sm focus:outline-none w-full transition-colors"
+              className="bg-white border border-slate-200 focus:border-[#01c1d3] text-slate-800 rounded-xl px-4 py-3.5 text-sm focus:outline-none w-full transition-colors appearance-none text-left"
             />
           </div>
 

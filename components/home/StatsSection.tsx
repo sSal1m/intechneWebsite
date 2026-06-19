@@ -64,8 +64,8 @@ export function StatsSection({ initialStats = [] }: StatsSectionProps) {
   return (
     <section className="bg-[#F7FAFB] py-16">
       <div ref={ref} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-          {/* Left: Title + description + image */}
+        <div className="grid grid-cols-1 lg:grid-cols-[35%_65%] gap-10 items-start">
+          {/* Left: Title + description */}
           <div className="flex flex-col gap-5">
             <h2 className="text-brand-dark font-black text-3xl md:text-4xl leading-tight">
               {isEn ? 'Intechne in Numbers' : 'Sayılarla Biz'}
@@ -75,12 +75,6 @@ export function StatsSection({ initialStats = [] }: StatsSectionProps) {
                 ? 'Intechne prepares young talents for the future through its many innovative projects, robotics leagues, and hands-on technology trainings.'
                 : 'Intechne; pek çok yenilikçi projesi, robotik ligleri ve teknoloji eğitimleriyle genç yetenekleri geleceğe hazırlamaktadır.'}
             </p>
-            {/* Placeholder image */}
-            <div className="rounded-2xl overflow-hidden aspect-[4/3] bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center max-w-sm">
-              <span className="text-white/60 font-medium text-sm">
-                {isEn ? 'Event Image' : 'Etkinlik Görseli'}
-              </span>
-            </div>
           </div>
 
           {/* Right: grid */}

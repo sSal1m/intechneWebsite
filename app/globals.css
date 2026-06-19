@@ -109,3 +109,20 @@ body {
   --color-primary-dark: #009cb0;
   --color-primary-light: #e0f8fa;
 }
+
+/* Mobile date input resets to ensure identical heights and border frames */
+input[type="date"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: calc(1.25rem + 28px + 2px); /* Matches text-sm (1.25rem) line height + py-3.5 (14px * 2) + border (1px * 2) */
+}
+
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-calendar-picker-indicator {
+  -webkit-appearance: none;
+  margin: 0;
+  padding: 0;
+}
