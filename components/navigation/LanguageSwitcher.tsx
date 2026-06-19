@@ -6,10 +6,6 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
-const flags: Record<string, string> = {
-  tr: 'https://flagcdn.com/w20/tr.png',
-  en: 'https://flagcdn.com/w20/gb.png',
-};
 
 export function LanguageSwitcher() {
   const locale = useLocale();
@@ -47,7 +43,6 @@ export function LanguageSwitcher() {
         aria-label="Language selector"
       >
         <span>{locale.toUpperCase()}</span>
-        <img src={flags[locale]} alt={locale} className="w-4 h-auto rounded-sm flex-shrink-0" />
         <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
@@ -64,14 +59,13 @@ export function LanguageSwitcher() {
               <button
                 key={loc}
                 onClick={() => switchLocale(loc)}
-                className={`flex items-center gap-2 w-full px-5 py-2 text-sm font-semibold text-left transition-colors ${
+                className={`flex items-center justify-center w-full px-5 py-2 text-sm font-semibold text-left transition-colors ${
                   loc === locale
                     ? 'text-primary bg-white/10'
                     : 'text-white hover:bg-white/10 hover:text-primary'
                 }`}
               >
                 <span>{loc.toUpperCase()}</span>
-                <img src={flags[loc]} alt={loc} className="w-4 h-auto rounded-sm flex-shrink-0" />
               </button>
             ))}
           </motion.div>
