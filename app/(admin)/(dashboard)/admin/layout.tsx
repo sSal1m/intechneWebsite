@@ -15,7 +15,8 @@ import {
   TrendingUp,
   Trash2,
   Cpu,
-  Briefcase
+  Briefcase,
+  Heart
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -66,6 +67,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { label: 'Kurumsal Kimlik', href: '/admin/identity', icon: FolderArchive },
     { label: 'Gelen Mesajlar', href: '/admin/messages', icon: Mail },
     { label: 'Kariyer', href: '/admin/careers', icon: Briefcase },
+    { label: 'Gönüllüler', href: '/admin/volunteers', icon: Heart },
     { label: 'Çöp Kutusu', href: '/admin/trash', icon: Trash2 },
   ];
 

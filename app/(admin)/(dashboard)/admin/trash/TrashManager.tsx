@@ -53,6 +53,8 @@ export function TrashManager({ initialItems }: TrashManagerProps) {
         return 'Açık Pozisyon';
       case 'job_applications':
         return 'İş Başvurusu';
+      case 'volunteers':
+        return 'Gönüllü';
       default:
         return type;
     }
@@ -76,6 +78,8 @@ export function TrashManager({ initialItems }: TrashManagerProps) {
         return 'bg-violet-500/10 text-violet-400 border-violet-500/20';
       case 'job_applications':
         return 'bg-orange-500/10 text-orange-400 border-orange-500/20';
+      case 'volunteers':
+        return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
       default:
         return 'bg-slate-500/10 text-slate-400 border-slate-500/20';
     }
@@ -93,6 +97,9 @@ export function TrashManager({ initialItems }: TrashManagerProps) {
     }
     if (item.entity_type === 'job_applications') {
       return `${data.name} - ${data.position_title_tr || 'Pozisyon Bilgisi Yok'}`;
+    }
+    if (item.entity_type === 'volunteers') {
+      return `${data.name_surname} (${data.phone})`;
     }
     if (item.entity_type === 'job_positions') {
       return data.title_tr || 'Başlıksız Pozisyon';

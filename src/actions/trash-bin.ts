@@ -211,6 +211,8 @@ function triggerRevalidation(entityType: string) {
     } else if (entityType === 'job_positions' || entityType === 'job_applications') {
       revalidatePath('/admin/careers');
       revalidatePath('/[locale]/kariyer', 'page');
+    } else if (entityType === 'volunteers') {
+      revalidatePath('/admin/volunteers');
     }
   } catch (e) {
     console.error('triggerRevalidation error:', e);

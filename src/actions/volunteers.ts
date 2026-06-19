@@ -1,0 +1,121 @@
+'use server';
+
+import { createClient } from '@/src/utils/supabase/server';
+import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
+import { moveToTrash } from './trash-bin';
+
+const volunteerSchema = z.object({
+  name_surname: z.string().min(2, 'İsim en az 2 karakter olmalıdır').max(100, 'İsim en fazla 100 karakter olabilir').trim(),
+  birth_date: z.string().refine(val => !isNaN(Date.parse(val)), 'Geçersiz doğum tarihi'),
+  gender: z.enum(['Kadin', 'Erkek']),
+  phone: z.string().min(7, 'Telefon numarası en az 7 karakter olmalıdır').max(30, 'Telefon numarası en fazla 30 karakter olabilir').trim(),
+  city: z.string().min(2, 'Şehir en az 2 karakter olmalıdır').max(100, 'Şehir en fazla 100 karakter olabilir').trim(),
+  employment_status: z.string().min(2, 'İş/Eğitim durumu en az 2 karakter olmalıdır').max(255, 'İş/Eğitim durumu en fazla 255 karakter olabilir').trim(),
+  school_department: z.string().min(2, 'Okul/Bölüm en az 2 karakter olmalıdır').max(255, 'Okul/Bölüm en fazla 255 karakter olabilir').trim(),
+  food_allergies: z.string().max(1000, 'Gıda alerjileri en fazla 1000 karakter olabilir').optional().default('').transform(val => val.trim()),
+  medical_conditions: z.string().max(1000, 'Rahatsızlık durumu en fazla 1000 karakter olabilir').optional().default('').transform(val => val.trim()),
+});
+
+// Auth helper
+async function checkAdmin(supabase: any) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user || user.email !== 'admin@intechne.com.tr') {
+    throw new Error('Yetkisiz erişim');
+  }
+}
+
+export async function submitVolunteerForm(rawFormData: FormData) {
+  // 1. Honeypot check
+  const hpField = rawFormData.get('hp_field');
+  if (hpField && hpField.toString().trim() !== '') {
+    console.warn('Volunteer Honeypot field triggered. Silently ignoring submit.');
+    return { success: true, message: 'Başvurunuz başarıyla alınmıştır.' };
+  }
+
+  // 2. Parse fields
+  const parsedData = {
+    name_surname: rawFormData.get('name_surname')?.toString() || '',
+    birth_date: rawFormData.get('birth_date')?.toString() || '',
+    gender: rawFormData.get('gender')?.toString() || '',
+    phone: rawFormData.get('phone')?.toString() || '',
+    city: rawFormData.get('city')?.toString() || '',
+    employment_status: rawFormData.get('employment_status')?.toString() || '',
+    school_department: rawFormData.get('school_department')?.toString() || '',
+    food_allergies: rawFormData.get('food_allergies')?.toString() || '',
+    medical_conditions: rawFormData.get('medical_conditions')?.toString() || '',
+  };
+
+  try {
+    const validated = volunteerSchema.parse(parsedData);
+    const supabase = await createClient();
+
+    const { error: dbError } = await supabase
+      .from('volunteers')
+      .insert([validated]);
+
+    if (dbError) {
+      console.error('Database insert error in volunteers:', dbError);
+      throw new Error('Database insert failed');
+    }
+
+    return { success: true, message: 'Başvurunuz başarıyla alınmıştır.' };
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.issues[0]?.message || 'Doğrulama hatası' };
+    }
+    console.error('submitVolunteerForm error:', error);
+    // Mask original database/technical errors from user
+    return { success: false, error: 'Bir hata oluştu, lütfen daha sonra tekrar deneyiniz.' };
+  }
+}
+
+export async function getVolunteers() {
+  try {
+    const supabase = await createClient();
+    await checkAdmin(supabase);
+
+    const { data, error } = await supabase
+      .from('volunteers')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw new Error(error.message);
+    return data || [];
+  } catch (error: any) {
+    console.error('getVolunteers error:', error);
+    return [];
+  }
+}
+
+export async function deleteVolunteer(id: string) {
+  try {
+    const supabase = await createClient();
+    await checkAdmin(supabase);
+
+    // Fetch the volunteer row to back it up
+    const { data: item, error: fetchError } = await supabase
+      .from('volunteers')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !item) throw new Error(fetchError?.message || 'Kayıt bulunamadı');
+
+    const trashResult = await moveToTrash('volunteers', id, item, []);
+    if (!trashResult.success) throw new Error(trashResult.error);
+
+    const { error } = await supabase
+      .from('volunteers')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath('/admin/volunteers');
+    return { success: true };
+  } catch (error: any) {
+    console.error('deleteVolunteer error:', error);
+    return { success: false, error: error.message };
+  }
+}

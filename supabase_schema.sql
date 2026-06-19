@@ -504,3 +504,34 @@ INSERT INTO brand_pages (
   '1.Sezon Yakında Başlıyor!',
   'Season 1 Starting Soon!'
 );
+
+-- volunteers Tablosu
+CREATE TABLE IF NOT EXISTS volunteers (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name_surname VARCHAR(255) NOT NULL,
+    birth_date DATE NOT NULL,
+    gender VARCHAR(20) NOT NULL,
+    phone VARCHAR(50) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    employment_status TEXT NOT NULL,
+    school_department TEXT NOT NULL,
+    food_allergies TEXT NULL,
+    medical_conditions TEXT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- RLS Politikalarını aktif et
+ALTER TABLE volunteers ENABLE ROW LEVEL SECURITY;
+
+-- Ziyaretçiler sadece INSERT yapabilir (okuma/yönetim tamamen kapalıdır)
+DROP POLICY IF EXISTS "Ziyaretciler gonullu basvurusu yapabilir" ON volunteers;
+CREATE POLICY "Ziyaretciler gonullu basvurusu yapabilir" ON volunteers
+    FOR INSERT TO public WITH CHECK (true);
+
+-- Admin tüm yetkilere sahiptir
+DROP POLICY IF EXISTS "Admin gonulluleri yonetebilir" ON volunteers;
+CREATE POLICY "Admin gonulluleri yonetebilir" ON volunteers
+    FOR ALL TO authenticated
+    USING ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr')
+    WITH CHECK ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr');
+
