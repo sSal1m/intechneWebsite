@@ -45,7 +45,6 @@ export function ContactForm() {
           kvkk: false,
           hp_field: '',
         });
-        setTimeout(() => setIsSubmitted(false), 5000);
       } else {
         setError(res.error || 'Bir hata oluştu. Lütfen tekrar deneyin.');
       }
@@ -71,9 +70,15 @@ export function ContactForm() {
               <Send className="w-8 h-8 ml-1" />
             </div>
             <h3 className="text-xl font-bold text-[#15a3b0] mb-2">Mesajınız Gönderildi!</h3>
-            <p className="text-slate-600 font-medium">
+            <p className="text-slate-600 font-medium mb-6">
               En kısa sürede sizinle iletişime geçeceğiz. Teşekkür ederiz.
             </p>
+            <button
+              onClick={() => setIsSubmitted(false)}
+              className="px-6 py-3 bg-[#15a3b0] hover:bg-[#128a95] text-white font-bold rounded-xl shadow-md transition-all duration-300 cursor-pointer text-sm"
+            >
+              Başka Bir Mesaj Gönder
+            </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
