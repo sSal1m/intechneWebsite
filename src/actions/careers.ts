@@ -65,6 +65,23 @@ export async function getJobPositions(onlyActive = false) {
   }
 }
 
+export async function getJobPositionById(id: string) {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('job_positions')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) throw new Error(error.message);
+    return data || null;
+  } catch (error: any) {
+    console.error('getJobPositionById error:', error);
+    return null;
+  }
+}
+
 export async function createJobPosition(formData: z.infer<typeof positionSchema>) {
   try {
     const supabase = await createClient();
@@ -82,6 +99,7 @@ export async function createJobPosition(formData: z.infer<typeof positionSchema>
     // On-Demand Revalidation
     revalidatePath('/');
     revalidatePath('/[locale]/kariyer', 'page');
+    revalidatePath('/[locale]/kariyer/[id]', 'page');
 
     return { success: true, data };
   } catch (error: any) {
@@ -108,6 +126,7 @@ export async function updateJobPosition(id: string, formData: z.infer<typeof pos
     // On-Demand Revalidation
     revalidatePath('/');
     revalidatePath('/[locale]/kariyer', 'page');
+    revalidatePath('/[locale]/kariyer/[id]', 'page');
 
     return { success: true, data };
   } catch (error: any) {
@@ -144,6 +163,7 @@ export async function deleteJobPosition(id: string) {
     // On-Demand Revalidation
     revalidatePath('/');
     revalidatePath('/[locale]/kariyer', 'page');
+    revalidatePath('/[locale]/kariyer/[id]', 'page');
 
     return { success: true };
   } catch (error: any) {
@@ -342,6 +362,7 @@ export async function toggleJobPositionStatus(id: string, isActive: boolean) {
     // On-Demand Revalidation
     revalidatePath('/');
     revalidatePath('/[locale]/kariyer', 'page');
+    revalidatePath('/[locale]/kariyer/[id]', 'page');
 
     return { success: true, data };
   } catch (error: any) {

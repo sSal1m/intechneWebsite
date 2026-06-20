@@ -2,8 +2,8 @@
 
 import { useState, useTransition } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
+// VolunteerForm.tsx without Lucide icons
 import { submitVolunteerForm } from '@/src/actions/volunteers';
-import { User, Calendar, Users, Phone, MapPin, Briefcase, GraduationCap, AlertCircle, Heart } from 'lucide-react';
 
 interface VolunteerFormProps {
   isEn: boolean;
@@ -101,8 +101,7 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Ad */}
           <div className="flex flex-col gap-2">
-            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <User className="w-4 h-4 text-[#01c1d3]" />
+            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider">
               {t.firstNameLabel} <span className="text-red-500 font-bold">*</span>
             </label>
             <input
@@ -116,8 +115,7 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
 
           {/* Soyad */}
           <div className="flex flex-col gap-2">
-            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <User className="w-4 h-4 text-[#01c1d3]" />
+            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider">
               {t.lastNameLabel} <span className="text-red-500 font-bold">*</span>
             </label>
             <input
@@ -131,8 +129,7 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
 
           {/* Doğum Tarihi */}
           <div className="flex flex-col gap-2">
-            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <Calendar className="w-4 h-4 text-[#01c1d3]" />
+            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider">
               {t.birthLabel} <span className="text-red-500 font-bold">*</span>
             </label>
             <input
@@ -145,8 +142,7 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
 
           {/* Cinsiyet */}
           <div className="flex flex-col gap-2">
-            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <Users className="w-4 h-4 text-[#01c1d3]" />
+            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider">
               {t.genderLabel} <span className="text-red-500 font-bold">*</span>
             </label>
             <select
@@ -163,8 +159,7 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
 
           {/* Telefon */}
           <div className="flex flex-col gap-2">
-            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <Phone className="w-4 h-4 text-[#01c1d3]" />
+            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider">
               {t.phoneLabel} <span className="text-red-500 font-bold">*</span>
             </label>
             <input
@@ -178,8 +173,7 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
 
           {/* Yaşadığınız Şehir */}
           <div className="flex flex-col gap-2">
-            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-[#01c1d3]" />
+            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider">
               {t.cityLabel} <span className="text-red-500 font-bold">*</span>
             </label>
             <input
@@ -193,8 +187,7 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
 
           {/* İş/Eğitim Durumu */}
           <div className="flex flex-col gap-2">
-            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <Briefcase className="w-4 h-4 text-[#01c1d3]" />
+            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider">
               {t.jobLabel} <span className="text-red-500 font-bold">*</span>
             </label>
             <input
@@ -208,8 +201,7 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
 
           {/* Okul/Bölüm */}
           <div className="flex flex-col gap-2">
-            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <GraduationCap className="w-4 h-4 text-[#01c1d3]" />
+            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider">
               {t.schoolLabel} <span className="text-red-500 font-bold">*</span>
             </label>
             <input
@@ -223,8 +215,7 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
 
           {/* Gıda Alerjisi */}
           <div className="flex flex-col gap-2 md:col-span-2">
-            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <AlertCircle className="w-4 h-4 text-[#01c1d3]" />
+            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider">
               {t.allergyLabel}
             </label>
             <textarea
@@ -237,8 +228,7 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
 
           {/* Rahatsızlık Durumu */}
           <div className="flex flex-col gap-2 md:col-span-2">
-            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <AlertCircle className="w-4 h-4 text-[#01c1d3]" />
+            <label className="text-slate-700 text-xs font-bold uppercase tracking-wider">
               {t.medicalLabel}
             </label>
             <textarea
@@ -271,7 +261,7 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
           <button
             type="submit"
             disabled={isPending}
-            className="bg-[#01c1d3] hover:bg-[#009cb0] text-white font-bold px-8 py-4 rounded-xl text-sm transition-all duration-300 shadow-md shadow-[#01c1d3]/10 hover:shadow-[#01c1d3]/20 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none flex items-center gap-2"
+            className="bg-[#01c1d3] hover:bg-[#009cb0] text-white font-bold px-8 py-4 rounded-xl text-sm transition-all duration-300 shadow-md shadow-[#01c1d3]/10 hover:shadow-[#01c1d3]/20 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none flex items-center gap-2 cursor-pointer"
           >
             {isPending ? (
               <>
@@ -280,7 +270,6 @@ export function VolunteerForm({ isEn }: VolunteerFormProps) {
               </>
             ) : (
               <>
-                <Heart className="w-4 h-4 fill-current" />
                 {t.submitBtn}
               </>
             )}
