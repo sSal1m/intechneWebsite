@@ -16,7 +16,8 @@ import {
   Trash2,
   Cpu,
   Briefcase,
-  Heart
+  Heart,
+  Menu
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -29,6 +30,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
   const supabase = createClient();
   const [isOnline, setIsOnline] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -74,7 +76,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="flex min-h-screen bg-black text-neutral-100">
       {/* Sidebar */}
-      <aside className="w-64 bg-[#0a0a0a] border-r border-[#1f1f1f] flex flex-col justify-between p-6 flex-shrink-0">
+      <aside className={`bg-[#0a0a0a] border-r border-[#1f1f1f] flex flex-col justify-between flex-shrink-0 transition-all duration-300 ease-in-out ${
+        isSidebarOpen 
+          ? 'w-64 p-6 opacity-100' 
+          : 'w-0 p-0 opacity-0 border-r-0 overflow-hidden pointer-events-none'
+      }`}>
         <div className="flex flex-col gap-8">
           <div className="flex items-center gap-3">
             <img
@@ -91,6 +97,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <span className="text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2 px-3">
               YÖNETİM BÖLÜMLERİ
             </span>
+            
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -126,9 +133,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Header */}
         <header className="h-16 border-b border-[#1f1f1f] bg-[#0a0a0a] flex items-center justify-between px-8">
-          <h1 className="font-bold text-base text-neutral-300">
-            {menuItems.find((item) => item.href === pathname)?.label || 'Yönetim Paneli'}
-          </h1>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="p-2 hover:bg-[#161616] rounded-xl text-neutral-400 hover:text-white transition-colors"
+              title={isSidebarOpen ? "Menüyü Gizle" : "Menüyü Göster"}
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <h1 className="font-bold text-base text-neutral-300">
+              {menuItems.find((item) => item.href === pathname)?.label || 'Yönetim Paneli'}
+            </h1>
+          </div>
           <div className="flex items-center gap-4">
             {isOnline ? (
               <>
