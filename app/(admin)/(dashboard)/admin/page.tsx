@@ -40,26 +40,26 @@ export default async function AdminDashboardPage() {
     .from('volunteers')
     .select('*', { count: 'exact', head: true });
 
-  // Fetch 5 recent messages
+  // Fetch 3 recent messages
   const { data: recentMessages } = await supabase
     .from('messages')
     .select('*')
     .order('created_at', { ascending: false })
-    .limit(5);
+    .limit(3);
 
-  // Fetch 5 recent job applications
+  // Fetch 3 recent job applications
   const { data: recentApplications } = await supabase
     .from('job_applications')
     .select('*, job_positions(title_tr)')
     .order('created_at', { ascending: false })
-    .limit(5);
+    .limit(3);
 
-  // Fetch 5 recent volunteers
+  // Fetch 3 recent volunteers
   const { data: recentVolunteers } = await supabase
     .from('volunteers')
     .select('*')
     .order('created_at', { ascending: false })
-    .limit(5);
+    .limit(3);
 
   const stats = [
     { label: 'Gelen Mesajlar', value: messagesCount || 0, href: '/admin/messages', icon: Mail, color: 'text-primary bg-primary/10' },
