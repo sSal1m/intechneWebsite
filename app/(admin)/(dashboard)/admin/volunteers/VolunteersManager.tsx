@@ -67,19 +67,6 @@ export function VolunteersManager({ initialVolunteers }: VolunteersManagerProps)
           });
         }
       )
-      .on(
-        'postgres_changes',
-        {
-          event: 'DELETE',
-          schema: 'public',
-          table: 'volunteers',
-        },
-        (payload: any) => {
-          const deletedId = payload.old.id;
-          setVolunteers((prev) => prev.filter((v) => v.id !== deletedId));
-          setSelectedVolunteer((prev) => (prev?.id === deletedId ? null : prev));
-        }
-      )
       .subscribe();
 
     return () => {
