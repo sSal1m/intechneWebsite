@@ -50,19 +50,6 @@ export function MessagesList({ initialMessages }: MessagesListProps) {
           });
         }
       )
-      .on(
-        'postgres_changes',
-        {
-          event: 'DELETE',
-          schema: 'public',
-          table: 'messages',
-        },
-        (payload: any) => {
-          const deletedId = payload.old.id;
-          setMessages((prev) => prev.filter((msg) => msg.id !== deletedId));
-          setSelectedMessage((prev) => (prev?.id === deletedId ? null : prev));
-        }
-      )
       .subscribe();
 
     return () => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { 
   createJobPosition, 
   updateJobPosition, 
@@ -9,6 +9,7 @@ import {
   toggleJobPositionStatus,
   generateCVDownloadUrl 
 } from '@/src/actions/careers';
+import { createClient } from '@/src/utils/supabase/client';
 import { 
   Briefcase, 
   Users, 
@@ -76,6 +77,54 @@ export function CareersManager({ initialPositions, initialApplications }: Career
   const [applications, setApplications] = useState<JobApplication[]>(initialApplications);
   
   const [isPending, startTransition] = useTransition();
+
+  // Real-time job position listener
+  useEffect(() => {
+    const supabase = createClient();
+
+    const channel = supabase
+      .channel('job-positions-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'job_positions',
+        },
+        (payload: any) => {
+          const updatedPos = payload.new as JobPosition;
+
+          // 1. Update positions list
+          setPositions((prev) =>
+            prev
+              .map((p) => (p.id === updatedPos.id ? updatedPos : p))
+              .sort((a, b) => a.order_index - b.order_index)
+          );
+
+          // 2. Update job_positions in applications list
+          setApplications((prev) =>
+            prev.map((app) => {
+              if (app.position_id === updatedPos.id) {
+                return {
+                  ...app,
+                  job_positions: {
+                    title_tr: updatedPos.title_tr,
+                    title_en: updatedPos.title_en,
+                    is_active: updatedPos.is_active,
+                  },
+                };
+              }
+              return app;
+            })
+          );
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
   
   // Modals state
   const [isPosModalOpen, setIsPosModalOpen] = useState(false);
