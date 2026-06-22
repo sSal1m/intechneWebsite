@@ -127,7 +127,7 @@ export function InteractiveGrid({
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
           <div className="flex-1 text-center md:text-left">
             <h1 className="text-4xl md:text-6xl font-black mb-6">
-              {isEn ? 'Intechne Interactive' : 'Intechne İnteraktif'}
+              I Talks
             </h1>
             <p className="text-lg md:text-xl text-white/90 leading-relaxed max-w-2xl">
               {isEn

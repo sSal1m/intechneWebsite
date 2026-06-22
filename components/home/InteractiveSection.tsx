@@ -81,7 +81,7 @@ export function InteractiveSection({ initialItems }: InteractiveSectionProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <h2 className="text-white font-black text-3xl md:text-4xl whitespace-nowrap">
-              {isEn ? 'Intechne Interactive' : 'Intechne İnteraktif'}
+              I Talks
             </h2>
             {/* Tab filters */}
             <div className="flex flex-wrap gap-2">
