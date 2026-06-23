@@ -35,10 +35,6 @@ export const routing = defineRouting({
       tr: '/interaktif/[id]',
       en: '/interactive/[id]',
     },
-    '/yorumlar': {
-      tr: '/yorumlar',
-      en: '/testimonials',
-    },
     '/kvkk': {
       tr: '/kvkk',
       en: '/privacy-policy',

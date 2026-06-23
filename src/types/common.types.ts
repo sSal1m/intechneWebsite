@@ -22,15 +22,6 @@ export interface MediaItem {
   imageUrl?: string;
 }
 
-export interface TestimonialItem {
-  id: string;
-  name: string;
-  role?: string;
-  quote: string;
-  avatarAlt: string;
-  variant: 'featured' | 'secondary';
-}
-
 export interface StatItem {
   id: string;
   value: string;

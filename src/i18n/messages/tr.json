@@ -32,12 +32,6 @@
     "email": "kurumsal@intechne.com.tr",
     "phone": "0534 634 9058"
   },
-  "testimonials": {
-    "title": "Hakkımızda Neler Söylediniz?",
-    "subtitle": "Intechne hakkındaki düşüncelerinizi, önerilerinizi ve deneyimlerinizi bizimle paylaşın.",
-    "writeYours": "Sen de Yaz",
-    "viewAll": "Tümünü Gör"
-  },
   "stats": {
     "title": "Sayılarla Biz",
     "description": "Intechne; pek çok yenilikçi projesi, robotik ligleri ve teknoloji eğitimleriyle genç yetenekleri geleceğe hazırlamaktadır."

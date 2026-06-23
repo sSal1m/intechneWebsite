@@ -5,7 +5,6 @@ import { BrandsLogoRow } from '@/components/home/BrandsLogoRow';
 import { NewsSection } from '@/components/home/NewsSection';
 import { InteractiveSection } from '@/components/home/InteractiveSection';
 import { ContactCTA } from '@/components/home/ContactCTA';
-import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 import { StatsSection } from '@/components/home/StatsSection';
 
 import { getSliders, getStats } from '@/src/actions/sliders';
@@ -37,7 +36,6 @@ export default async function HomePage({ params }: HomePageProps) {
       <NewsSection initialNews={newsData} />
       <InteractiveSection initialItems={interactiveData} />
       <ContactCTA />
-      {/* <TestimonialsSection locale={locale} /> */}
       <StatsSection initialStats={statsData} />
     </>
   );
