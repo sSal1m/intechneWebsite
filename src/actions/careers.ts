@@ -245,7 +245,7 @@ export async function submitJobApplication(rawFormData: FormData) {
       .from('cv_uploads')
       .upload(cvPath, fileBuffer, {
         contentType: 'application/pdf',
-        upsert: true,
+        upsert: false,
       });
 
     if (uploadError) {
