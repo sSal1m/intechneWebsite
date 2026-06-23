@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { createTeamMember, updateTeamMember, deleteTeamMember } from '@/src/actions/team';
 import { Trash2, Edit, Plus, Mail, Users, X, Upload, ExternalLink } from 'lucide-react';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
@@ -40,6 +40,11 @@ interface TeamManagerProps {
 export function TeamManager({ initialMembers }: TeamManagerProps) {
   const [members, setMembers] = useState<TeamMember[]>(initialMembers);
   const [isPending, startTransition] = useTransition();
+
+  // Sync props to state
+  useEffect(() => {
+    setMembers(initialMembers);
+  }, [initialMembers]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
 

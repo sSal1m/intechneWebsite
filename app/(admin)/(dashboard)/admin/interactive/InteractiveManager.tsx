@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { createInteractiveItem, updateInteractiveItem, deleteInteractiveItem } from '@/src/actions/interactive';
 import { Trash2, Edit, Plus, X, Upload, BookOpen, ExternalLink, Play } from 'lucide-react';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
@@ -27,6 +27,11 @@ interface InteractiveManagerProps {
 export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
   const [items, setItems] = useState<InteractiveItem[]>(initialItems);
   const [isPending, startTransition] = useTransition();
+
+  // Sync props to state
+  useEffect(() => {
+    setItems(initialItems);
+  }, [initialItems]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<InteractiveItem | null>(null);
 

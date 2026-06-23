@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { createSlider, updateSlider, deleteSlider } from '@/src/actions/sliders';
 import { Trash2, Edit, Plus, X, Upload, Layers, ExternalLink } from 'lucide-react';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
@@ -26,6 +26,11 @@ interface SliderManagerProps {
 export function SliderManager({ initialSliders }: SliderManagerProps) {
   const [sliders, setSliders] = useState<Slider[]>(initialSliders);
   const [isPending, startTransition] = useTransition();
+
+  // Sync props to state
+  useEffect(() => {
+    setSliders(initialSliders);
+  }, [initialSliders]);
 
   // Modals state
   const [isSliderModalOpen, setIsSliderModalOpen] = useState(false);

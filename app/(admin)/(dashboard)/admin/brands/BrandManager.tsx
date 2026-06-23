@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { updateBrandPage } from '@/src/actions/brands';
 import { Edit, X, Upload, Plus, Trash2, Video, Images, Globe, Info, BarChart2 } from 'lucide-react';
 
@@ -40,6 +40,11 @@ export function BrandManager({ initialBrands }: BrandManagerProps) {
   const [brands, setBrands] = useState<BrandPage[]>(initialBrands);
   const [editingBrand, setEditingBrand] = useState<BrandPage | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  // Sync props to state
+  useEffect(() => {
+    setBrands(initialBrands);
+  }, [initialBrands]);
 
   // Form states
   const [nedirTr, setNedirTr] = useState('');

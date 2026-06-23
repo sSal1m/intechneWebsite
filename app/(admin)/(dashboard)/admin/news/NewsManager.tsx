@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition, useRef } from 'react';
+import { useState, useTransition, useRef, useEffect } from 'react';
 import { createNews, updateNews, deleteNews } from '@/src/actions/news';
 import { Trash2, Edit, Plus, X, Upload, FileText, Search, ExternalLink, Bold, Italic, List } from 'lucide-react';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
@@ -35,6 +35,11 @@ interface NewsManagerProps {
 export function NewsManager({ initialNews, categories }: NewsManagerProps) {
   const [newsList, setNewsList] = useState<NewsItem[]>(initialNews);
   const [isPending, startTransition] = useTransition();
+
+  // Sync props to state
+  useEffect(() => {
+    setNewsList(initialNews);
+  }, [initialNews]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
 

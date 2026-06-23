@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { 
   createCorporateIdentityItem, 
   updateCorporateIdentityItem, 
@@ -27,6 +27,11 @@ interface IdentityManagerProps {
 export function IdentityManager({ initialItems }: IdentityManagerProps) {
   const [items, setItems] = useState<CorporateIdentityItem[]>(initialItems);
   const [isPending, startTransition] = useTransition();
+
+  // Sync props to state
+  useEffect(() => {
+    setItems(initialItems);
+  }, [initialItems]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<CorporateIdentityItem | null>(null);
 
