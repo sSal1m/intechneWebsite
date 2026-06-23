@@ -24,15 +24,57 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
+function formatTime(date: Date): string {
+  const pad = (num: number) => String(num).padStart(2, '0');
+  const d = pad(date.getDate());
+  const m = pad(date.getMonth() + 1);
+  const y = date.getFullYear();
+  const h = pad(date.getHours());
+  const min = pad(date.getMinutes());
+  const s = pad(date.getSeconds());
+  return `${d}.${m}.${y} ${h}:${min}:${s}`;
+}
+
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
   const [isOnline, setIsOnline] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<string>('');
+
+  useEffect(() => {
+    // Set initial timestamp on mount
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLastUpdated(formatTime(new Date()));
+
+    // Subscribe to all changes in the public schema
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+        },
+        (payload: Record<string, unknown>) => {
+          console.log('Realtime database change detected:', payload);
+          // Silently refresh the page data
+          router.refresh();
+          // Update timestamp to the current time
+          setLastUpdated(formatTime(new Date()));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [router, supabase]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsOnline(navigator.onLine);
 
       const handleOnline = () => setIsOnline(true);
@@ -146,6 +188,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="flex items-center gap-4">
             {isOnline ? (
               <>
+                {lastUpdated && (
+                  <span className="text-xs text-neutral-400">
+                    Son Güncelleme: <span className="font-mono">{lastUpdated}</span>
+                  </span>
+                )}
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-xs font-semibold text-neutral-400">Aktif</span>
               </>
