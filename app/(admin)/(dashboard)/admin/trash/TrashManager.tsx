@@ -21,7 +21,13 @@ interface TrashManagerProps {
 export function TrashManager({ initialItems }: TrashManagerProps) {
   const [items, setItems] = useState<TrashItem[]>(initialItems);
   const [isPending, startTransition] = useTransition();
-  const [currentTime, setCurrentTime] = useState(Date.now());
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
+
+  // Sync props to state
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setItems(initialItems);
+  }, [initialItems]);
 
   // Confirm delete modal states
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);

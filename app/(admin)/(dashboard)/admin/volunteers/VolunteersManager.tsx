@@ -42,6 +42,12 @@ export function VolunteersManager({ initialVolunteers }: VolunteersManagerProps)
   const [selectedVolunteer, setSelectedVolunteer] = useState<Volunteer | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  // Sync props to state
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setVolunteers(initialVolunteers);
+  }, [initialVolunteers]);
+
   // Delete confirmation states
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [volunteerToDelete, setVolunteerToDelete] = useState<string | null>(null);

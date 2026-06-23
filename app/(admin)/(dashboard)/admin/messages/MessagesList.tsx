@@ -25,6 +25,12 @@ export function MessagesList({ initialMessages }: MessagesListProps) {
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  // Sync props to state
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMessages(initialMessages);
+  }, [initialMessages]);
+
   // Delete confirmation states
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<string | null>(null);

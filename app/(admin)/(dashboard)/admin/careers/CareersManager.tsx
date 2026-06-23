@@ -78,6 +78,17 @@ export function CareersManager({ initialPositions, initialApplications }: Career
   
   const [isPending, startTransition] = useTransition();
 
+  // Sync props to state
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPositions(initialPositions);
+  }, [initialPositions]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setApplications(initialApplications);
+  }, [initialApplications]);
+
   // Real-time job position listener
   useEffect(() => {
     const supabase = createClient();
@@ -91,8 +102,8 @@ export function CareersManager({ initialPositions, initialApplications }: Career
           schema: 'public',
           table: 'job_positions',
         },
-        (payload: any) => {
-          const updatedPos = payload.new as JobPosition;
+        (payload: { new: JobPosition }) => {
+          const updatedPos = payload.new;
 
           // 1. Update positions list
           setPositions((prev) =>
@@ -125,6 +136,48 @@ export function CareersManager({ initialPositions, initialApplications }: Career
       supabase.removeChannel(channel);
     };
   }, []);
+
+  // Real-time job applications listener
+  useEffect(() => {
+    const supabase = createClient();
+
+    const channel = supabase
+      .channel('job-applications-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'job_applications',
+        },
+        (payload: { eventType: string; new: JobApplication; old: { id: string } }) => {
+          if (payload.eventType === 'INSERT') {
+            const newApp = payload.new;
+            const pos = positions.find((p) => p.id === newApp.position_id);
+            const appWithPosition: JobApplication = {
+              ...newApp,
+              job_positions: pos ? {
+                title_tr: pos.title_tr,
+                title_en: pos.title_en,
+                is_active: pos.is_active,
+              } : null
+            };
+            setApplications((prev) => {
+              if (prev.some((a) => a.id === appWithPosition.id)) return prev;
+              return [appWithPosition, ...prev];
+            });
+          } else if (payload.eventType === 'DELETE') {
+            const oldApp = payload.old;
+            setApplications((prev) => prev.filter((a) => a.id !== oldApp.id));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [positions]);
   
   // Modals state
   const [isPosModalOpen, setIsPosModalOpen] = useState(false);
