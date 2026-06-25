@@ -86,7 +86,8 @@ CREATE TABLE interactive (
 -- Gelen İletişim Mesajları Tablosu
 CREATE TABLE messages (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
+    first_name VARCHAR(255) NOT NULL DEFAULT '',
+    last_name VARCHAR(255) NOT NULL DEFAULT '',
     email VARCHAR(255) NOT NULL,
     phone VARCHAR(100),
     subject VARCHAR(255),
@@ -532,6 +533,26 @@ CREATE POLICY "Ziyaretciler gonullu basvurusu yapabilir" ON volunteers
 -- Admin tüm yetkilere sahiptir
 DROP POLICY IF EXISTS "Admin gonulluleri yonetebilir" ON volunteers;
 CREATE POLICY "Admin gonulluleri yonetebilir" ON volunteers
+    FOR ALL TO authenticated
+    USING ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr')
+    WITH CHECK ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr');
+
+-- site_settings Tablosu
+CREATE TABLE IF NOT EXISTS site_settings (
+    key VARCHAR(100) PRIMARY KEY,
+    value VARCHAR(255) NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- İlk Değerler
+INSERT INTO site_settings (key, value) VALUES ('news_sort_order', 'index') ON CONFLICT (key) DO NOTHING;
+
+-- RLS'i etkinleştir
+ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+
+-- Politikalar
+CREATE POLICY "Ziyaretciler ayarlari okuyabilir" ON site_settings FOR SELECT USING (true);
+CREATE POLICY "Admin ayarlari yonetebilir" ON site_settings
     FOR ALL TO authenticated
     USING ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr')
     WITH CHECK ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr');

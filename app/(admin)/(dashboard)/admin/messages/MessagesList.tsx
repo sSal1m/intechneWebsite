@@ -9,6 +9,8 @@ import { createClient } from '@/src/utils/supabase/client';
 interface Message {
   id: string;
   name: string;
+  first_name?: string;
+  last_name?: string;
   email: string;
   phone?: string;
   subject?: string;
@@ -106,7 +108,9 @@ export function MessagesList({ initialMessages }: MessagesListProps) {
             >
               <div className="flex justify-between items-start gap-4">
                 <div className="flex flex-col gap-1 min-w-0">
-                  <span className="font-bold text-sm text-white line-clamp-1">{msg.name}</span>
+                  <span className="font-bold text-sm text-white line-clamp-1">
+                    {msg.first_name ? `${msg.first_name} ${msg.last_name || ''}`.trim() : msg.name}
+                  </span>
                   <span className="text-slate-400 text-xs line-clamp-1">{msg.subject || 'Konu Yok'}</span>
                 </div>
                 
@@ -141,11 +145,19 @@ export function MessagesList({ initialMessages }: MessagesListProps) {
                   <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Gönderen</span>
                   <h3 className="text-lg font-bold text-white flex items-center gap-2">
                     <User className="w-4 h-4 text-primary" />
-                    {selectedMessage.name}
+                    {selectedMessage.first_name ? `${selectedMessage.first_name} ${selectedMessage.last_name || ''}`.trim() : selectedMessage.name}
                   </h3>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-400">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">İsim:</span>
+                    <span className="text-white font-semibold">{selectedMessage.first_name || selectedMessage.name}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Soyisim:</span>
+                    <span className="text-white font-semibold">{selectedMessage.last_name || '-'}</span>
+                  </div>
                   <div className="flex items-center gap-2">
                     <Mail className="w-4 h-4 text-slate-500" />
                     <a href={`mailto:${selectedMessage.email}`} className="hover:text-primary transition-colors">

@@ -133,7 +133,9 @@ export default async function AdminDashboardPage() {
                 >
                   <div className="flex flex-col gap-1">
                     <div className="flex flex-col xl:flex-row xl:items-center gap-1 xl:gap-3">
-                      <span className="font-bold text-sm text-white truncate max-w-[120px]">{msg.name}</span>
+                      <span className="font-bold text-sm text-white truncate max-w-[120px]">
+                        {msg.first_name ? `${msg.first_name} ${msg.last_name || ''}`.trim() : msg.name}
+                      </span>
                       <span className="text-slate-500 text-xs truncate">{msg.email}</span>
                     </div>
                     <p className="text-slate-400 text-xs line-clamp-2">{msg.message}</p>

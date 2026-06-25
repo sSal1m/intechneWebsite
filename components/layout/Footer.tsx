@@ -180,23 +180,19 @@ export function Footer({ locale }: FooterProps) {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-white/60 text-xs">
             <span>© 2026 {isEn ? 'INTECHNE TECHNOLOGY' : 'INTECHNE TEKNOLOJİ'}</span>
             <span className="hidden sm:block">|</span>
-            <a
-              href="https://drive.google.com/file/d/1l9YG0k9t0mWb1G2AzjiO16oY3K6ZdpGe/view?usp=drive_link"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/kvkk"
               className="hover:text-white transition-colors"
             >
               {isEn ? 'PRIVACY POLICY' : 'GİZLİLİK POLİTİKASI'}
-            </a>
+            </Link>
             <span className="hidden sm:block">|</span>
-            <a
-              href="https://drive.google.com/file/d/1l9YG0k9t0mWb1G2AzjiO16oY3K6ZdpGe/view?usp=drive_link"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/kvkk"
               className="hover:text-white transition-colors"
             >
               {isEn ? 'KVKK AYDINLATMA METNİ' : 'KVKK AYDINLATMA METNİ'}
-            </a>
+            </Link>
           </div>
         </div>
       </div>

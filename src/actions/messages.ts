@@ -6,7 +6,8 @@ import { moveToTrash } from './trash-bin';
 import { z } from 'zod';
 
 const contactFormSchema = z.object({
-  name: z.string().trim().min(1, 'İsim boş olamaz').max(100),
+  firstName: z.string().trim().min(1, 'İsim boş olamaz').max(100),
+  lastName: z.string().trim().min(1, 'Soyisim boş olamaz').max(100),
   email: z.string().trim().email('Geçersiz e-posta').max(100),
   phone: z.string().trim().max(50).optional().or(z.literal('')),
   subject: z.string().trim().max(150).optional().or(z.literal('')),
@@ -16,7 +17,8 @@ const contactFormSchema = z.object({
 });
 
 export async function submitContactForm(formData: {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone?: string;
   subject?: string;
@@ -44,7 +46,8 @@ export async function submitContactForm(formData: {
       .from('messages')
       .insert([
         {
-          name: validatedData.name,
+          first_name: validatedData.firstName,
+          last_name: validatedData.lastName,
           email: validatedData.email,
           phone: validatedData.phone || '',
           subject: validatedData.subject || '',

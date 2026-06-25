@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Send, Loader2 } from 'lucide-react';
 import { submitContactForm } from '@/src/actions/messages';
+import { Link } from '@/src/i18n/navigation';
 
 export function ContactForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -10,7 +11,8 @@ export function ContactForm() {
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     subject: '',
     message: '',
@@ -27,7 +29,8 @@ export function ContactForm() {
 
     try {
       const res = await submitContactForm({
-        name: formData.name,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
         email: formData.email,
         subject: formData.subject,
         message: formData.message,
@@ -38,7 +41,8 @@ export function ContactForm() {
       if (res.success) {
         setIsSubmitted(true);
         setFormData({
-          name: '',
+          firstName: '',
+          lastName: '',
           email: '',
           subject: '',
           message: '',
@@ -99,14 +103,24 @@ export function ContactForm() {
               autoComplete="off"
             />
             
-            <input
-              type="text"
-              placeholder="İsim Soyisim"
-              required
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#15a3b0]/20 focus:border-[#15a3b0] transition-all"
-            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <input
+                type="text"
+                placeholder="İsim"
+                required
+                value={formData.firstName}
+                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#15a3b0]/20 focus:border-[#15a3b0] transition-all"
+              />
+              <input
+                type="text"
+                placeholder="Soyisim"
+                required
+                value={formData.lastName}
+                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#15a3b0]/20 focus:border-[#15a3b0] transition-all"
+              />
+            </div>
             
             <input
               type="email"
@@ -145,14 +159,14 @@ export function ContactForm() {
                 className="mt-1 w-4 h-4 rounded border-slate-300 text-[#15a3b0] focus:ring-[#15a3b0]"
               />
               <label htmlFor="kvkk" className="text-sm text-slate-600 font-medium leading-tight">
-                <a 
-                  href="https://drive.google.com/file/d/1l9YG0k9t0mWb1G2AzjiO16oY3K6ZdpGe/view?usp=drive_link" 
+                <Link 
+                  href="/kvkk" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-[#15a3b0] hover:underline font-bold"
                 >
                   KVKK Aydınlatma Metnini
-                </a> okudum ve onaylıyorum.
+                </Link> okudum ve onaylıyorum.
               </label>
             </div>
 

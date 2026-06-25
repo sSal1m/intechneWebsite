@@ -1,4 +1,5 @@
 import { Link } from '@/src/i18n/navigation';
+import { FileText, Download } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,6 +64,32 @@ export default async function KvkkPage({ params }: PageProps) {
             <p className="text-slate-700 text-sm md:text-base leading-relaxed font-medium">
               {t.introText}
             </p>
+          </div>
+
+          {/* Download Button Section */}
+          <div className="bg-slate-50 border border-slate-200/65 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-5 transition-all hover:shadow-md">
+            <div className="flex items-center gap-3.5">
+              <div className="p-3 bg-[#15a3b0]/10 text-[#15a3b0] rounded-xl flex-shrink-0">
+                <FileText className="w-6 h-6" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-bold text-slate-800 text-sm md:text-base">
+                  {isEn ? 'KVKK Clarification Text Form' : 'KVKK Aydınlatma Metni Formu'}
+                </h3>
+                <p className="text-slate-500 text-xs font-semibold mt-0.5">
+                  {isEn ? 'Click to view and download the form.' : 'Formu görüntülemek ve indirmek için tıklayın.'}
+                </p>
+              </div>
+            </div>
+            <a
+              href="/kvkk-aydinlatma-metni.pdf"
+              target="_blank"
+              download="kvkk-aydinlatma-metni.pdf"
+              className="bg-[#15a3b0] hover:bg-[#128a95] text-white font-bold px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2 cursor-pointer text-sm w-full sm:w-auto justify-center"
+            >
+              <Download className="w-4 h-4" />
+              {isEn ? 'Download Form' : 'Formu İndir'}
+            </a>
           </div>
 
           {/* 1. Veri Sorumlusu */}
