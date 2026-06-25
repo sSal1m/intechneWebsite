@@ -8,29 +8,7 @@ import { extractStoragePath } from '@/src/utils/storage';
 export async function getNews(categorySlug?: string) {
   try {
     const supabase = await createClient();
-
-    // Fetch site setting for news sorting
-    let sortBy = 'index';
-    try {
-      const { data: settingData, error: settingError } = await supabase
-        .from('site_settings')
-        .select('value')
-        .eq('key', 'news_sort_order')
-        .single();
-      if (!settingError && settingData) {
-        sortBy = settingData.value;
-      }
-    } catch (e) {
-      console.warn('site_settings table read failed, falling back to index sorting:', e);
-    }
-
-    let query = supabase.from('news').select('*');
-
-    if (sortBy === 'date') {
-      query = query.order('published_at', { ascending: false });
-    } else {
-      query = query.order('order_index', { ascending: false }).order('published_at', { ascending: false });
-    }
+    let query = supabase.from('news').select('*').order('published_at', { ascending: false });
 
     if (categorySlug && categorySlug !== 'all') {
       query = query.eq('category_slug', categorySlug);
@@ -38,16 +16,6 @@ export async function getNews(categorySlug?: string) {
 
     const { data, error } = await query;
     if (error) {
-      // Fallback if order_index column doesn't exist in DB yet
-      if (error.code === '42703' || error.message.includes('order_index')) {
-        let fallbackQuery = supabase.from('news').select('*').order('published_at', { ascending: false });
-        if (categorySlug && categorySlug !== 'all') {
-          fallbackQuery = fallbackQuery.eq('category_slug', categorySlug);
-        }
-        const fallbackResult = await fallbackQuery;
-        if (fallbackResult.error) throw new Error(fallbackResult.error.message);
-        return fallbackResult.data || [];
-      }
       throw new Error(error.message);
     }
     return data || [];
@@ -276,46 +244,3 @@ export async function deleteNews(id: string, imageUrl?: string) {
   }
 }
 
-export async function getSiteSetting(key: string) {
-  try {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from('site_settings')
-      .select('value')
-      .eq('key', key)
-      .single();
-    if (error) {
-      if (error.code === 'PGRST116') return null; // not found
-      throw new Error(error.message);
-    }
-    return data?.value || null;
-  } catch (error) {
-    console.error('getSiteSetting error:', error);
-    return null;
-  }
-}
-
-export async function updateSiteSetting(key: string, value: string) {
-  try {
-    const supabase = await createClient();
-
-    // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
-
-    const { error } = await supabase
-      .from('site_settings')
-      .upsert({ key, value, updated_at: new Date().toISOString() });
-
-    if (error) throw new Error(error.message);
-
-    // Revalidate paths for all languages/routes to clear dynamic caches instantly
-    revalidatePath('/[locale]/haberler', 'page');
-    revalidatePath('/');
-    
-    return { success: true };
-  } catch (error: any) {
-    console.error('updateSiteSetting error:', error);
-    return { success: false, error: error.message };
-  }
-}

@@ -1,13 +1,12 @@
-import { getNews, getNewsCategories, getSiteSetting } from '@/src/actions/news';
+import { getNews, getNewsCategories } from '@/src/actions/news';
 import { NewsManager } from './NewsManager';
 
 export const revalidate = 0; // Disable cache for news management list
 
 export default async function AdminNewsPage() {
-  const [news, categories, sortOrder] = await Promise.all([
+  const [news, categories] = await Promise.all([
     getNews(),
     getNewsCategories(),
-    getSiteSetting('news_sort_order'),
   ]);
 
   return (
@@ -22,7 +21,6 @@ export default async function AdminNewsPage() {
       <NewsManager 
         initialNews={news} 
         categories={categories as any} 
-        initialSortOrder={sortOrder || 'index'} 
       />
     </div>
   );

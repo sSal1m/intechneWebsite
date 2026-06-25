@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition, useRef, useEffect } from 'react';
-import { createNews, updateNews, deleteNews, updateSiteSetting } from '@/src/actions/news';
+import { createNews, updateNews, deleteNews } from '@/src/actions/news';
 import { Trash2, Edit, Plus, X, Upload, FileText, Search, ExternalLink, Bold, Italic, List } from 'lucide-react';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
@@ -30,31 +30,16 @@ interface Category {
 interface NewsManagerProps {
   initialNews: NewsItem[];
   categories: Category[];
-  initialSortOrder: string;
 }
 
-export function NewsManager({ initialNews, categories, initialSortOrder }: NewsManagerProps) {
+export function NewsManager({ initialNews, categories }: NewsManagerProps) {
   const [newsList, setNewsList] = useState<NewsItem[]>(initialNews);
   const [isPending, startTransition] = useTransition();
-  const [sortOrder, setSortOrder] = useState(initialSortOrder);
 
   // Sync props to state
   useEffect(() => {
     setNewsList(initialNews);
   }, [initialNews]);
-
-  function handleSortOrderChange(value: string) {
-    setSortOrder(value);
-    startTransition(async () => {
-      const res = await updateSiteSetting('news_sort_order', value);
-      if (res.success) {
-        // Success revalidation handles the path revalidation
-      } else {
-        alert('Sıralama güncellenirken hata oluştu: ' + res.error);
-        setSortOrder(initialSortOrder);
-      }
-    });
-  }
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
 
@@ -288,7 +273,7 @@ export function NewsManager({ initialNews, categories, initialSortOrder }: NewsM
     });
   }
 
-  // Filter & Sort logic
+  // Filter & Sort logic (automatically sorted by publish date descending)
   const filteredNews = newsList
     .filter((news) => {
       const matchesSearch = 
@@ -301,16 +286,7 @@ export function NewsManager({ initialNews, categories, initialSortOrder }: NewsM
 
       return matchesSearch && matchesCategory;
     })
-    .sort((a, b) => {
-      if (sortOrder === 'date') {
-        return new Date(b.published_at).getTime() - new Date(a.published_at).getTime();
-      } else {
-        const orderA = a.order_index ?? 0;
-        const orderB = b.order_index ?? 0;
-        if (orderA !== orderB) return orderB - orderA;
-        return new Date(b.published_at).getTime() - new Date(a.published_at).getTime();
-      }
-    });
+    .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
 
   return (
     <div className="flex flex-col gap-6">
@@ -343,19 +319,6 @@ export function NewsManager({ initialNews, categories, initialSortOrder }: NewsM
             ))}
           </select>
 
-          {/* Global Sıralama Seçeneği */}
-          <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl px-4 py-1.5 w-full sm:w-auto">
-            <span className="text-slate-500 text-xs font-semibold whitespace-nowrap">Global Sıralama:</span>
-            <select
-              value={sortOrder}
-              onChange={(e) => handleSortOrderChange(e.target.value)}
-              disabled={isPending}
-              className="bg-transparent text-slate-300 text-sm focus:outline-none font-semibold cursor-pointer disabled:opacity-50 py-1"
-            >
-              <option value="index">Manuel Sıralama (Index)</option>
-              <option value="date">Tarihe Göre (Yayın Tarihi)</option>
-            </select>
-          </div>
         </div>
 
         <button

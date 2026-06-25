@@ -537,23 +537,4 @@ CREATE POLICY "Admin gonulluleri yonetebilir" ON volunteers
     USING ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr')
     WITH CHECK ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr');
 
--- site_settings Tablosu
-CREATE TABLE IF NOT EXISTS site_settings (
-    key VARCHAR(100) PRIMARY KEY,
-    value VARCHAR(255) NOT NULL,
-    updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- İlk Değerler
-INSERT INTO site_settings (key, value) VALUES ('news_sort_order', 'index') ON CONFLICT (key) DO NOTHING;
-
--- RLS'i etkinleştir
-ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
-
--- Politikalar
-CREATE POLICY "Ziyaretciler ayarlari okuyabilir" ON site_settings FOR SELECT USING (true);
-CREATE POLICY "Admin ayarlari yonetebilir" ON site_settings
-    FOR ALL TO authenticated
-    USING ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr')
-    WITH CHECK ((auth.jwt() ->> 'email') = 'admin@intechne.com.tr');
 
