@@ -104,7 +104,6 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
   const [categorySlug, setCategorySlug] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [publishedAt, setPublishedAt] = useState('');
-  const [orderIndex, setOrderIndex] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [inContentMediaUrl, setInContentMediaUrl] = useState('');
   const [inContentUploading, setInContentUploading] = useState(false);
@@ -122,7 +121,6 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
     setCategorySlug(categories[0]?.slug || '');
     setImageUrl('');
     setInContentMediaUrl('');
-    setOrderIndex(0);
     // Default to current local time in datetime-local format (YYYY-MM-DDTHH:MM)
     const localNow = new Date();
     localNow.setMinutes(localNow.getMinutes() - localNow.getTimezoneOffset());
@@ -142,7 +140,6 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
     setCategorySlug(news.category_slug || '');
     setImageUrl(news.image_url || '');
     setInContentMediaUrl('');
-    setOrderIndex(news.order_index || 0);
     
     // Format published_at to local datetime-local format
     const dateObj = new Date(news.published_at);
@@ -226,13 +223,10 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
         category_slug: categorySlug || undefined,
         image_url: imageUrl,
         published_at: new Date(publishedAt).toISOString(),
-        order_index: orderIndex,
+        order_index: 0,
       };
 
       const sortNews = (a: NewsItem, b: NewsItem) => {
-        const orderA = a.order_index || 0;
-        const orderB = b.order_index || 0;
-        if (orderA !== orderB) return orderB - orderA;
         return new Date(b.published_at).getTime() - new Date(a.published_at).getTime();
       };
 
@@ -353,9 +347,6 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
                 </span>
               )}
 
-              <span className="absolute top-3 right-3 bg-slate-900/80 text-slate-300 border border-slate-800 font-bold text-[9px] px-2 py-0.5 rounded-md uppercase tracking-wider">
-                Sıra: {news.order_index || 0}
-              </span>
             </div>
 
             {/* Title & info */}
@@ -628,7 +619,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
 
 
 
-                <div className="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
+                <div className="flex flex-col gap-1.5 col-span-2">
                   <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Yayın Tarihi</label>
                   <input
                     type="datetime-local"
@@ -636,18 +627,6 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
                     value={publishedAt}
                     onChange={(e) => setPublishedAt(e.target.value)}
                     className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full cursor-pointer"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-                  <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Sıra Numarası (Order Index)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    value={orderIndex}
-                    onChange={(e) => setOrderIndex(parseInt(e.target.value) || 0)}
-                    placeholder="Varsayılan: 0"
-                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
                   />
                 </div>
 
