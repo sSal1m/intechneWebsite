@@ -27,13 +27,13 @@ export const routing = defineRouting({
       tr: '/iletisim',
       en: '/contact',
     },
-    '/interaktif': {
-      tr: '/interaktif',
-      en: '/interactive',
+    '/i-talks': {
+      tr: '/i-talks',
+      en: '/i-talks',
     },
-    '/interaktif/[id]': {
-      tr: '/interaktif/[id]',
-      en: '/interactive/[id]',
+    '/i-talks/[id]': {
+      tr: '/i-talks/[id]',
+      en: '/i-talks/[id]',
     },
     '/kvkk': {
       tr: '/kvkk',

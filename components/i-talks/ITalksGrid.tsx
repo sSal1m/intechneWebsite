@@ -2,9 +2,9 @@
 
 import { ArrowRight, BookOpen, MonitorPlay, FileText, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { Link } from '@/src/i18n/navigation';
-import { InteractiveSidebar } from './InteractiveSidebar';
+import { ITalksSidebar } from './ITalksSidebar';
 
-interface InteractiveItem {
+interface ITalksItem {
   id: string | number;
   title: string;
   titleEn: string;
@@ -20,7 +20,7 @@ interface InteractiveItem {
   date?: string;
 }
 
-interface InteractiveGridProps {
+interface ITalksGridProps {
   isEn: boolean;
   initialItems?: any[];
   filterCategory?: string;
@@ -30,7 +30,7 @@ interface InteractiveGridProps {
   filterPage?: string;
 }
 
-export function InteractiveGrid({
+export function ITalksGrid({
   isEn,
   initialItems,
   filterCategory,
@@ -38,12 +38,12 @@ export function InteractiveGrid({
   filterStartDate,
   filterEndDate,
   filterPage,
-}: InteractiveGridProps) {
+}: ITalksGridProps) {
   const ITEMS_PER_PAGE = 6;
   const currentPage = Math.max(1, parseInt(filterPage || '1', 10) || 1);
 
   // Map database items
-  let finalItems: InteractiveItem[] = initialItems && initialItems.length > 0
+  let finalItems: ITalksItem[] = initialItems && initialItems.length > 0
     ? initialItems.map((item) => {
         const catLower = item.category?.toLowerCase() || '';
         const catEn = catLower === 'projeler'
@@ -117,7 +117,7 @@ export function InteractiveGrid({
     if (filterEndDate) params.set('endDate', filterEndDate);
     if (pageNum > 1) params.set('page', pageNum.toString());
     const searchStr = params.toString();
-    return `/interaktif${searchStr ? `?${searchStr}` : ''}`;
+    return `/i-talks${searchStr ? `?${searchStr}` : ''}`;
   };
 
   return (
@@ -155,7 +155,7 @@ export function InteractiveGrid({
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* Left Sidebar (Filters & Categories) */}
           <div className="w-full lg:w-[25%] lg:flex-shrink-0 mb-8 lg:mb-0">
-            <InteractiveSidebar isEn={isEn} />
+            <ITalksSidebar isEn={isEn} />
           </div>
 
           {/* Right Content */}
@@ -166,7 +166,7 @@ export function InteractiveGrid({
                   {isEn ? 'No interactive content found matching your filters.' : 'Aradığınız kriterlere uygun içerik bulunamadı.'}
                 </p>
                 <Link
-                  href="/interaktif"
+                  href="/i-talks"
                   className="text-[#15a3b0] hover:text-[#128a95] font-bold text-sm underline"
                 >
                   {isEn ? 'Clear all filters' : 'Tüm filtreleri temizle'}
@@ -178,7 +178,7 @@ export function InteractiveGrid({
                   return (
                     <Link
                       key={item.id}
-                      href={{ pathname: '/interaktif/[id]' as any, params: { id: String(item.id) } }}
+                      href={{ pathname: '/i-talks/[id]' as any, params: { id: String(item.id) } }}
                       className="bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group overflow-hidden cursor-pointer"
                     >
                       <figure className="w-full aspect-[4/3] overflow-hidden relative">

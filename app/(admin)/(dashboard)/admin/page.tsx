@@ -69,7 +69,7 @@ export default async function AdminDashboardPage() {
     { label: 'Ekip Üyeleri', value: teamCount || 0, href: '/admin/team', icon: Users, color: 'text-amber-400 bg-amber-400/10' },
     { label: 'Aktif Slaytlar', value: slidersCount || 0, href: '/admin/sliders', icon: Sliders, color: 'text-indigo-400 bg-indigo-400/10' },
     { label: 'Kurumsal Kimlik', value: identityCount || 0, href: '/admin/identity', icon: FolderArchive, color: 'text-pink-400 bg-pink-400/10' },
-    { label: 'İnteraktif Yayınlar', value: interactiveCount || 0, href: '/admin/interactive', icon: BookOpen, color: 'text-cyan-400 bg-cyan-400/10' },
+    { label: 'I-Talks', value: interactiveCount || 0, href: '/admin/i-talks', icon: BookOpen, color: 'text-cyan-400 bg-cyan-400/10' },
   ];
 
   return (

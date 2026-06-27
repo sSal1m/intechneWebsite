@@ -1,5 +1,5 @@
 import { Link } from '@/src/i18n/navigation';
-import { getInteractiveItemById } from '@/src/actions/interactive';
+import { getITalksItemById } from '@/src/actions/i-talks';
 import { notFound } from 'next/navigation';
 import {
   Clock,
@@ -29,7 +29,7 @@ function getYoutubeEmbedUrl(url: string) {
   return id ? `https://www.youtube.com/embed/${id}` : url;
 }
 
-export default async function InteractiveDetailPage({ params }: PageProps) {
+export default async function ITalksDetailPage({ params }: PageProps) {
   const { locale, id } = await params;
   const isEn = locale === 'en';
 
@@ -38,7 +38,7 @@ export default async function InteractiveDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const item = await getInteractiveItemById(id);
+  const item = await getITalksItemById(id);
   if (!item) {
     notFound();
   }
@@ -55,19 +55,19 @@ export default async function InteractiveDetailPage({ params }: PageProps) {
 
   const catLower = item.category?.toLowerCase() || '';
   const categoryLabel = isEn
-    ? (catLower === 'projeler' ? 'Projects' : catLower === 'raporlar' ? 'Reports' : catLower === 'egitimler' ? 'Trainings' : catLower === 'interaktif' ? 'Interactive' : catLower)
-    : (catLower === 'projeler' ? 'Projeler' : catLower === 'raporlar' ? 'Raporlar' : catLower === 'egitimler' ? 'Eğitimler' : catLower === 'interaktif' ? 'İnteraktif' : catLower);
+    ? (catLower === 'projeler' ? 'Projects' : catLower === 'raporlar' ? 'Reports' : catLower === 'egitimler' ? 'Trainings' : catLower === 'interaktif' ? 'I-Talks' : catLower)
+    : (catLower === 'projeler' ? 'Projeler' : catLower === 'raporlar' ? 'Raporlar' : catLower === 'egitimler' ? 'Eğitimler' : catLower === 'interaktif' ? 'I-Talks' : catLower);
 
   return (
     <div className="bg-slate-50 min-h-screen pb-20">
       {/* Upper Navigation */}
       <div className="max-w-5xl mx-auto px-4 pt-8 md:pt-12">
         <Link
-          href="/interaktif"
+          href="/i-talks"
           className="inline-flex items-center gap-2 text-slate-500 hover:text-[#15a3b0] font-bold text-sm mb-8 transition-colors group"
         >
           <ArrowLeft className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" />
-          {isEn ? 'Back to Interactive Items' : 'İnteraktif İçeriklere Dön'}
+          {isEn ? 'Back to I-Talks' : 'I-Talks İçeriklerine Dön'}
         </Link>
 
         {/* Content Card container */}

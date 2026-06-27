@@ -6,7 +6,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { cn } from '@/src/lib/utils';
 import { Search, X } from 'lucide-react';
 
-const interactiveCategories = [
+const italksCategories = [
   { id: 'all', name: 'Tümü', nameEn: 'All' },
   { id: 'projeler', name: 'Projeler', nameEn: 'Projects' },
   { id: 'raporlar', name: 'Raporlar', nameEn: 'Reports' },
@@ -14,7 +14,7 @@ const interactiveCategories = [
   { id: 'interaktif', name: 'İnteraktif', nameEn: 'Interactive' },
 ];
 
-function InteractiveSidebarContent({ isEn }: { isEn: boolean }) {
+function ITalksSidebarContent({ isEn }: { isEn: boolean }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -74,7 +74,7 @@ function InteractiveSidebarContent({ isEn }: { isEn: boolean }) {
             onChange={handleCategoryChange}
             className="bg-transparent border-none outline-none text-slate-700 text-sm font-semibold w-full cursor-pointer focus:ring-0"
           >
-            {interactiveCategories.map(cat => (
+            {italksCategories.map(cat => (
               <option key={cat.id} value={cat.id}>{isEn ? cat.nameEn : cat.name}</option>
             ))}
           </select>
@@ -82,12 +82,12 @@ function InteractiveSidebarContent({ isEn }: { isEn: boolean }) {
 
         {/* Desktop Category List */}
         <div className="hidden lg:flex flex-col gap-2">
-          {interactiveCategories.map((cat) => {
+          {italksCategories.map((cat) => {
             const isActive = activeCategory === cat.id;
             return (
               <Link
                 key={cat.id}
-                href={cat.id === 'all' ? '/interaktif' : (`/interaktif?category=${cat.id}` as any)}
+                href={cat.id === 'all' ? '/i-talks' : (`/i-talks?category=${cat.id}` as any)}
                 className={cn(
                   "block px-5 py-3 rounded-xl font-bold text-sm transition-all duration-200 border-l-4",
                   isActive
@@ -193,10 +193,10 @@ function InteractiveSidebarContent({ isEn }: { isEn: boolean }) {
   );
 }
 
-export function InteractiveSidebar({ isEn }: { isEn: boolean }) {
+export function ITalksSidebar({ isEn }: { isEn: boolean }) {
   return (
     <Suspense fallback={<div className="bg-[#f8f9fa] rounded-2xl p-6 text-slate-500">{isEn ? 'Loading...' : 'Yükleniyor...'}</div>}>
-      <InteractiveSidebarContent isEn={isEn} />
+      <ITalksSidebarContent isEn={isEn} />
     </Suspense>
   );
 }

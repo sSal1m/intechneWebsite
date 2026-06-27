@@ -33,7 +33,7 @@ function createPublicClient() {
   return createSupabaseClient(url, key);
 }
 
-export async function getInteractiveItems(category?: string) {
+export async function getITalksItems(category?: string) {
   try {
     const supabase = createPublicClient();
     let query = supabase.from('interactive').select('*').order('order_index', { ascending: false }).order('created_at', { ascending: false });
@@ -58,12 +58,12 @@ export async function getInteractiveItems(category?: string) {
     }
     return data || [];
   } catch (error: any) {
-    console.error('getInteractiveItems error:', error);
+    console.error('getITalksItems error:', error);
     return [];
   }
 }
 
-export async function getInteractiveItemById(id: string) {
+export async function getITalksItemById(id: string) {
   try {
     const supabase = createPublicClient();
     const { data, error } = await supabase
@@ -80,12 +80,12 @@ export async function getInteractiveItemById(id: string) {
     if (error?.message === 'NEXT_NOT_FOUND' || error?.digest === 'NEXT_NOT_FOUND') {
       throw error;
     }
-    console.error('getInteractiveItemById error:', error);
+    console.error('getITalksItemById error:', error);
     notFound();
   }
 }
 
-export async function createInteractiveItem(formData: {
+export async function createITalksItem(formData: {
   title_tr: string;
   title_en: string;
   description_tr: string;
@@ -125,15 +125,15 @@ export async function createInteractiveItem(formData: {
     if (error) throw new Error(error.message);
 
     revalidatePath('/');
-    revalidatePath('/[locale]/interaktif', 'page');
+    revalidatePath('/[locale]/i-talks', 'page');
     return { success: true, data };
   } catch (error: any) {
-    console.error('createInteractiveItem error:', error);
+    console.error('createITalksItem error:', error);
     return { success: false, error: error.message };
   }
 }
 
-export async function updateInteractiveItem(
+export async function updateITalksItem(
   id: string,
   formData: {
     title_tr: string;
@@ -175,15 +175,15 @@ export async function updateInteractiveItem(
     if (error) throw new Error(error.message);
 
     revalidatePath('/');
-    revalidatePath('/[locale]/interaktif', 'page');
+    revalidatePath('/[locale]/i-talks', 'page');
     return { success: true, data };
   } catch (error: any) {
-    console.error('updateInteractiveItem error:', error);
+    console.error('updateITalksItem error:', error);
     return { success: false, error: error.message };
   }
 }
 
-export async function deleteInteractiveItem(id: string, imageUrl?: string, fileUrl?: string) {
+export async function deleteITalksItem(id: string, imageUrl?: string, fileUrl?: string) {
   try {
     const supabase = await createServerClient();
 
@@ -215,14 +215,14 @@ export async function deleteInteractiveItem(id: string, imageUrl?: string, fileU
     const { error: dbError } = await supabase.from('interactive').delete().eq('id', id);
     if (dbError) throw new Error(dbError.message);
 
-    revalidatePath('/[locale]/interaktif', 'page');
-    revalidatePath(`/[locale]/interaktif/${id}`);
-    revalidatePath('/[locale]/interaktif/[id]', 'page');
+    revalidatePath('/[locale]/i-talks', 'page');
+    revalidatePath(`/[locale]/i-talks/${id}`);
+    revalidatePath('/[locale]/i-talks/[id]', 'page');
     revalidatePath('/');
     revalidatePath('/[locale]', 'layout');
     return { success: true };
   } catch (error: any) {
-    console.error('deleteInteractiveItem error:', error);
+    console.error('deleteITalksItem error:', error);
     return { success: false, error: error.message };
   }
 }

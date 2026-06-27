@@ -22,11 +22,11 @@ const categoryTranslations: Record<Category, string> = {
   'Robotik': 'Robotics',
 };
 
-interface InteractiveSectionProps {
+interface ITalksSectionProps {
   initialItems?: any[];
 }
 
-export function InteractiveSection({ initialItems }: InteractiveSectionProps) {
+export function ITalksSection({ initialItems }: ITalksSectionProps) {
   const locale = useLocale();
   const isEn = locale === 'en';
   const [activeCategory, setActiveCategory] = useState<Category>('Tümü');
@@ -62,7 +62,7 @@ export function InteractiveSection({ initialItems }: InteractiveSectionProps) {
           title: isEn ? item.title_en : item.title_tr,
           subtitle: isEn ? item.description_en : item.description_tr,
           type: item.type,
-          href: `/interaktif/${item.id}`,
+          href: `/i-talks/${item.id}`,
           imageAlt: isEn ? item.title_en : item.title_tr,
           imageUrl: item.image_url,
         };
@@ -135,7 +135,7 @@ export function InteractiveSection({ initialItems }: InteractiveSectionProps) {
                   </button>
                 </div>
                 <Link
-                  href="/interaktif"
+                  href="/i-talks"
                   className="px-6 py-2.5 bg-primary text-white font-bold text-sm rounded-full hover:bg-primary-dark transition-colors"
                 >
                   {isEn ? 'View All' : 'Tümünü Gör'}

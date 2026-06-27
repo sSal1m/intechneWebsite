@@ -202,7 +202,7 @@ function triggerRevalidation(entityType: string) {
     } else if (entityType === 'corporate_identity') {
       revalidatePath('/[locale]/hakkimizda/kurumsal-kimlik', 'page');
     } else if (entityType === 'interactive') {
-      revalidatePath('/[locale]/interaktif', 'page');
+      revalidatePath('/[locale]/i-talks', 'page');
       revalidatePath('/');
       revalidatePath('/[locale]', 'layout');
     } else if (entityType === 'messages') {

@@ -3,13 +3,13 @@ import { HeroSlider } from '@/components/home/HeroSlider';
 import { BrandsTabSection } from '@/components/home/BrandsTabSection';
 import { BrandsLogoRow } from '@/components/home/BrandsLogoRow';
 import { NewsSection } from '@/components/home/NewsSection';
-import { InteractiveSection } from '@/components/home/InteractiveSection';
+import { ITalksSection } from '@/components/home/ITalksSection';
 import { ContactCTA } from '@/components/home/ContactCTA';
 import { StatsSection } from '@/components/home/StatsSection';
 
 import { getSliders, getStats } from '@/src/actions/sliders';
 import { getNews } from '@/src/actions/news';
-import { getInteractiveItems } from '@/src/actions/interactive';
+import { getITalksItems } from '@/src/actions/i-talks';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,7 +26,7 @@ export default async function HomePage({ params }: HomePageProps) {
   const sliders = await getSliders();
   const statsData = await getStats();
   const newsData = await getNews();
-  const interactiveData = await getInteractiveItems();
+  const interactiveData = await getITalksItems();
 
   return (
     <>
@@ -34,7 +34,7 @@ export default async function HomePage({ params }: HomePageProps) {
       <BrandsTabSection locale={locale} />
       <BrandsLogoRow locale={locale} />
       <NewsSection initialNews={newsData} />
-      <InteractiveSection initialItems={interactiveData} />
+      <ITalksSection initialItems={interactiveData} />
       <ContactCTA />
       <StatsSection initialStats={statsData} />
     </>

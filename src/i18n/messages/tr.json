@@ -21,7 +21,7 @@
     "readMore": "Devamını Gör",
     "badge": "Intechne Haber"
   },
-  "interactive": {
+  "iTalks": {
     "title": "I-Talks",
     "all": "Tümü",
     "viewAll": "Tümünü Gör"
@@ -51,7 +51,7 @@
       "home": "Anasayfa",
       "about": "Hakkımızda",
       "news": "Haberler",
-      "interactive": "I-Talks"
+      "iTalks": "I-Talks"
     },
     "instagram": {
       "title": "Instagram"

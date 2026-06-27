@@ -44,10 +44,10 @@ export function MediaCard({ item, className }: MediaCardProps) {
   const imageUrl = item.imageUrl || (item as any).image_url;
   const isExternal = item.href.startsWith('http') || item.href.startsWith('//');
 
-  // Convert dynamic interaktif paths to next-intl object format
-  const interaktifMatch = item.href.match(/^\/interaktif\/(.+)$/);
-  const linkHref = interaktifMatch
-    ? { pathname: '/interaktif/[id]' as any, params: { id: interaktifMatch[1] } }
+  // Convert dynamic i-talks paths to next-intl object format
+  const italksMatch = item.href.match(/^\/i-talks\/(.+)$/);
+  const linkHref = italksMatch
+    ? { pathname: '/i-talks/[id]' as any, params: { id: italksMatch[1] } }
     : item.href as any;
 
   return (

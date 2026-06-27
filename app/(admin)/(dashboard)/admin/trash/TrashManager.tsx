@@ -52,7 +52,7 @@ export function TrashManager({ initialItems }: TrashManagerProps) {
       case 'corporate_identity':
         return 'Kurumsal Kimlik';
       case 'interactive':
-        return 'İnteraktif Yayın';
+        return 'I-Talks';
       case 'messages':
         return 'Mesaj';
       case 'job_positions':

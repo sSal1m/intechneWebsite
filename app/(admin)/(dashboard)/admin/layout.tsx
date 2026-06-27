@@ -105,7 +105,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { label: 'Marka Sayfaları', href: '/admin/brands', icon: Cpu },
     { label: 'Haber', href: '/admin/news', icon: FileText },
     { label: 'Ekip', href: '/admin/team', icon: Users },
-    { label: 'İnteraktif Yayınlar', href: '/admin/interactive', icon: BookOpen },
+    { label: 'I-Talks', href: '/admin/i-talks', icon: BookOpen },
     { label: 'Kurumsal Kimlik', href: '/admin/identity', icon: FolderArchive },
     { label: 'Gelen Mesajlar', href: '/admin/messages', icon: Mail },
     { label: 'Kariyer', href: '/admin/careers', icon: Briefcase },

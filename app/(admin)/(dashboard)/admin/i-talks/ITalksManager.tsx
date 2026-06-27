@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useTransition, useEffect } from 'react';
-import { createInteractiveItem, updateInteractiveItem, deleteInteractiveItem } from '@/src/actions/interactive';
+import { createITalksItem, updateITalksItem, deleteITalksItem } from '@/src/actions/i-talks';
 import { Trash2, Edit, Plus, X, Upload, BookOpen, ExternalLink, Play } from 'lucide-react';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
-interface InteractiveItem {
+interface ITalksItem {
   id: string;
   title_tr: string;
   title_en: string;
@@ -20,12 +20,12 @@ interface InteractiveItem {
   created_at: string;
 }
 
-interface InteractiveManagerProps {
-  initialItems: InteractiveItem[];
+interface ITalksManagerProps {
+  initialItems: ITalksItem[];
 }
 
-export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
-  const [items, setItems] = useState<InteractiveItem[]>(initialItems);
+export function ITalksManager({ initialItems }: ITalksManagerProps) {
+  const [items, setItems] = useState<ITalksItem[]>(initialItems);
   const [isPending, startTransition] = useTransition();
 
   // Sync props to state
@@ -33,7 +33,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
     setItems(initialItems);
   }, [initialItems]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<InteractiveItem | null>(null);
+  const [editingItem, setEditingItem] = useState<ITalksItem | null>(null);
 
   // Delete confirmation states
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -68,7 +68,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
     setIsModalOpen(true);
   }
 
-  function openEditModal(item: InteractiveItem) {
+  function openEditModal(item: ITalksItem) {
     setEditingItem(item);
     setTitleTr(item.title_tr);
     setTitleEn(item.title_en);
@@ -130,7 +130,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
         order_index: orderIndex,
       };
 
-      const sortItems = (a: InteractiveItem, b: InteractiveItem) => {
+      const sortItems = (a: ITalksItem, b: ITalksItem) => {
         const orderA = a.order_index || 0;
         const orderB = b.order_index || 0;
         if (orderA !== orderB) return orderB - orderA;
@@ -138,7 +138,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
       };
 
       if (editingItem) {
-        const result = await updateInteractiveItem(editingItem.id, payload);
+        const result = await updateITalksItem(editingItem.id, payload);
         if (result.success && result.data) {
           const updated = result.data[0];
           setItems(items.map((i) => (i.id === editingItem.id ? updated : i)).sort(sortItems));
@@ -147,7 +147,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
           alert('Güncelleme hatası: ' + result.error);
         }
       } else {
-        const result = await createInteractiveItem(payload);
+        const result = await createITalksItem(payload);
         if (result.success && result.data) {
           const created = result.data[0];
           setItems([created, ...items].sort(sortItems));
@@ -163,7 +163,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
     if (!itemToDelete) return;
     const { id, img, file } = itemToDelete;
     startTransition(async () => {
-      const result = await deleteInteractiveItem(id, img, file);
+      const result = await deleteITalksItem(id, img, file);
       if (result.success) {
         setItems(items.filter((i) => i.id !== id));
       } else {
@@ -246,7 +246,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
                       ? item.video_url 
                       : item.type === 'report' && item.file_url 
                       ? item.file_url 
-                      : '/tr/interaktif'
+                      : '/tr/i-talks'
                   }
                   target="_blank"
                   rel="noreferrer"
@@ -512,7 +512,7 @@ export function InteractiveManager({ initialItems }: InteractiveManagerProps) {
         onClose={() => setDeleteConfirmOpen(false)}
         onConfirm={executeDelete}
         title="Yayını Sil"
-        message="Bu interaktif yayını silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
+        message="Bu I-Talks yayınını silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
       />
     </div>
   );
