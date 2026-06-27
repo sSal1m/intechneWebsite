@@ -55,9 +55,9 @@ export function MediaCard({ item, className }: MediaCardProps) {
       href={linkHref}
       target={isExternal ? '_blank' : undefined}
       rel={isExternal ? 'noopener noreferrer' : undefined}
-      className={cn('block bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group', className)}
+      className={cn('flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group', className)}
     >
-      <div className="relative aspect-video bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center overflow-hidden">
+      <div className="relative aspect-video bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center overflow-hidden flex-shrink-0">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -79,18 +79,18 @@ export function MediaCard({ item, className }: MediaCardProps) {
           })()}
         </span>
       </div>
-      <div className="p-4">
+      <div className="p-4 flex-grow flex flex-col">
         <div className="flex items-center gap-2 mb-2">
           <span className={cn('text-xs font-semibold px-2 py-0.5 rounded-full', categoryColors[item.category] || 'bg-gray-100 text-gray-700')}>
             {displayCategory}
           </span>
           <span className="text-slate-400 text-xs">{item.date}</span>
         </div>
-        <h4 className="text-brand-dark font-semibold text-sm leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+        <h4 className="text-brand-dark font-semibold text-sm leading-snug line-clamp-2 overflow-hidden group-hover:text-primary transition-colors mb-2">
           {item.title}
         </h4>
         {item.subtitle && (
-          <p className="text-slate-500 text-xs mt-1 line-clamp-1">{item.subtitle}</p>
+          <p className="text-slate-500 text-xs mt-auto line-clamp-1">{item.subtitle}</p>
         )}
       </div>
     </Link>
