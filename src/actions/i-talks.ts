@@ -36,7 +36,7 @@ function createPublicClient() {
 export async function getITalksItems(category?: string) {
   try {
     const supabase = createPublicClient();
-    let query = supabase.from('interactive').select('*').order('order_index', { ascending: false }).order('created_at', { ascending: false });
+    let query = supabase.from('interactive').select('*').order('created_at', { ascending: false });
 
     if (category && category !== 'all') {
       query = query.eq('category', category);
@@ -44,16 +44,6 @@ export async function getITalksItems(category?: string) {
 
     const { data, error } = await query;
     if (error) {
-      // Fallback if order_index column doesn't exist in DB yet
-      if (error.code === '42703' || error.message.includes('order_index')) {
-        let fallbackQuery = supabase.from('interactive').select('*').order('created_at', { ascending: false });
-        if (category && category !== 'all') {
-          fallbackQuery = fallbackQuery.eq('category', category);
-        }
-        const fallbackResult = await fallbackQuery;
-        if (fallbackResult.error) throw new Error(fallbackResult.error.message);
-        return fallbackResult.data || [];
-      }
       throw new Error(error.message);
     }
     return data || [];
@@ -95,7 +85,6 @@ export async function createITalksItem(formData: {
   file_url?: string;
   video_url?: string;
   image_url?: string;
-  order_index?: number;
 }) {
   try {
     const supabase = await createServerClient();
@@ -117,7 +106,6 @@ export async function createITalksItem(formData: {
           file_url: formData.file_url || '',
           video_url: formData.video_url || '',
           image_url: formData.image_url || '',
-          order_index: formData.order_index || 0,
         },
       ])
       .select();
@@ -145,7 +133,6 @@ export async function updateITalksItem(
     file_url?: string;
     video_url?: string;
     image_url?: string;
-    order_index?: number;
   }
 ) {
   try {
@@ -167,7 +154,6 @@ export async function updateITalksItem(
         file_url: formData.file_url || '',
         video_url: formData.video_url || '',
         image_url: formData.image_url || '',
-        order_index: formData.order_index || 0,
       })
       .eq('id', id)
       .select();
