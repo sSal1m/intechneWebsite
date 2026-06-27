@@ -102,7 +102,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const menuItems = [
     { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { label: 'Slayt', href: '/admin/sliders', icon: Sliders },
-    { label: 'Marka Sayfaları', href: '/admin/brands', icon: Cpu },
+    { label: 'Markalarımız', href: '/admin/brands', icon: Cpu },
     { label: 'Haber', href: '/admin/news', icon: FileText },
     { label: 'Ekip', href: '/admin/team', icon: Users },
     { label: 'I-Talks', href: '/admin/i-talks', icon: BookOpen },
