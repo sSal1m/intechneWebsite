@@ -209,18 +209,18 @@ export function ITalksManager({ initialItems }: ITalksManagerProps) {
                 ) : (
                   <BookOpen className="w-8 h-8 text-slate-800" />
                 )}
-
-                {/* Badge Type */}
-                <span className={`absolute top-3 left-3 border text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1 ${typeInfo.color}`}>
-                  <TypeIcon className="w-2.5 h-2.5" />
-                  {typeInfo.label}
-                </span>
               </div>
 
               {/* Title & Info */}
               <div className="flex flex-col gap-2 min-h-[90px]">
                 <div className="flex items-center justify-between text-[10px] text-slate-500 font-bold uppercase">
                   <span>Kategori: {categoryLabels[item.category] || item.category}</span>
+                </div>
+                <div className="flex">
+                  <span className={`border text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1 ${typeInfo.color}`}>
+                    <TypeIcon className="w-2.5 h-2.5" />
+                    {typeInfo.label}
+                  </span>
                 </div>
                 <h4 className="font-bold text-white text-sm line-clamp-1 leading-snug">{item.title_tr}</h4>
                 <p className="text-slate-400 text-xs line-clamp-2 leading-relaxed mt-0.5">{item.description_tr}</p>
@@ -229,13 +229,7 @@ export function ITalksManager({ initialItems }: ITalksManagerProps) {
               {/* Actions panel */}
               <div className="absolute right-4 top-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-950 p-1.5 rounded-lg border border-slate-850 shadow-md">
                 <a
-                  href={
-                    item.type === 'video' && item.video_url 
-                      ? item.video_url 
-                      : item.type === 'report' && item.file_url 
-                      ? item.file_url 
-                      : '/tr/i-talks'
-                  }
+                  href={`/tr/i-talks/${item.id}`}
                   target="_blank"
                   rel="noreferrer"
                   className="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg hover:bg-slate-900 transition-colors"
