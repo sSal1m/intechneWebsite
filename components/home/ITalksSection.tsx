@@ -108,7 +108,7 @@ export function ITalksSection({ initialItems }: ITalksSectionProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {filtered.length > 0 ? (
             <>
-              <div ref={emblaRef} className="embla overflow-hidden">
+              <div ref={emblaRef} className="embla overflow-hidden py-4">
                 <div className="embla__container flex gap-4">
                   {filtered.map((item) => (
                     <div key={item.id} className="embla__slide !flex-none w-full sm:w-[calc((100%-16px)/2)] md:w-[calc((100%-32px)/3)]">
