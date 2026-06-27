@@ -111,7 +111,7 @@ export function ITalksSection({ initialItems }: ITalksSectionProps) {
               <div ref={emblaRef} className="embla overflow-hidden">
                 <div className="embla__container flex gap-4">
                   {filtered.map((item) => (
-                    <div key={item.id} className="embla__slide !flex-none w-full sm:w-[calc((100%-16px)/2)] md:w-[calc((100%-32px)/3)] flex flex-col">
+                    <div key={item.id} className="embla__slide !flex-none w-full sm:w-[calc((100%-16px)/2)] md:w-[calc((100%-32px)/3)]">
                       <MediaCard item={item} />
                     </div>
                   ))}
