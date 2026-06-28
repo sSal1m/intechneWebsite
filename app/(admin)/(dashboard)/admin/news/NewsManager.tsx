@@ -418,24 +418,24 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
                 {/* TR / EN Titles */}
                 <div className="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
                   <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Haber Başlığı (TR)</label>
-                  <input
-                    type="text"
+                  <textarea
                     required
+                    rows={1}
                     value={titleTr}
                     onChange={(e) => setTitleTr(e.target.value)}
                     placeholder="Başlığı yazın..."
-                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full resize-y"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
                   <label className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Haber Başlığı (EN)</label>
-                  <input
-                    type="text"
+                  <textarea
                     required
+                    rows={1}
                     value={titleEn}
                     onChange={(e) => setTitleEn(e.target.value)}
                     placeholder="Enter title..."
-                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full"
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full resize-y"
                   />
                 </div>
 
@@ -448,7 +448,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
                     value={excerptTr}
                     onChange={(e) => setExcerptTr(e.target.value)}
                     placeholder="Ana sayfada ve listelemede görünecek kısa özet..."
-                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full resize-none"
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full resize-y"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5 col-span-2">
@@ -459,7 +459,7 @@ export function NewsManager({ initialNews, categories }: NewsManagerProps) {
                     value={excerptEn}
                     onChange={(e) => setExcerptEn(e.target.value)}
                     placeholder="Brief summary for listings..."
-                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full resize-none"
+                    className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:outline-none w-full resize-y"
                   />
                 </div>
 
