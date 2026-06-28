@@ -1,9 +1,16 @@
 import { getNews, getNewsCategories } from '@/src/actions/news';
 import { NewsManager } from './NewsManager';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
+import { forbidden } from 'next/navigation';
 
 export const revalidate = 0; // Disable cache for news management list
 
 export default async function AdminNewsPage() {
+  const { role } = await getServerUserAndRole();
+  if (role !== 'super_admin' && role !== 'admin') {
+    forbidden();
+  }
+
   const [news, categories] = await Promise.all([
     getNews(),
     getNewsCategories(),

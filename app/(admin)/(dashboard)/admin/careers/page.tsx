@@ -1,11 +1,20 @@
 import { getJobPositions, getJobApplications } from '@/src/actions/careers';
 import { CareersManager } from './CareersManager';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
+import { forbidden } from 'next/navigation';
 
 export const revalidate = 0; // Disable caching for the admin dashboard list page
 
 export default async function AdminCareersPage() {
+  const { role } = await getServerUserAndRole();
+  if (role !== 'super_admin' && role !== 'admin' && role !== 'operations_manager') {
+    forbidden();
+  }
+
   const positions = await getJobPositions();
-  const applications = await getJobApplications();
+  const applications = (role === 'super_admin' || role === 'operations_manager')
+    ? await getJobApplications()
+    : [];
 
   return (
     <div className="flex flex-col gap-6">

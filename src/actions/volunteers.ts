@@ -4,6 +4,7 @@ import { createClient } from '@/src/utils/supabase/server';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { moveToTrash } from './trash-bin';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
 
 const volunteerSchema = z.object({
   first_name: z.string().min(2, 'Ad en az 2 karakter olmalıdır').max(150, 'Ad en fazla 150 karakter olabilir').trim(),
@@ -19,9 +20,9 @@ const volunteerSchema = z.object({
 });
 
 // Auth helper
-async function checkAdmin(supabase: any) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user || user.email !== 'admin@intechne.com.tr') {
+async function checkVolunteerAccess() {
+  const { user, role } = await getServerUserAndRole();
+  if (!user || (role !== 'super_admin' && role !== 'operations_manager')) {
     throw new Error('Yetkisiz erişim');
   }
 }
@@ -74,8 +75,8 @@ export async function submitVolunteerForm(rawFormData: FormData) {
 
 export async function getVolunteers() {
   try {
+    await checkVolunteerAccess();
     const supabase = await createClient();
-    await checkAdmin(supabase);
 
     const { data, error } = await supabase
       .from('volunteers')
@@ -92,8 +93,8 @@ export async function getVolunteers() {
 
 export async function deleteVolunteer(id: string) {
   try {
+    await checkVolunteerAccess();
     const supabase = await createClient();
-    await checkAdmin(supabase);
 
     // Fetch the volunteer row to back it up
     const { data: item, error: fetchError } = await supabase

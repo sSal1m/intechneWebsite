@@ -10,6 +10,7 @@ import {
   generateCVDownloadUrl 
 } from '@/src/actions/careers';
 import { createClient } from '@/src/utils/supabase/client';
+import { useAdminRole } from '@/src/utils/supabase/role-client';
 import { 
   Briefcase, 
   Users, 
@@ -72,9 +73,16 @@ interface CareersManagerProps {
 }
 
 export function CareersManager({ initialPositions, initialApplications }: CareersManagerProps) {
+  const { role } = useAdminRole();
   const [activeTab, setActiveTab] = useState<'positions' | 'applications'>('positions');
   const [positions, setPositions] = useState<JobPosition[]>(initialPositions);
   const [applications, setApplications] = useState<JobApplication[]>(initialApplications);
+
+  useEffect(() => {
+    if (role === 'admin' && activeTab === 'applications') {
+      setActiveTab('positions');
+    }
+  }, [role, activeTab]);
   
   const [isPending, startTransition] = useTransition();
 
@@ -401,17 +409,19 @@ export function CareersManager({ initialPositions, initialApplications }: Career
           <Briefcase className="w-4 h-4" />
           Pozisyonlar ({positions.length})
         </button>
-        <button
-          onClick={() => setActiveTab('applications')}
-          className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm transition-colors border-b-2 ${
-            activeTab === 'applications'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-slate-400 hover:text-white'
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          Gelen Başvurular ({applications.length})
-        </button>
+        {role !== 'admin' && (
+          <button
+            onClick={() => setActiveTab('applications')}
+            className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm transition-colors border-b-2 ${
+              activeTab === 'applications'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-slate-400 hover:text-white'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            Gelen Başvurular ({applications.length})
+          </button>
+        )}
       </div>
 
       {/* POSITIONS TAB */}
@@ -541,7 +551,7 @@ export function CareersManager({ initialPositions, initialApplications }: Career
       })()}
 
       {/* APPLICATIONS TAB */}
-      {activeTab === 'applications' && (
+      {activeTab === 'applications' && role !== 'admin' && (
         <div className="flex flex-col gap-6 animate-fadeIn">
           <div className="flex justify-between items-center">
             <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider">

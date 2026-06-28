@@ -1,9 +1,16 @@
 import { getCorporateIdentityItems } from '@/src/actions/corporate-identity';
 import { IdentityManager } from './IdentityManager';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
+import { forbidden } from 'next/navigation';
 
 export const revalidate = 0; // Disable caching for the admin list page
 
 export default async function AdminIdentityPage() {
+  const { role } = await getServerUserAndRole();
+  if (role !== 'super_admin') {
+    forbidden();
+  }
+
   const items = await getCorporateIdentityItems();
 
   return (

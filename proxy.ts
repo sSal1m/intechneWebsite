@@ -24,6 +24,36 @@ export async function proxy(request: NextRequest) {
         const dashboardUrl = new URL('/admin', request.url);
         return NextResponse.redirect(dashboardUrl);
       }
+
+      const role = user.app_metadata?.role;
+
+      if (!role) {
+        const loginUrl = new URL('/admin/login', request.url);
+        return NextResponse.redirect(loginUrl);
+      }
+
+      const isOpsManagerRestricted = 
+        pathname.startsWith('/admin/sliders') ||
+        pathname.startsWith('/admin/brands') ||
+        pathname.startsWith('/admin/news') ||
+        pathname.startsWith('/admin/team') ||
+        pathname.startsWith('/admin/i-talks') ||
+        pathname.startsWith('/admin/identity') ||
+        pathname.startsWith('/admin/trash');
+
+      const isAdminRestricted = 
+        pathname.startsWith('/admin/identity') ||
+        pathname.startsWith('/admin/messages') ||
+        pathname.startsWith('/admin/volunteers');
+
+      if (role === 'operations_manager' && isOpsManagerRestricted) {
+        return NextResponse.redirect(new URL('/admin', request.url));
+      }
+
+      if (role === 'admin' && isAdminRestricted) {
+        return NextResponse.redirect(new URL('/admin', request.url));
+      }
+
       return response;
     }
   }

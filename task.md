@@ -1,0 +1,39 @@
+- [x] Create Role Core Utilities
+  - [x] Create `src/utils/supabase/role-server.ts`
+  - [x] Create `src/utils/supabase/role-client.ts`
+- [x] Implement Auth Page Changes & Cookie Setup
+  - [x] Modify `app/(admin)/admin/login/page.tsx` (role selection cookie support)
+  - [x] Modify `src/utils/supabase/middleware.ts` (dummy email cookie parsing)
+- [x] Implement Dashboard Layout & Sidebar
+  - [x] Rename `app/(admin)/(dashboard)/admin/layout.tsx` to `DashboardLayoutClient.tsx` and refactor
+  - [x] Create new server-side `app/(admin)/(dashboard)/admin/layout.tsx`
+  - [x] Create `app/(admin)/(dashboard)/admin/forbidden.tsx` page
+- [x] Guard Sub-routes (Pages)
+  - [x] Modify `/admin/page.tsx` (dashboard counts and widgets query customization)
+  - [x] Modify `/admin/sliders/page.tsx`
+  - [x] Modify `/admin/brands/page.tsx`
+  - [x] Modify `/admin/news/page.tsx`
+  - [x] Modify `/admin/team/page.tsx`
+  - [x] Modify `/admin/i-talks/page.tsx`
+  - [x] Modify `/admin/identity/page.tsx`
+  - [x] Modify `/admin/messages/page.tsx`
+  - [x] Modify `/admin/careers/page.tsx`
+  - [x] Modify `/admin/careers/CareersManager.tsx`
+  - [x] Modify `/admin/volunteers/page.tsx`
+  - [x] Modify `/admin/trash/page.tsx`
+  - [x] Modify `/admin/trash/TrashManager.tsx`
+- [x] Protect Server Actions
+  - [x] Modify `src/actions/brands.ts`
+  - [x] Modify `src/actions/careers.ts`
+  - [x] Modify `src/actions/corporate-identity.ts`
+  - [x] Modify `src/actions/i-talks.ts`
+  - [x] Modify `src/actions/messages.ts`
+  - [x] Modify `src/actions/news.ts`
+  - [x] Modify `src/actions/sliders.ts`
+  - [x] Modify `src/actions/team.ts`
+  - [x] Modify `src/actions/trash-bin.ts`
+  - [x] Modify `src/actions/volunteers.ts`
+- [x] Secure Middleware/Proxy Redirects
+  - [x] Modify `proxy.ts`
+- [/] Verification & Build validation
+  - [ ] Build verification with `npm run build`

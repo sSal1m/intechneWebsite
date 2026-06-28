@@ -1,9 +1,16 @@
 import { getBrandPages } from '@/src/actions/brands';
 import { BrandManager } from './BrandManager';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
+import { forbidden } from 'next/navigation';
 
 export const revalidate = 0; // Disable caching for admin
 
 export default async function AdminBrandsPage() {
+  const { role } = await getServerUserAndRole();
+  if (role !== 'super_admin' && role !== 'admin') {
+    forbidden();
+  }
+
   const brands = await getBrandPages();
 
   return (

@@ -4,6 +4,7 @@ import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { moveToTrash } from './trash-bin';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
 
 // Zod schemas for validation
 const positionSchema = z.object({
@@ -32,10 +33,17 @@ const applicationSchema = z.object({
   kvkk_approved: z.boolean().refine(val => val === true, 'KVKK onayı zorunludur'),
 });
 
-// Auth helper
-async function checkAdmin(supabase: any) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user || user.email !== 'admin@intechne.com.tr') {
+// Auth helpers
+async function checkPositionAccess() {
+  const { user, role } = await getServerUserAndRole();
+  if (!user || (role !== 'super_admin' && role !== 'admin' && role !== 'operations_manager')) {
+    throw new Error('Yetkisiz erişim');
+  }
+}
+
+async function checkApplicationAccess() {
+  const { user, role } = await getServerUserAndRole();
+  if (!user || (role !== 'super_admin' && role !== 'operations_manager')) {
     throw new Error('Yetkisiz erişim');
   }
 }
@@ -84,8 +92,8 @@ export async function getJobPositionById(id: string) {
 
 export async function createJobPosition(formData: z.infer<typeof positionSchema>) {
   try {
+    await checkPositionAccess();
     const supabase = await createClient();
-    await checkAdmin(supabase);
 
     const validated = positionSchema.parse(formData);
 
@@ -110,8 +118,8 @@ export async function createJobPosition(formData: z.infer<typeof positionSchema>
 
 export async function updateJobPosition(id: string, formData: z.infer<typeof positionSchema>) {
   try {
+    await checkPositionAccess();
     const supabase = await createClient();
-    await checkAdmin(supabase);
 
     const validated = positionSchema.parse(formData);
 
@@ -137,8 +145,8 @@ export async function updateJobPosition(id: string, formData: z.infer<typeof pos
 
 export async function deleteJobPosition(id: string) {
   try {
+    await checkPositionAccess();
     const supabase = await createClient();
-    await checkAdmin(supabase);
 
     // Fetch original position data
     const { data: positionItem, error: fetchError } = await supabase
@@ -290,8 +298,8 @@ export async function submitJobApplication(rawFormData: FormData) {
 
 export async function getJobApplications() {
   try {
+    await checkApplicationAccess();
     const supabase = await createClient();
-    await checkAdmin(supabase);
 
     const { data, error } = await supabase
       .from('job_applications')
@@ -308,8 +316,8 @@ export async function getJobApplications() {
 
 export async function deleteJobApplication(id: string) {
   try {
+    await checkApplicationAccess();
     const supabase = await createClient();
-    await checkAdmin(supabase);
 
     // Fetch the application to get original data and file path
     const { data: applicationItem, error: fetchError } = await supabase
@@ -348,8 +356,8 @@ export async function deleteJobApplication(id: string) {
 
 export async function toggleJobPositionStatus(id: string, isActive: boolean) {
   try {
+    await checkPositionAccess();
     const supabase = await createClient();
-    await checkAdmin(supabase);
 
     const { data, error } = await supabase
       .from('job_positions')
@@ -373,8 +381,8 @@ export async function toggleJobPositionStatus(id: string, isActive: boolean) {
 
 export async function generateCVDownloadUrl(cvPath: string) {
   try {
+    await checkApplicationAccess();
     const supabase = await createClient();
-    await checkAdmin(supabase);
 
     const { data, error } = await supabase.storage
       .from('cv_uploads')

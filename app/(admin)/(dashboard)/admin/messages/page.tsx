@@ -1,9 +1,16 @@
 import { getMessages } from '@/src/actions/messages';
 import { MessagesList } from './MessagesList';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
+import { forbidden } from 'next/navigation';
 
 export const revalidate = 0; // Disable cache for message inbox
 
 export default async function AdminMessagesPage() {
+  const { role } = await getServerUserAndRole();
+  if (role !== 'super_admin' && role !== 'operations_manager') {
+    forbidden();
+  }
+
   const messages = await getMessages();
 
   return (

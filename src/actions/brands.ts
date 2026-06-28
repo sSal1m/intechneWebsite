@@ -3,6 +3,7 @@
 import { createClient } from '@/src/utils/supabase/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
 
 // Static-friendly client that does NOT read cookies, allowing ISR / static generation to work without dynamic bail-out.
 function createPublicClient() {
@@ -82,9 +83,11 @@ export async function updateBrandPage(
   try {
     const supabase = await createClient();
 
-    // Verify auth using server client (requires cookies)
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    // Verify auth using server client
+    const { user, role } = await getServerUserAndRole();
+    if (!user || (role !== 'super_admin' && role !== 'admin')) {
+      throw new Error('Unauthorized');
+    }
 
     const { data, error } = await supabase
       .from('brand_pages')

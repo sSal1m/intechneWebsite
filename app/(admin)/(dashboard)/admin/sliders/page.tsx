@@ -1,9 +1,16 @@
 import { getSliders } from '@/src/actions/sliders';
 import { SliderManager } from './SliderManager';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
+import { forbidden } from 'next/navigation';
 
 export const revalidate = 0; // Disable cache for admin sliders
 
 export default async function AdminSlidersPage() {
+  const { role } = await getServerUserAndRole();
+  if (role !== 'super_admin' && role !== 'admin') {
+    forbidden();
+  }
+
   const sliders = await getSliders();
 
   return (

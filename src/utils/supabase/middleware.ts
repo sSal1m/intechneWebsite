@@ -11,18 +11,10 @@ export async function updateSession(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  const isValidUrl = url && (url.startsWith('http://') || url.startsWith('https://'));
-  const isPlaceholder = !key || key.includes('your-supabase');
-
-  if (!isValidUrl || isPlaceholder) {
-    const dummyCookie = request.cookies.get('sb-dummy-session');
-    const user = dummyCookie?.value === 'true'
-      ? { email: 'admin@intechne.com.tr', id: 'dummy-uid' } as any
-      : null;
-
+  if (!url || !key) {
     return {
       supabase: {} as any,
-      user,
+      user: null,
       response,
     };
   }

@@ -1,9 +1,16 @@
 import { getVolunteers } from '@/src/actions/volunteers';
 import { VolunteersManager } from './VolunteersManager';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
+import { forbidden } from 'next/navigation';
 
 export const revalidate = 0; // Disable caching
 
 export default async function AdminVolunteersPage() {
+  const { role } = await getServerUserAndRole();
+  if (role !== 'super_admin' && role !== 'operations_manager') {
+    forbidden();
+  }
+
   const volunteers = await getVolunteers();
 
   return (

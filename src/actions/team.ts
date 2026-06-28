@@ -4,6 +4,7 @@ import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { moveToTrash } from './trash-bin';
 import { extractStoragePath } from '@/src/utils/storage';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
 
 export async function getTeam() {
   try {
@@ -34,8 +35,8 @@ export async function createTeamMember(formData: {
     const supabase = await createClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
 
     const { data, error } = await supabase
       .from('team')
@@ -78,8 +79,8 @@ export async function updateTeamMember(
     const supabase = await createClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
 
     const { data, error } = await supabase
       .from('team')
@@ -110,8 +111,8 @@ export async function deleteTeamMember(id: string, imageUrl?: string) {
     const supabase = await createClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
 
     // Fetch original team member data
     const { data: member, error: fetchError } = await supabase

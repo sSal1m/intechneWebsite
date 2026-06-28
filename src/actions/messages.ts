@@ -4,6 +4,7 @@ import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { moveToTrash } from './trash-bin';
 import { z } from 'zod';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
 
 const contactFormSchema = z.object({
   firstName: z.string().trim().min(1, 'İsim boş olamaz').max(100),
@@ -74,8 +75,8 @@ export async function getMessages() {
     const supabase = await createClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || (role !== 'super_admin' && role !== 'operations_manager')) throw new Error('Unauthorized');
 
     const { data, error } = await supabase
       .from('messages')
@@ -95,8 +96,8 @@ export async function deleteMessage(id: string) {
     const supabase = await createClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || (role !== 'super_admin' && role !== 'operations_manager')) throw new Error('Unauthorized');
 
     // Fetch original message data
     const { data: message, error: fetchError } = await supabase

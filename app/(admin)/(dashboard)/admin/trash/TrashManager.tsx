@@ -4,6 +4,7 @@ import { useState, useEffect, useTransition } from 'react';
 import { restoreFromTrash, deletePermanently } from '@/src/actions/trash-bin';
 import { RotateCcw, Trash2, Clock, AlertTriangle, ShieldAlert } from 'lucide-react';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { useAdminRole } from '@/src/utils/supabase/role-client';
 
 interface TrashItem {
   id: string;
@@ -19,6 +20,7 @@ interface TrashManagerProps {
 }
 
 export function TrashManager({ initialItems }: TrashManagerProps) {
+  const { role } = useAdminRole();
   const [items, setItems] = useState<TrashItem[]>(initialItems);
   const [isPending, startTransition] = useTransition();
   const [currentTime, setCurrentTime] = useState(() => Date.now());
@@ -246,18 +248,20 @@ export function TrashManager({ initialItems }: TrashManagerProps) {
                         <RotateCcw className="w-3.5 h-3.5 shrink-0" />
                         Kurtar
                       </button>
-                      <button
-                        onClick={() => {
-                          setItemToDelete(item.id);
-                          setDeleteConfirmOpen(true);
-                        }}
-                        disabled={isPending}
-                        className="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-slate-950 border border-red-500/20 hover:border-red-500 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
-                        title="Kalıcı Olarak Sil"
-                      >
-                        <Trash2 className="w-3.5 h-3.5 shrink-0" />
-                        Kalıcı Sil
-                      </button>
+                      {role === 'super_admin' && (
+                        <button
+                          onClick={() => {
+                            setItemToDelete(item.id);
+                            setDeleteConfirmOpen(true);
+                          }}
+                          disabled={isPending}
+                          className="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-slate-950 border border-red-500/20 hover:border-red-500 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
+                          title="Kalıcı Olarak Sil"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 shrink-0" />
+                          Kalıcı Sil
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -1,9 +1,16 @@
 import { getITalksItems } from '@/src/actions/i-talks';
 import { ITalksManager } from './ITalksManager';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
+import { forbidden } from 'next/navigation';
 
 export const revalidate = 0; // Disable cache for interactive items
 
 export default async function AdminITalksPage() {
+  const { role } = await getServerUserAndRole();
+  if (role !== 'super_admin' && role !== 'admin') {
+    forbidden();
+  }
+
   const items = await getITalksItems();
 
   return (

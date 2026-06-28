@@ -17,24 +17,6 @@ export default function AdminLoginPage() {
     setError(null);
     setLoading(true);
 
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    const isDummyMode = !url || !key || !url.startsWith('http') || key.includes('your-supabase');
-
-    if (isDummyMode) {
-      if (email === 'admin@intechne.com.tr' && password === 'admin123') {
-        document.cookie = "sb-dummy-session=true; path=/; max-age=86400";
-        router.push('/admin');
-        router.refresh();
-        setLoading(false);
-        return;
-      } else {
-        setError('Giriş bilgileri hatalı.');
-        setLoading(false);
-        return;
-      }
-    }
-
     try {
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email,

@@ -4,6 +4,7 @@ import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { moveToTrash } from './trash-bin';
 import { extractStoragePath } from '@/src/utils/storage';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
 
 export async function getCorporateIdentityItems() {
   try {
@@ -33,8 +34,8 @@ export async function createCorporateIdentityItem(formData: {
     const supabase = await createClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || role !== 'super_admin') throw new Error('Unauthorized');
 
     const { data, error } = await supabase
       .from('corporate_identity')
@@ -75,8 +76,8 @@ export async function updateCorporateIdentityItem(
     const supabase = await createClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || role !== 'super_admin') throw new Error('Unauthorized');
 
     const { data, error } = await supabase
       .from('corporate_identity')
@@ -106,8 +107,8 @@ export async function deleteCorporateIdentityItem(id: string, fileUrl?: string, 
     const supabase = await createClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || role !== 'super_admin') throw new Error('Unauthorized');
 
     // Fetch original corporate identity item data
     const { data: item, error: fetchError } = await supabase

@@ -3,9 +3,13 @@
 import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { extractStoragePath } from '@/src/utils/storage';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
 
 export async function getTrashItems() {
   try {
+    const { user, role } = await getServerUserAndRole();
+    if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
+
     const supabase = await createClient();
     
     // First, prune expired items older than 24 hours
@@ -78,7 +82,7 @@ export async function moveToTrash(
     const supabase = await createClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
+    const { user } = await getServerUserAndRole();
     if (!user) throw new Error('Unauthorized');
 
     const { error } = await supabase
@@ -106,8 +110,8 @@ export async function restoreFromTrash(trashId: string) {
     const supabase = await createClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
 
     // Fetch the trash item
     const { data: trashItem, error: fetchError } = await supabase
@@ -157,8 +161,8 @@ export async function deletePermanently(trashId: string) {
     const supabase = await createClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || role !== 'super_admin') throw new Error('Unauthorized');
 
     // Fetch the trash item
     const { data: trashItem, error: fetchError } = await supabase

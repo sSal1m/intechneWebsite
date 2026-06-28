@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { moveToTrash } from './trash-bin';
 import { extractStoragePath } from '@/src/utils/storage';
 import { notFound } from 'next/navigation';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 function createPublicClient() {
@@ -90,8 +91,8 @@ export async function createITalksItem(formData: {
     const supabase = await createServerClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
 
     const { data, error } = await supabase
       .from('interactive')
@@ -139,8 +140,8 @@ export async function updateITalksItem(
     const supabase = await createServerClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
 
     const { data, error } = await supabase
       .from('interactive')
@@ -174,8 +175,8 @@ export async function deleteITalksItem(id: string, imageUrl?: string, fileUrl?: 
     const supabase = await createServerClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
 
     // Fetch original interactive item data
     const { data: item, error: fetchError } = await supabase

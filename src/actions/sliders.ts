@@ -4,6 +4,7 @@ import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { moveToTrash } from './trash-bin';
 import { extractStoragePath } from '@/src/utils/storage';
+import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
 
 export async function getSliders() {
   try {
@@ -37,8 +38,8 @@ export async function createSlider(formData: {
     const supabase = await createClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
 
     const { data, error } = await supabase
       .from('sliders')
@@ -88,8 +89,8 @@ export async function updateSlider(
     const supabase = await createClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
 
     const { data, error } = await supabase
       .from('sliders')
@@ -124,8 +125,8 @@ export async function deleteSlider(id: string, imageUrl?: string) {
     const supabase = await createClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
 
     // Fetch original slider data
     const { data: slider, error: fetchError } = await supabase
@@ -189,8 +190,8 @@ export async function updateStat(
     const supabase = await createClient();
 
     // Verify auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Unauthorized');
+    const { user, role } = await getServerUserAndRole();
+    if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
 
     const { data, error } = await supabase
       .from('stats')
