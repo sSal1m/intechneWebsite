@@ -46,6 +46,7 @@ export async function submitContactForm(formData: {
     const supabase = await createClient();
 
     const newValues = {
+      name: `${validatedData.firstName} ${validatedData.lastName}`.trim(),
       first_name: validatedData.firstName,
       last_name: validatedData.lastName,
       email: validatedData.email,

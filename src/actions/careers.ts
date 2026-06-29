@@ -381,6 +381,9 @@ export async function submitJobApplication(rawFormData: FormData) {
       newValues
     });
 
+    revalidatePath('/admin');
+    revalidatePath('/admin/careers');
+
     return { success: true, message: 'Başvurunuz başarıyla alındı.' };
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : String(error);

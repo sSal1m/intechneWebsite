@@ -75,6 +75,9 @@ export async function submitVolunteerForm(rawFormData: FormData) {
       newValues
     });
 
+    revalidatePath('/admin');
+    revalidatePath('/admin/volunteers');
+
     return { success: true, message: 'Başvurunuz başarıyla alınmıştır.' };
   } catch (error: unknown) {
     console.error('submitVolunteerForm error:', error);
