@@ -10,6 +10,12 @@ export async function proxy(request: NextRequest) {
 
   // 1. If it's an admin path, handle Supabase Auth session & redirection
   if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+    const isForbiddenPage = pathname === '/admin/forbidden';
+    if (isForbiddenPage) {
+      const { response } = await updateSession(request);
+      return response;
+    }
+
     const { user, response } = await updateSession(request);
     const isLoginPage = pathname === '/admin/login';
 
@@ -20,16 +26,18 @@ export async function proxy(request: NextRequest) {
       }
       return response;
     } else {
+      const role = user.app_metadata?.role;
+      const allowedRoles = ['super_admin', 'admin', 'operations_manager'];
+      const hasAllowedRole = role && allowedRoles.includes(role);
+
+      if (!hasAllowedRole) {
+        const forbiddenUrl = new URL('/admin/forbidden', request.url);
+        return NextResponse.redirect(forbiddenUrl);
+      }
+
       if (isLoginPage) {
         const dashboardUrl = new URL('/admin', request.url);
         return NextResponse.redirect(dashboardUrl);
-      }
-
-      const role = user.app_metadata?.role;
-
-      if (!role) {
-        const loginUrl = new URL('/admin/login', request.url);
-        return NextResponse.redirect(loginUrl);
       }
 
       const isOpsManagerRestricted = 
