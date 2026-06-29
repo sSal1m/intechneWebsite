@@ -6,7 +6,34 @@ import { moveToTrash } from './trash-bin';
 import { extractStoragePath } from '@/src/utils/storage';
 import { notFound } from 'next/navigation';
 import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js';
+import { writeAuditLog, AuditAction } from '@/src/utils/supabase/log-helper';
+
+const mockQuery: unknown = new Proxy({}, {
+  get(target, prop): unknown {
+    if (prop === 'then') {
+      return (resolve: (val: unknown) => void) => resolve({ data: [], error: null, count: 0 });
+    }
+    return () => mockQuery;
+  }
+});
+
+const mockSupabase = new Proxy({}, {
+  get(target, prop): unknown {
+    if (prop === 'then') return undefined;
+    if (prop === 'from') {
+      return () => ({
+        select: () => ({
+          order: () => Promise.resolve({ data: [], error: null }),
+          eq: () => ({
+            single: () => Promise.resolve({ data: null, error: null })
+          })
+        })
+      });
+    }
+    return () => {};
+  }
+}) as unknown as SupabaseClient;
 
 function createPublicClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -15,21 +42,7 @@ function createPublicClient() {
   const isPlaceholder = !key || key.includes('your-supabase');
 
   if (!isValidUrl || isPlaceholder) {
-    return new Proxy({}, {
-      get(target, prop): any {
-        if (prop === 'from') {
-          return () => ({
-            select: () => ({
-              order: () => Promise.resolve({ data: [], error: null }),
-              eq: () => ({
-                single: () => Promise.resolve({ data: null, error: null })
-              })
-            })
-          });
-        }
-        return () => {};
-      }
-    }) as any;
+    return mockSupabase;
   }
   return createSupabaseClient(url, key);
 }
@@ -48,7 +61,7 @@ export async function getITalksItems(category?: string) {
       throw new Error(error.message);
     }
     return data || [];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('getITalksItems error:', error);
     return [];
   }
@@ -67,8 +80,9 @@ export async function getITalksItemById(id: string) {
       notFound();
     }
     return data;
-  } catch (error: any) {
-    if (error?.message === 'NEXT_NOT_FOUND' || error?.digest === 'NEXT_NOT_FOUND') {
+  } catch (error: unknown) {
+    const errObj = error as Record<string, unknown>;
+    if (errObj?.message === 'NEXT_NOT_FOUND' || errObj?.digest === 'NEXT_NOT_FOUND') {
       throw error;
     }
     console.error('getITalksItemById error:', error);
@@ -87,6 +101,7 @@ export async function createITalksItem(formData: {
   video_url?: string;
   image_url?: string;
 }) {
+  const startTime = performance.now();
   try {
     const supabase = await createServerClient();
 
@@ -94,31 +109,54 @@ export async function createITalksItem(formData: {
     const { user, role } = await getServerUserAndRole();
     if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
 
+    const insertPayload = {
+      title_tr: formData.title_tr,
+      title_en: formData.title_en,
+      description_tr: formData.description_tr,
+      description_en: formData.description_en,
+      category: formData.category,
+      type: formData.type,
+      file_url: formData.file_url || '',
+      video_url: formData.video_url || '',
+      image_url: formData.image_url || '',
+    };
+
     const { data, error } = await supabase
       .from('interactive')
-      .insert([
-        {
-          title_tr: formData.title_tr,
-          title_en: formData.title_en,
-          description_tr: formData.description_tr,
-          description_en: formData.description_en,
-          category: formData.category,
-          type: formData.type,
-          file_url: formData.file_url || '',
-          video_url: formData.video_url || '',
-          image_url: formData.image_url || '',
-        },
-      ])
+      .insert([insertPayload])
       .select();
 
     if (error) throw new Error(error.message);
 
+    const newValues = data && data[0] ? (data[0] as Record<string, unknown>) : null;
+
+    await writeAuditLog({
+      action: AuditAction.CREATE_I_TALKS,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: formData.title_tr },
+      oldValues: null,
+      newValues
+    });
+
     revalidatePath('/');
     revalidatePath('/[locale]/i-talks', 'page');
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('createITalksItem error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.CREATE_I_TALKS,
+      status: 'FAILED',
+      startTime,
+      details: { title: formData.title_tr },
+      oldValues: null,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }
 
@@ -136,12 +174,24 @@ export async function updateITalksItem(
     image_url?: string;
   }
 ) {
+  const startTime = performance.now();
+  let oldValues: Record<string, unknown> | null = null;
   try {
     const supabase = await createServerClient();
 
     // Verify auth
     const { user, role } = await getServerUserAndRole();
     if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
+
+    // Fetch old values
+    const { data: oldData } = await supabase
+      .from('interactive')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (oldData) {
+      oldValues = oldData as Record<string, unknown>;
+    }
 
     const { data, error } = await supabase
       .from('interactive')
@@ -161,16 +211,43 @@ export async function updateITalksItem(
 
     if (error) throw new Error(error.message);
 
+    const newValues = data && data[0] ? (data[0] as Record<string, unknown>) : null;
+
+    await writeAuditLog({
+      action: AuditAction.UPDATE_I_TALKS,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: formData.title_tr },
+      oldValues,
+      newValues
+    });
+
     revalidatePath('/');
     revalidatePath('/[locale]/i-talks', 'page');
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('updateITalksItem error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.UPDATE_I_TALKS,
+      status: 'FAILED',
+      startTime,
+      details: { title: formData.title_tr },
+      oldValues,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }
 
 export async function deleteITalksItem(id: string, imageUrl?: string, fileUrl?: string) {
+  (void imageUrl);
+  (void fileUrl);
+  const startTime = performance.now();
+  let oldValues: Record<string, unknown> | null = null;
   try {
     const supabase = await createServerClient();
 
@@ -186,6 +263,7 @@ export async function deleteITalksItem(id: string, imageUrl?: string, fileUrl?: 
       .single();
 
     if (fetchError || !item) throw new Error(fetchError?.message || 'Interactive item not found');
+    oldValues = item as Record<string, unknown>;
 
     // Collect file paths to delete later
     const filePaths: string[] = [];
@@ -202,14 +280,35 @@ export async function deleteITalksItem(id: string, imageUrl?: string, fileUrl?: 
     const { error: dbError } = await supabase.from('interactive').delete().eq('id', id);
     if (dbError) throw new Error(dbError.message);
 
+    await writeAuditLog({
+      action: AuditAction.DELETE_I_TALKS,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: String(oldValues.title_tr || '') },
+      oldValues,
+      newValues: null
+    });
+
     revalidatePath('/[locale]/i-talks', 'page');
     revalidatePath(`/[locale]/i-talks/${id}`);
     revalidatePath('/[locale]/i-talks/[id]', 'page');
     revalidatePath('/');
     revalidatePath('/[locale]', 'layout');
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('deleteITalksItem error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.DELETE_I_TALKS,
+      status: 'FAILED',
+      startTime,
+      details: {},
+      oldValues,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }

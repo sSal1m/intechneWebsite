@@ -1,8 +1,9 @@
 import { createClient } from './server';
+import { User } from '@supabase/supabase-js';
 
 export type AdminRole = 'super_admin' | 'admin' | 'operations_manager';
 
-export async function getServerUserAndRole(): Promise<{ user: any; role: AdminRole | null }> {
+export async function getServerUserAndRole(): Promise<{ user: User | null; role: AdminRole | null }> {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();

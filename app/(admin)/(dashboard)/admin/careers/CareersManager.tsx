@@ -158,7 +158,7 @@ export function CareersManager({ initialPositions, initialApplications }: Career
           schema: 'public',
           table: 'job_applications',
         },
-        (payload: { eventType: string; new: JobApplication; old: { id: string } }) => {
+        (payload: { eventType: 'INSERT' | 'UPDATE' | 'DELETE' | '*'; new: JobApplication; old: { id: string } }) => {
           if (payload.eventType === 'INSERT') {
             const newApp = payload.new;
             const pos = positions.find((p) => p.id === newApp.position_id);

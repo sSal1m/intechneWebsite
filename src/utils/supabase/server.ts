@@ -1,32 +1,33 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js';
 
-const mockQuery = new Proxy({}, {
-  get(target, prop): any {
+const mockQuery: unknown = new Proxy({}, {
+  get(target, prop): unknown {
     if (prop === 'then') {
-      return (resolve: any) => resolve({ data: [], error: null, count: 0 });
+      return (resolve: (val: unknown) => void) => resolve({ data: [], error: null, count: 0 });
     }
     return () => mockQuery;
   }
 });
 
-const mockAuthQuery = new Proxy({}, {
-  get(target, prop): any {
+const mockAuthQuery: unknown = new Proxy({}, {
+  get(target, prop): unknown {
     if (prop === 'then') {
-      return (resolve: any) => resolve({ data: { user: null, session: null }, error: null });
+      return (resolve: (val: unknown) => void) => resolve({ data: { user: null, session: null }, error: null });
     }
     return () => mockAuthQuery;
   }
 });
 
 const mockSupabase = new Proxy({}, {
-  get(target, prop): any {
+  get(target, prop): unknown {
     if (prop === 'then') {
       return undefined;
     }
     if (prop === 'auth') {
       return new Proxy({}, {
-        get(t, p): any {
+        get(t, p): unknown {
           if (p === 'then') return undefined;
           return () => mockAuthQuery;
         }
@@ -34,10 +35,10 @@ const mockSupabase = new Proxy({}, {
     }
     if (prop === 'storage') {
       return new Proxy({}, {
-        get(t, p): any {
+        get(t, p): unknown {
           if (p === 'then') return undefined;
           return () => new Proxy({}, {
-            get(t2, p2): any {
+            get(t2, p2): unknown {
               if (p2 === 'then') return undefined;
               if (p2 === 'getPublicUrl') {
                 return () => ({ data: { publicUrl: '' } });
@@ -68,7 +69,7 @@ export async function createClient() {
 
   if (!isValidUrl || isPlaceholder) {
     console.log("Returning mockSupabase client");
-    return mockSupabase as any;
+    return mockSupabase as unknown as ReturnType<typeof createServerClient>;
   }
 
   return createServerClient(
@@ -94,3 +95,18 @@ export async function createClient() {
     }
   );
 }
+
+export function createServiceClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  const isValidUrl = url && (url.startsWith('http://') || url.startsWith('https://'));
+  const isPlaceholder = !key || key.includes('your-supabase');
+
+  if (!isValidUrl || isPlaceholder) {
+    return mockSupabase as unknown as SupabaseClient;
+  }
+
+  return createSupabaseClient(url, key);
+}
+

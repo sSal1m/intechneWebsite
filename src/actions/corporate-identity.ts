@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { moveToTrash } from './trash-bin';
 import { extractStoragePath } from '@/src/utils/storage';
 import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
+import { writeAuditLog, AuditAction } from '@/src/utils/supabase/log-helper';
 
 export async function getCorporateIdentityItems() {
   try {
@@ -16,7 +17,7 @@ export async function getCorporateIdentityItems() {
 
     if (error) throw new Error(error.message);
     return data || [];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('getCorporateIdentityItems error:', error);
     return [];
   }
@@ -30,6 +31,7 @@ export async function createCorporateIdentityItem(formData: {
   thumbnail_url?: string;
   order_index?: number;
 }) {
+  const startTime = performance.now();
   try {
     const supabase = await createClient();
 
@@ -37,27 +39,50 @@ export async function createCorporateIdentityItem(formData: {
     const { user, role } = await getServerUserAndRole();
     if (!user || role !== 'super_admin') throw new Error('Unauthorized');
 
+    const insertPayload = {
+      title_tr: formData.title_tr,
+      title_en: formData.title_en,
+      type: formData.type,
+      file_url: formData.file_url,
+      thumbnail_url: formData.thumbnail_url || null,
+      order_index: formData.order_index || 0,
+    };
+
     const { data, error } = await supabase
       .from('corporate_identity')
-      .insert([
-        {
-          title_tr: formData.title_tr,
-          title_en: formData.title_en,
-          type: formData.type,
-          file_url: formData.file_url,
-          thumbnail_url: formData.thumbnail_url || null,
-          order_index: formData.order_index || 0,
-        },
-      ])
+      .insert([insertPayload])
       .select();
 
     if (error) throw new Error(error.message);
 
+    const newValues = data && data[0] ? (data[0] as Record<string, unknown>) : null;
+
+    await writeAuditLog({
+      action: AuditAction.CREATE_CORPORATE_IDENTITY,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: formData.title_tr },
+      oldValues: null,
+      newValues
+    });
+
     revalidatePath('/[locale]/hakkimizda/kurumsal-kimlik', 'page');
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('createCorporateIdentityItem error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.CREATE_CORPORATE_IDENTITY,
+      status: 'FAILED',
+      startTime,
+      details: { title: formData.title_tr },
+      oldValues: null,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }
 
@@ -72,12 +97,24 @@ export async function updateCorporateIdentityItem(
     order_index?: number;
   }
 ) {
+  const startTime = performance.now();
+  let oldValues: Record<string, unknown> | null = null;
   try {
     const supabase = await createClient();
 
     // Verify auth
     const { user, role } = await getServerUserAndRole();
     if (!user || role !== 'super_admin') throw new Error('Unauthorized');
+
+    // Fetch old values
+    const { data: oldData } = await supabase
+      .from('corporate_identity')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (oldData) {
+      oldValues = oldData as Record<string, unknown>;
+    }
 
     const { data, error } = await supabase
       .from('corporate_identity')
@@ -94,15 +131,42 @@ export async function updateCorporateIdentityItem(
 
     if (error) throw new Error(error.message);
 
+    const newValues = data && data[0] ? (data[0] as Record<string, unknown>) : null;
+
+    await writeAuditLog({
+      action: AuditAction.UPDATE_CORPORATE_IDENTITY,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: formData.title_tr },
+      oldValues,
+      newValues
+    });
+
     revalidatePath('/[locale]/hakkimizda/kurumsal-kimlik', 'page');
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('updateCorporateIdentityItem error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.UPDATE_CORPORATE_IDENTITY,
+      status: 'FAILED',
+      startTime,
+      details: { title: formData.title_tr },
+      oldValues,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }
 
 export async function deleteCorporateIdentityItem(id: string, fileUrl?: string, thumbnailUrl?: string) {
+  (void fileUrl);
+  (void thumbnailUrl);
+  const startTime = performance.now();
+  let oldValues: Record<string, unknown> | null = null;
   try {
     const supabase = await createClient();
 
@@ -118,6 +182,7 @@ export async function deleteCorporateIdentityItem(id: string, fileUrl?: string, 
       .single();
 
     if (fetchError || !item) throw new Error(fetchError?.message || 'Corporate identity item not found');
+    oldValues = item as Record<string, unknown>;
 
     // Collect file paths to delete later
     const filePaths: string[] = [];
@@ -138,10 +203,31 @@ export async function deleteCorporateIdentityItem(id: string, fileUrl?: string, 
 
     if (dbError) throw new Error(dbError.message);
 
+    await writeAuditLog({
+      action: AuditAction.DELETE_CORPORATE_IDENTITY,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: String(oldValues.title_tr || '') },
+      oldValues,
+      newValues: null
+    });
+
     revalidatePath('/[locale]/hakkimizda/kurumsal-kimlik', 'page');
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('deleteCorporateIdentityItem error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.DELETE_CORPORATE_IDENTITY,
+      status: 'FAILED',
+      startTime,
+      details: {},
+      oldValues,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }

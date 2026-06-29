@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { moveToTrash } from './trash-bin';
 import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
+import { writeAuditLog, AuditAction } from '@/src/utils/supabase/log-helper';
 
 const volunteerSchema = z.object({
   first_name: z.string().min(2, 'Ad en az 2 karakter olmalıdır').max(150, 'Ad en fazla 150 karakter olabilir').trim(),
@@ -20,7 +21,7 @@ const volunteerSchema = z.object({
 });
 
 // Auth helper
-async function checkVolunteerAccess() {
+async function checkVolunteerAccess(): Promise<void> {
   const { user, role } = await getServerUserAndRole();
   if (!user || (role !== 'super_admin' && role !== 'operations_manager')) {
     throw new Error('Yetkisiz erişim');
@@ -28,6 +29,7 @@ async function checkVolunteerAccess() {
 }
 
 export async function submitVolunteerForm(rawFormData: FormData) {
+  const startTime = performance.now();
   // 1. Honeypot check
   const hpField = rawFormData.get('hp_field');
   if (hpField && hpField.toString().trim() !== '') {
@@ -53,21 +55,41 @@ export async function submitVolunteerForm(rawFormData: FormData) {
     const validated = volunteerSchema.parse(parsedData);
     const supabase = await createClient();
 
-    const { error: dbError } = await supabase
+    const { data, error: dbError } = await supabase
       .from('volunteers')
-      .insert([validated]);
+      .insert([validated])
+      .select();
 
     if (dbError) {
       console.error('Database insert error in volunteers:', dbError);
       throw new Error('Database insert failed');
     }
 
+    const newValues = data && data[0] ? (data[0] as Record<string, unknown>) : null;
+
+    await writeAuditLog({
+      action: AuditAction.SUBMIT_VOLUNTEER_FORM,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: `${validated.first_name} ${validated.last_name}` },
+      oldValues: null,
+      newValues
+    });
+
     return { success: true, message: 'Başvurunuz başarıyla alınmıştır.' };
-  } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      return { success: false, error: error.issues[0]?.message || 'Doğrulama hatası' };
-    }
+  } catch (error: unknown) {
     console.error('submitVolunteerForm error:', error);
+
+    await writeAuditLog({
+      action: AuditAction.SUBMIT_VOLUNTEER_FORM,
+      status: 'FAILED',
+      startTime,
+      details: {},
+      oldValues: null,
+      newValues: null,
+      error
+    });
+
     // Mask original database/technical errors from user
     return { success: false, error: 'Bir hata oluştu, lütfen daha sonra tekrar deneyiniz.' };
   }
@@ -85,13 +107,15 @@ export async function getVolunteers() {
 
     if (error) throw new Error(error.message);
     return data || [];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('getVolunteers error:', error);
     return [];
   }
 }
 
 export async function deleteVolunteer(id: string) {
+  const startTime = performance.now();
+  let oldValues: Record<string, unknown> | null = null;
   try {
     await checkVolunteerAccess();
     const supabase = await createClient();
@@ -104,6 +128,7 @@ export async function deleteVolunteer(id: string) {
       .single();
 
     if (fetchError || !item) throw new Error(fetchError?.message || 'Kayıt bulunamadı');
+    oldValues = item as Record<string, unknown>;
 
     const trashResult = await moveToTrash('volunteers', id, item, []);
     if (!trashResult.success) throw new Error(trashResult.error);
@@ -115,10 +140,31 @@ export async function deleteVolunteer(id: string) {
 
     if (error) throw new Error(error.message);
 
+    await writeAuditLog({
+      action: AuditAction.DELETE_VOLUNTEER,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: `${oldValues.first_name || ''} ${oldValues.last_name || ''}` },
+      oldValues,
+      newValues: null
+    });
+
     revalidatePath('/admin/volunteers');
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('deleteVolunteer error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.DELETE_VOLUNTEER,
+      status: 'FAILED',
+      startTime,
+      details: {},
+      oldValues,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }

@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({
@@ -13,7 +14,7 @@ export async function updateSession(request: NextRequest) {
 
   if (!url || !key) {
     return {
-      supabase: {} as any,
+      supabase: {} as unknown as SupabaseClient,
       user: null,
       response,
     };

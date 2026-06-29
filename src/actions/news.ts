@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { moveToTrash } from './trash-bin';
 import { extractStoragePath } from '@/src/utils/storage';
 import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
+import { writeAuditLog, AuditAction } from '@/src/utils/supabase/log-helper';
 
 export async function getNews(categorySlug?: string) {
   try {
@@ -20,7 +21,7 @@ export async function getNews(categorySlug?: string) {
       throw new Error(error.message);
     }
     return data || [];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('getNews error:', error);
     return [];
   }
@@ -37,13 +38,19 @@ export async function getNewsById(id: string) {
 
     if (error) throw new Error(error.message);
     return data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('getNewsById error:', error);
     return null;
   }
 }
 
-export async function getNewsCategories() {
+interface NewsCategory {
+  slug: string;
+  name_tr: string;
+  name_en: string;
+}
+
+export async function getNewsCategories(): Promise<NewsCategory[]> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -62,41 +69,57 @@ export async function getNewsCategories() {
       { slug: 'oyun-espor', name_tr: 'Oyun & E-Spor', name_en: 'Gaming & E-Sports' }
     ];
 
-    const needsSync = !data || data.length === 0 || !data.some((c: any) => c.slug === 'duyurular-kurumsal');
+    const needsSync = !data || data.length === 0 || !data.some((c: Record<string, unknown>) => c.slug === 'duyurular-kurumsal');
 
     if (needsSync) {
-      console.log('Syncing categories in database...');
-      // 1. Unlink existing categories from news articles to avoid foreign key violations
-      await supabase
-        .from('news')
-        .update({ category_slug: null })
-        .not('category_slug', 'is', null);
+      const syncStartTime = performance.now();
+      try {
+        console.log('Syncing categories in database...');
+        // 1. Unlink existing categories from news articles to avoid foreign key violations
+        await supabase
+          .from('news')
+          .update({ category_slug: null })
+          .not('category_slug', 'is', null);
 
-      // 2. Delete old categories
-      await supabase
-        .from('news_categories')
-        .delete()
-        .neq('slug', 'all-keep');
+        // 2. Delete old categories
+        await supabase
+          .from('news_categories')
+          .delete()
+          .neq('slug', 'all-keep');
 
-      // 3. Insert new categories
-      const { error: insertError } = await supabase
-        .from('news_categories')
-        .insert(targetCategories);
+        // 3. Insert new categories
+        const { error: insertError } = await supabase
+          .from('news_categories')
+          .insert(targetCategories);
 
-      if (insertError) {
-        console.error('Error inserting categories during sync:', insertError.message);
-      } else {
+        if (insertError) throw new Error(insertError.message);
+
+        await writeAuditLog({
+          action: AuditAction.SYNC_NEWS_CATEGORIES,
+          status: 'SUCCESS',
+          startTime: syncStartTime,
+          details: { count: targetCategories.length }
+        });
+
         console.log('Categories synced successfully!');
         return targetCategories.map(c => ({
           slug: c.slug,
           name_tr: c.name_tr,
           name_en: c.name_en
         }));
+      } catch (syncError: unknown) {
+        console.error('Error inserting categories during sync:', syncError);
+        await writeAuditLog({
+          action: AuditAction.SYNC_NEWS_CATEGORIES,
+          status: 'FAILED',
+          startTime: syncStartTime,
+          error: syncError
+        });
       }
     }
 
-    return data || [];
-  } catch (error: any) {
+    return (data || []) as NewsCategory[];
+  } catch (error: unknown) {
     console.error('getNewsCategories error:', error);
     return [];
   }
@@ -115,6 +138,7 @@ export async function createNews(formData: {
   published_at?: string;
   order_index?: number;
 }) {
+  const startTime = performance.now();
   try {
     const supabase = await createClient();
 
@@ -122,34 +146,57 @@ export async function createNews(formData: {
     const { user, role } = await getServerUserAndRole();
     if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
 
+    const insertPayload = {
+      title_tr: formData.title_tr,
+      title_en: formData.title_en,
+      excerpt_tr: formData.excerpt_tr,
+      excerpt_en: formData.excerpt_en,
+      content_tr: formData.content_tr,
+      content_en: formData.content_en,
+      tag: formData.tag || '',
+      category_slug: formData.category_slug || null,
+      image_url: formData.image_url || '',
+      published_at: formData.published_at || new Date().toISOString(),
+      order_index: formData.order_index || 0,
+    };
+
     const { data, error } = await supabase
       .from('news')
-      .insert([
-        {
-          title_tr: formData.title_tr,
-          title_en: formData.title_en,
-          excerpt_tr: formData.excerpt_tr,
-          excerpt_en: formData.excerpt_en,
-          content_tr: formData.content_tr,
-          content_en: formData.content_en,
-          tag: formData.tag || '',
-          category_slug: formData.category_slug || null,
-          image_url: formData.image_url || '',
-          published_at: formData.published_at || new Date().toISOString(),
-          order_index: formData.order_index || 0,
-        },
-      ])
+      .insert([insertPayload])
       .select();
 
     if (error) throw new Error(error.message);
+
+    const newValues = data && data[0] ? (data[0] as Record<string, unknown>) : null;
+
+    await writeAuditLog({
+      action: AuditAction.CREATE_NEWS,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: formData.title_tr },
+      oldValues: null,
+      newValues
+    });
 
     revalidatePath('/');
     revalidatePath('/[locale]/haberler', 'page');
     revalidatePath('/[locale]/haberler/[id]', 'page');
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('createNews error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.CREATE_NEWS,
+      status: 'FAILED',
+      startTime,
+      details: { title: formData.title_tr },
+      oldValues: null,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }
 
@@ -169,12 +216,24 @@ export async function updateNews(
     order_index?: number;
   }
 ) {
+  const startTime = performance.now();
+  let oldValues: Record<string, unknown> | null = null;
   try {
     const supabase = await createClient();
 
     // Verify auth
     const { user, role } = await getServerUserAndRole();
     if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
+
+    // Fetch old values
+    const { data: oldData } = await supabase
+      .from('news')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (oldData) {
+      oldValues = oldData as Record<string, unknown>;
+    }
 
     const { data, error } = await supabase
       .from('news')
@@ -196,17 +255,43 @@ export async function updateNews(
 
     if (error) throw new Error(error.message);
 
+    const newValues = data && data[0] ? (data[0] as Record<string, unknown>) : null;
+
+    await writeAuditLog({
+      action: AuditAction.UPDATE_NEWS,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: formData.title_tr },
+      oldValues,
+      newValues
+    });
+
     revalidatePath('/');
     revalidatePath('/[locale]/haberler', 'page');
     revalidatePath('/[locale]/haberler/[id]', 'page');
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('updateNews error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.UPDATE_NEWS,
+      status: 'FAILED',
+      startTime,
+      details: { title: formData.title_tr },
+      oldValues,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }
 
 export async function deleteNews(id: string, imageUrl?: string) {
+  (void imageUrl);
+  const startTime = performance.now();
+  let oldValues: Record<string, unknown> | null = null;
   try {
     const supabase = await createClient();
 
@@ -222,6 +307,7 @@ export async function deleteNews(id: string, imageUrl?: string) {
       .single();
 
     if (fetchError || !newsItem) throw new Error(fetchError?.message || 'News not found');
+    oldValues = newsItem as Record<string, unknown>;
 
     // Collect file paths to delete later
     const filePaths: string[] = [];
@@ -236,12 +322,32 @@ export async function deleteNews(id: string, imageUrl?: string) {
     const { error: dbError } = await supabase.from('news').delete().eq('id', id);
     if (dbError) throw new Error(dbError.message);
 
+    await writeAuditLog({
+      action: AuditAction.DELETE_NEWS,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: String(oldValues.title_tr || '') },
+      oldValues,
+      newValues: null
+    });
+
     revalidatePath('/[locale]/haberler', 'page');
     revalidatePath('/');
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('deleteNews error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.DELETE_NEWS,
+      status: 'FAILED',
+      startTime,
+      details: {},
+      oldValues,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }
-

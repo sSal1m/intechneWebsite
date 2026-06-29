@@ -1,12 +1,22 @@
 'use server';
 
 import { createClient } from '@/src/utils/supabase/server';
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
+import { writeAuditLog, AuditAction } from '@/src/utils/supabase/log-helper';
+
+const mockQuery: unknown = new Proxy({}, {
+  get(target, prop): unknown {
+    if (prop === 'then') {
+      return (resolve: (val: unknown) => void) => resolve({ data: [], error: null, count: 0 });
+    }
+    return () => mockQuery;
+  }
+});
 
 // Static-friendly client that does NOT read cookies, allowing ISR / static generation to work without dynamic bail-out.
-function createPublicClient() {
+function createPublicClient(): SupabaseClient {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -14,19 +24,10 @@ function createPublicClient() {
   const isPlaceholder = !key || key.includes('your-supabase');
 
   if (!isValidUrl || isPlaceholder) {
-    // Return dummy mock query structure
-    const mockQuery = new Proxy({}, {
-      get(target, prop): any {
-        if (prop === 'then') {
-          return (resolve: any) => resolve({ data: [], error: null, count: 0 });
-        }
-        return () => mockQuery;
-      }
-    });
-    return mockQuery as any;
+    return mockQuery as unknown as SupabaseClient;
   }
 
-  return createSupabaseClient(url!, key!);
+  return createSupabaseClient(url, key);
 }
 
 export async function getBrandPages() {
@@ -39,7 +40,7 @@ export async function getBrandPages() {
 
     if (error) throw new Error(error.message);
     return data || [];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('getBrandPages error:', error);
     return [];
   }
@@ -56,7 +57,7 @@ export async function getBrandPage(slug: string) {
 
     if (error) throw new Error(error.message);
     return data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('getBrandPage error:', error);
     return null;
   }
@@ -73,13 +74,15 @@ export async function updateBrandPage(
     kapsam_en: string;
     video_url?: string | null;
     gallery?: string[] | null;
-    sections_tr: any[];
-    sections_en: any[];
-    stats?: any[] | null;
+    sections_tr: unknown[];
+    sections_en: unknown[];
+    stats?: unknown[] | null;
     status_message_tr?: string | null;
     status_message_en?: string | null;
   }
 ) {
+  const startTime = performance.now();
+  let oldValues: Record<string, unknown> | null = null;
   try {
     const supabase = await createClient();
 
@@ -87,6 +90,16 @@ export async function updateBrandPage(
     const { user, role } = await getServerUserAndRole();
     if (!user || (role !== 'super_admin' && role !== 'admin')) {
       throw new Error('Unauthorized');
+    }
+
+    // Fetch old values
+    const { data: oldBrandData } = await supabase
+      .from('brand_pages')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+    if (oldBrandData) {
+      oldValues = oldBrandData as Record<string, unknown>;
     }
 
     const { data, error } = await supabase
@@ -112,14 +125,37 @@ export async function updateBrandPage(
 
     if (error) throw new Error(error.message);
 
+    const newValues = data && data[0] ? (data[0] as Record<string, unknown>) : null;
+
+    await writeAuditLog({
+      action: AuditAction.UPDATE_BRAND,
+      status: 'SUCCESS',
+      startTime,
+      details: { slug, title: slug },
+      oldValues,
+      newValues
+    });
+
     // On-Demand Revalidation:
     revalidatePath('/[locale]/markalarimiz/[slug]', 'page');
     revalidatePath('/[locale]/markalarimiz', 'layout');
     revalidatePath('/');
 
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('updateBrandPage error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.UPDATE_BRAND,
+      status: 'FAILED',
+      startTime,
+      details: { slug, title: slug },
+      oldValues,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }

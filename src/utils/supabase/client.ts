@@ -1,31 +1,31 @@
 import { createBrowserClient } from '@supabase/ssr';
 
-const mockQuery = new Proxy({}, {
-  get(target, prop): any {
+const mockQuery: unknown = new Proxy({}, {
+  get(target, prop): unknown {
     if (prop === 'then') {
-      return (resolve: any) => resolve({ data: [], error: null, count: 0 });
+      return (resolve: (val: unknown) => void) => resolve({ data: [], error: null, count: 0 });
     }
     return () => mockQuery;
   }
 });
 
-const mockAuthQuery = new Proxy({}, {
-  get(target, prop): any {
+const mockAuthQuery: unknown = new Proxy({}, {
+  get(target, prop): unknown {
     if (prop === 'then') {
-      return (resolve: any) => resolve({ data: { user: null, session: null }, error: null });
+      return (resolve: (val: unknown) => void) => resolve({ data: { user: null, session: null }, error: null });
     }
     return () => mockAuthQuery;
   }
 });
 
 const mockSupabase = new Proxy({}, {
-  get(target, prop): any {
+  get(target, prop): unknown {
     if (prop === 'then') {
       return undefined;
     }
     if (prop === 'auth') {
       return new Proxy({}, {
-        get(t, p): any {
+        get(t, p): unknown {
           if (p === 'then') return undefined;
           return () => mockAuthQuery;
         }
@@ -33,10 +33,10 @@ const mockSupabase = new Proxy({}, {
     }
     if (prop === 'storage') {
       return new Proxy({}, {
-        get(t, p): any {
+        get(t, p): unknown {
           if (p === 'then') return undefined;
           return () => new Proxy({}, {
-            get(t2, p2): any {
+            get(t2, p2): unknown {
               if (p2 === 'then') return undefined;
               if (p2 === 'getPublicUrl') {
                 return () => ({ data: { publicUrl: '' } });
@@ -59,7 +59,7 @@ export function createClient() {
   const isPlaceholder = !key || key.includes('your-supabase');
 
   if (!isValidUrl || isPlaceholder) {
-    return mockSupabase as any;
+    return mockSupabase as unknown as ReturnType<typeof createBrowserClient>;
   }
 
   return createBrowserClient(url, key);

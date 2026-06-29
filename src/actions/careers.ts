@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { moveToTrash } from './trash-bin';
 import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
+import { writeAuditLog, AuditAction } from '@/src/utils/supabase/log-helper';
 
 // Zod schemas for validation
 const positionSchema = z.object({
@@ -29,19 +30,19 @@ const applicationSchema = z.object({
   last_name: z.string().min(2, 'Soyad en az 2 karakter olmalıdır').max(150, 'Soyad en fazla 150 karakter olabilir').trim(),
   email: z.string().email('Geçersiz e-posta adresi').max(255).trim(),
   phone: z.string().min(7, 'Telefon numarası en az 7 karakter olmalıdır').max(30).trim(),
-  cover_letter: z.string().max(2000, 'Niyet mektubu en fazla 2000 karakter olabilir').optional().default('').transform(val => val.trim()),
-  kvkk_approved: z.boolean().refine(val => val === true, 'KVKK onayı zorunludur'),
+  cover_letter: z.string().max(2000, 'Niyet mektubu en fazla 2000 karakter olabilir').optional().default('').transform((val: string) => val.trim()),
+  kvkk_approved: z.boolean().refine((val: boolean) => val === true, 'KVKK onayı zorunludur'),
 });
 
 // Auth helpers
-async function checkPositionAccess() {
+async function checkPositionAccess(): Promise<void> {
   const { user, role } = await getServerUserAndRole();
   if (!user || (role !== 'super_admin' && role !== 'admin' && role !== 'operations_manager')) {
     throw new Error('Yetkisiz erişim');
   }
 }
 
-async function checkApplicationAccess() {
+async function checkApplicationAccess(): Promise<void> {
   const { user, role } = await getServerUserAndRole();
   if (!user || (role !== 'super_admin' && role !== 'operations_manager')) {
     throw new Error('Yetkisiz erişim');
@@ -67,7 +68,7 @@ export async function getJobPositions(onlyActive = false) {
     const { data, error } = await query;
     if (error) throw new Error(error.message);
     return data || [];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('getJobPositions error:', error);
     return [];
   }
@@ -84,13 +85,14 @@ export async function getJobPositionById(id: string) {
 
     if (error) throw new Error(error.message);
     return data || null;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('getJobPositionById error:', error);
     return null;
   }
 }
 
 export async function createJobPosition(formData: z.infer<typeof positionSchema>) {
+  const startTime = performance.now();
   try {
     await checkPositionAccess();
     const supabase = await createClient();
@@ -104,24 +106,59 @@ export async function createJobPosition(formData: z.infer<typeof positionSchema>
 
     if (error) throw new Error(error.message);
 
+    const newValues = data && data[0] ? (data[0] as Record<string, unknown>) : null;
+
+    await writeAuditLog({
+      action: AuditAction.CREATE_JOB_POSITION,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: validated.title_tr },
+      oldValues: null,
+      newValues
+    });
+
     // On-Demand Revalidation
     revalidatePath('/');
     revalidatePath('/[locale]/kariyer', 'page');
     revalidatePath('/[locale]/kariyer/[id]', 'page');
 
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('createJobPosition error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.CREATE_JOB_POSITION,
+      status: 'FAILED',
+      startTime,
+      details: { title: formData?.title_tr },
+      oldValues: null,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }
 
 export async function updateJobPosition(id: string, formData: z.infer<typeof positionSchema>) {
+  const startTime = performance.now();
+  let oldValues: Record<string, unknown> | null = null;
   try {
     await checkPositionAccess();
     const supabase = await createClient();
 
     const validated = positionSchema.parse(formData);
+
+    // Fetch old values
+    const { data: oldData } = await supabase
+      .from('job_positions')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (oldData) {
+      oldValues = oldData as Record<string, unknown>;
+    }
 
     const { data, error } = await supabase
       .from('job_positions')
@@ -131,19 +168,44 @@ export async function updateJobPosition(id: string, formData: z.infer<typeof pos
 
     if (error) throw new Error(error.message);
 
+    const newValues = data && data[0] ? (data[0] as Record<string, unknown>) : null;
+
+    await writeAuditLog({
+      action: AuditAction.UPDATE_JOB_POSITION,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: validated.title_tr },
+      oldValues,
+      newValues
+    });
+
     // On-Demand Revalidation
     revalidatePath('/');
     revalidatePath('/[locale]/kariyer', 'page');
     revalidatePath('/[locale]/kariyer/[id]', 'page');
 
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('updateJobPosition error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.UPDATE_JOB_POSITION,
+      status: 'FAILED',
+      startTime,
+      details: { title: formData?.title_tr },
+      oldValues,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }
 
 export async function deleteJobPosition(id: string) {
+  const startTime = performance.now();
+  let oldValues: Record<string, unknown> | null = null;
   try {
     await checkPositionAccess();
     const supabase = await createClient();
@@ -156,6 +218,7 @@ export async function deleteJobPosition(id: string) {
       .single();
 
     if (fetchError || !positionItem) throw new Error(fetchError?.message || 'Pozisyon bulunamadı');
+    oldValues = positionItem as Record<string, unknown>;
 
     // Move to trash
     const trashResult = await moveToTrash('job_positions', id, positionItem, []);
@@ -168,15 +231,36 @@ export async function deleteJobPosition(id: string) {
 
     if (error) throw new Error(error.message);
 
+    await writeAuditLog({
+      action: AuditAction.DELETE_JOB_POSITION,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: String(oldValues.title_tr || '') },
+      oldValues,
+      newValues: null
+    });
+
     // On-Demand Revalidation
     revalidatePath('/');
     revalidatePath('/[locale]/kariyer', 'page');
     revalidatePath('/[locale]/kariyer/[id]', 'page');
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('deleteJobPosition error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.DELETE_JOB_POSITION,
+      status: 'FAILED',
+      startTime,
+      details: {},
+      oldValues,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }
 
@@ -185,6 +269,7 @@ export async function deleteJobPosition(id: string) {
 // ----------------------------------------------------
 
 export async function submitJobApplication(rawFormData: FormData) {
+  const startTime = performance.now();
   try {
     // 1. Honeypot check
     const hpField = rawFormData.get('hp_field');
@@ -227,7 +312,7 @@ export async function submitJobApplication(rawFormData: FormData) {
 
     // Validate using Zod (specifically checking type and size)
     const fileValidation = z.object({
-      type: z.string().refine(val => val === 'application/pdf', {
+      type: z.string().refine((val: string) => val === 'application/pdf', {
         message: 'Sadece PDF formatında CV yükleyebilirsiniz.'
       }),
       size: z.number().max(600 * 1024, 'Maksimum dosya boyutu 600KB ile sınırlandırılmıştır.')
@@ -241,7 +326,6 @@ export async function submitJobApplication(rawFormData: FormData) {
     }
 
     // 4. Create unique filename path: 'pozisyon_id/uuid-orijinal_isim.pdf'
-    const extension = 'pdf'; // Guaranteed by mime-type validation
     const originalNameSanitized = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
     const uniqueFilename = `${crypto.randomUUID()}-${originalNameSanitized}`;
     const cvPath = `${validated.position_id}/${uniqueFilename}`;
@@ -262,7 +346,7 @@ export async function submitJobApplication(rawFormData: FormData) {
     }
 
     // 6. Save to job_applications table
-    const { error: dbError } = await supabase
+    const { data: insertedData, error: dbError } = await supabase
       .from('job_applications')
       .insert([
         {
@@ -277,7 +361,8 @@ export async function submitJobApplication(rawFormData: FormData) {
           position_title_tr: positionData.title_tr,
           position_title_en: positionData.title_en,
         }
-      ]);
+      ])
+      .select();
 
     if (dbError) {
       // Clean up uploaded file if DB insert fails
@@ -286,13 +371,33 @@ export async function submitJobApplication(rawFormData: FormData) {
       throw new Error(`Başvuru kaydedilemedi: ${dbError.message}`);
     }
 
+    const newValues = insertedData && insertedData[0] ? (insertedData[0] as Record<string, unknown>) : null;
+
+    await writeAuditLog({
+      action: AuditAction.SUBMIT_JOB_APPLICATION,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: `${validated.first_name} ${validated.last_name}` },
+      oldValues: null,
+      newValues
+    });
+
     return { success: true, message: 'Başvurunuz başarıyla alındı.' };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('submitJobApplication error:', error);
-    if (error instanceof z.ZodError) {
-      return { success: false, error: error.issues[0]?.message || 'Doğrulama hatası' };
-    }
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.SUBMIT_JOB_APPLICATION,
+      status: 'FAILED',
+      startTime,
+      details: {},
+      oldValues: null,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }
 
@@ -308,13 +413,15 @@ export async function getJobApplications() {
 
     if (error) throw new Error(error.message);
     return data || [];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('getJobApplications error:', error);
     return [];
   }
 }
 
 export async function deleteJobApplication(id: string) {
+  const startTime = performance.now();
+  let oldValues: Record<string, unknown> | null = null;
   try {
     await checkApplicationAccess();
     const supabase = await createClient();
@@ -327,6 +434,7 @@ export async function deleteJobApplication(id: string) {
       .single();
 
     if (fetchError || !applicationItem) throw new Error(fetchError?.message || 'Başvuru bulunamadı');
+    oldValues = applicationItem as Record<string, unknown>;
 
     // Collect CV file path
     const filePaths: string[] = [];
@@ -346,18 +454,51 @@ export async function deleteJobApplication(id: string) {
 
     if (deleteError) throw new Error(deleteError.message);
 
+    await writeAuditLog({
+      action: AuditAction.DELETE_JOB_APPLICATION,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: `${oldValues.first_name} ${oldValues.last_name}` },
+      oldValues,
+      newValues: null
+    });
+
     revalidatePath('/admin/careers');
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('deleteJobApplication error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.DELETE_JOB_APPLICATION,
+      status: 'FAILED',
+      startTime,
+      details: {},
+      oldValues,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }
 
 export async function toggleJobPositionStatus(id: string, isActive: boolean) {
+  const startTime = performance.now();
+  let oldValues: Record<string, unknown> | null = null;
   try {
     await checkPositionAccess();
     const supabase = await createClient();
+
+    // Fetch old values
+    const { data: oldData } = await supabase
+      .from('job_positions')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (oldData) {
+      oldValues = oldData as Record<string, unknown>;
+    }
 
     const { data, error } = await supabase
       .from('job_positions')
@@ -367,15 +508,38 @@ export async function toggleJobPositionStatus(id: string, isActive: boolean) {
 
     if (error) throw new Error(error.message);
 
+    const newValues = data && data[0] ? (data[0] as Record<string, unknown>) : null;
+
+    await writeAuditLog({
+      action: AuditAction.TOGGLE_JOB_POSITION_STATUS,
+      status: 'SUCCESS',
+      startTime,
+      details: { title: String(oldValues?.title_tr || ''), isActive },
+      oldValues,
+      newValues
+    });
+
     // On-Demand Revalidation
     revalidatePath('/');
     revalidatePath('/[locale]/kariyer', 'page');
     revalidatePath('/[locale]/kariyer/[id]', 'page');
 
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('toggleJobPositionStatus error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.TOGGLE_JOB_POSITION_STATUS,
+      status: 'FAILED',
+      startTime,
+      details: { isActive },
+      oldValues,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }
 
@@ -391,8 +555,8 @@ export async function generateCVDownloadUrl(cvPath: string) {
     if (error) throw new Error(error.message);
 
     return { success: true, url: data.signedUrl };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('generateCVDownloadUrl error:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: error instanceof Error ? error.message : String(error) };
   }
 }

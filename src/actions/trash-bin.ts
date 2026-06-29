@@ -2,8 +2,9 @@
 
 import { createClient } from '@/src/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
-import { extractStoragePath } from '@/src/utils/storage';
 import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
+import { writeAuditLog, AuditAction } from '@/src/utils/supabase/log-helper';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 export async function getTrashItems() {
   try {
@@ -11,7 +12,7 @@ export async function getTrashItems() {
     if (!user || (role !== 'super_admin' && role !== 'admin')) throw new Error('Unauthorized');
 
     const supabase = await createClient();
-    
+
     // First, prune expired items older than 24 hours
     await pruneExpiredTrash(supabase);
 
@@ -22,17 +23,17 @@ export async function getTrashItems() {
 
     if (error) throw new Error(error.message);
     return data || [];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('getTrashItems error:', error);
     return [];
   }
 }
 
 // Function to prune expired items older than 24 hours
-async function pruneExpiredTrash(supabase: any) {
+async function pruneExpiredTrash(supabase: SupabaseClient): Promise<void> {
   try {
     const expiredTime = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    
+
     // Fetch expired items to clean up storage files
     const { data: expiredItems } = await supabase
       .from('trash_bin')
@@ -44,11 +45,12 @@ async function pruneExpiredTrash(supabase: any) {
       const assetPaths: string[] = [];
       const cvPaths: string[] = [];
       for (const item of expiredItems) {
-        if (item.file_paths && Array.isArray(item.file_paths)) {
-          if (item.entity_type === 'job_applications') {
-            cvPaths.push(...item.file_paths);
+        const itemRecord = item as Record<string, unknown>;
+        if (itemRecord.file_paths && Array.isArray(itemRecord.file_paths)) {
+          if (itemRecord.entity_type === 'job_applications') {
+            cvPaths.push(...(itemRecord.file_paths as string[]));
           } else {
-            assetPaths.push(...item.file_paths);
+            assetPaths.push(...(itemRecord.file_paths as string[]));
           }
         }
       }
@@ -59,14 +61,14 @@ async function pruneExpiredTrash(supabase: any) {
       if (cvPaths.length > 0) {
         await supabase.storage.from('cv_uploads').remove(cvPaths);
       }
-      
+
       // Delete from DB
       await supabase
         .from('trash_bin')
         .delete()
         .lt('deleted_at', expiredTime);
     }
-  } catch (err) {
+  } catch (err: unknown) {
     console.error('pruneExpiredTrash error:', err);
   }
 }
@@ -75,9 +77,10 @@ async function pruneExpiredTrash(supabase: any) {
 export async function moveToTrash(
   entityType: string,
   entityId: string,
-  originalData: any,
+  originalData: Record<string, unknown>,
   filePaths: string[] = []
 ) {
+  const startTime = performance.now();
   try {
     const supabase = await createClient();
 
@@ -97,15 +100,39 @@ export async function moveToTrash(
       ]);
 
     if (error) throw new Error(error.message);
+
+    await writeAuditLog({
+      action: AuditAction.MOVE_TO_TRASH,
+      status: 'SUCCESS',
+      startTime,
+      details: { entityType, entityId },
+      oldValues: originalData,
+      newValues: null
+    });
+
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('moveToTrash error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.MOVE_TO_TRASH,
+      status: 'FAILED',
+      startTime,
+      details: { entityType, entityId },
+      oldValues: originalData,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }
 
 // Restore item from trash
 export async function restoreFromTrash(trashId: string) {
+  const startTime = performance.now();
+  let oldValues: Record<string, unknown> | null = null;
   try {
     const supabase = await createClient();
 
@@ -121,11 +148,14 @@ export async function restoreFromTrash(trashId: string) {
       .single();
 
     if (fetchError || !trashItem) throw new Error(fetchError?.message || 'Trash item not found');
+    oldValues = trashItem as Record<string, unknown>;
+
+    const originalData = trashItem.original_data as Record<string, unknown>;
 
     // Restore to original table
     const { error: restoreError } = await supabase
       .from(trashItem.entity_type)
-      .insert([trashItem.original_data]);
+      .insert([originalData]);
 
     if (restoreError) throw new Error(restoreError.message);
 
@@ -133,8 +163,8 @@ export async function restoreFromTrash(trashId: string) {
     if (trashItem.entity_type === 'job_positions') {
       await supabase
         .from('job_applications')
-        .update({ position_id: trashItem.original_data.id })
-        .eq('original_position_id', trashItem.original_data.id);
+        .update({ position_id: originalData.id })
+        .eq('original_position_id', originalData.id);
     }
 
     // Delete from trash_bin
@@ -145,18 +175,41 @@ export async function restoreFromTrash(trashId: string) {
 
     if (deleteError) throw new Error(deleteError.message);
 
+    await writeAuditLog({
+      action: AuditAction.RESTORE_FROM_TRASH,
+      status: 'SUCCESS',
+      startTime,
+      details: { entityType: trashItem.entity_type, entityId: originalData.id as string },
+      oldValues,
+      newValues: originalData
+    });
+
     // Revalidate original layout / pages
     triggerRevalidation(trashItem.entity_type);
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('restoreFromTrash error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.RESTORE_FROM_TRASH,
+      status: 'FAILED',
+      startTime,
+      details: { trashId },
+      oldValues,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }
 
 // Delete permanently
 export async function deletePermanently(trashId: string) {
+  const startTime = performance.now();
+  let oldValues: Record<string, unknown> | null = null;
   try {
     const supabase = await createClient();
 
@@ -172,6 +225,7 @@ export async function deletePermanently(trashId: string) {
       .single();
 
     if (fetchError || !trashItem) throw new Error(fetchError?.message || 'Trash item not found');
+    oldValues = trashItem as Record<string, unknown>;
 
     // Remove from storage
     if (trashItem.file_paths && Array.isArray(trashItem.file_paths) && trashItem.file_paths.length > 0) {
@@ -187,10 +241,31 @@ export async function deletePermanently(trashId: string) {
 
     if (deleteError) throw new Error(deleteError.message);
 
+    await writeAuditLog({
+      action: AuditAction.DELETE_PERMANENTLY,
+      status: 'SUCCESS',
+      startTime,
+      details: { entityType: trashItem.entity_type, entityId: trashItem.entity_id as string },
+      oldValues,
+      newValues: null
+    });
+
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('deletePermanently error:', error);
-    return { success: false, error: error.message };
+
+    await writeAuditLog({
+      action: AuditAction.DELETE_PERMANENTLY,
+      status: 'FAILED',
+      startTime,
+      details: { trashId },
+      oldValues,
+      newValues: null,
+      error
+    });
+
+    return { success: false, error: errorMessage };
   }
 }
 

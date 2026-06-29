@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from './client';
+import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
 export type AdminRole = 'super_admin' | 'admin' | 'operations_manager';
 
@@ -36,7 +37,9 @@ export function useAdminRole() {
     getInitialRole();
 
     // Set up auth state change listener to dynamically update role state
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: any, session: any) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
+      // Prevent unused variable warning on event if any
+      (void event);
       const user = session?.user;
       if (user) {
         const uRole = user.app_metadata?.role;
