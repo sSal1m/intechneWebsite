@@ -6,6 +6,17 @@ import { z } from 'zod';
 import { moveToTrash } from './trash-bin';
 import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
 import { writeAuditLog, AuditAction } from '@/src/utils/supabase/log-helper';
+import fs from 'fs';
+import path from 'path';
+
+function logDebug(message: string, error: unknown) {
+  const logMsg = `[${new Date().toISOString()}] ${message}: ${error instanceof Error ? error.message : String(error)}\n${error instanceof Error && error.stack ? error.stack : ''}\n---\n`;
+  try {
+    fs.appendFileSync(path.join(process.cwd(), 'debug.log'), logMsg);
+  } catch (e) {
+    console.error('Failed to write to debug.log:', e);
+  }
+}
 
 // Zod schemas for validation
 const positionSchema = z.object({
@@ -417,6 +428,7 @@ export async function getJobApplications() {
     return data || [];
   } catch (error: unknown) {
     console.error('getJobApplications error:', error);
+    logDebug('getJobApplications error', error);
     return [];
   }
 }

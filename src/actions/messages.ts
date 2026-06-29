@@ -6,6 +6,17 @@ import { moveToTrash } from './trash-bin';
 import { z } from 'zod';
 import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
 import { writeAuditLog, AuditAction } from '@/src/utils/supabase/log-helper';
+import fs from 'fs';
+import path from 'path';
+
+function logDebug(message: string, error: unknown) {
+  const logMsg = `[${new Date().toISOString()}] ${message}: ${error instanceof Error ? error.message : String(error)}\n${error instanceof Error && error.stack ? error.stack : ''}\n---\n`;
+  try {
+    fs.appendFileSync(path.join(process.cwd(), 'debug.log'), logMsg);
+  } catch (e) {
+    console.error('Failed to write to debug.log:', e);
+  }
+}
 
 const contactFormSchema = z.object({
   firstName: z.string().trim().min(1, 'İsim boş olamaz').max(100),
@@ -78,6 +89,7 @@ export async function submitContactForm(formData: {
     return { success: true };
   } catch (error: unknown) {
     console.error('submitContactForm error:', error);
+    logDebug('submitContactForm error', error);
 
     await writeAuditLog({
       action: AuditAction.SUBMIT_CONTACT_FORM,
@@ -110,6 +122,7 @@ export async function getMessages() {
     return data || [];
   } catch (error: unknown) {
     console.error('getMessages error:', error);
+    logDebug('getMessages error', error);
     return [];
   }
 }

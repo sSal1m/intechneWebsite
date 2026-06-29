@@ -6,6 +6,17 @@ import { revalidatePath } from 'next/cache';
 import { moveToTrash } from './trash-bin';
 import { getServerUserAndRole } from '@/src/utils/supabase/role-server';
 import { writeAuditLog, AuditAction } from '@/src/utils/supabase/log-helper';
+import fs from 'fs';
+import path from 'path';
+
+function logDebug(message: string, error: unknown) {
+  const logMsg = `[${new Date().toISOString()}] ${message}: ${error instanceof Error ? error.message : String(error)}\n${error instanceof Error && error.stack ? error.stack : ''}\n---\n`;
+  try {
+    fs.appendFileSync(path.join(process.cwd(), 'debug.log'), logMsg);
+  } catch (e) {
+    console.error('Failed to write to debug.log:', e);
+  }
+}
 
 const volunteerSchema = z.object({
   first_name: z.string().min(2, 'Ad en az 2 karakter olmalıdır').max(150, 'Ad en fazla 150 karakter olabilir').trim(),
@@ -111,6 +122,7 @@ export async function getVolunteers() {
     return data || [];
   } catch (error: unknown) {
     console.error('getVolunteers error:', error);
+    logDebug('getVolunteers error', error);
     return [];
   }
 }
