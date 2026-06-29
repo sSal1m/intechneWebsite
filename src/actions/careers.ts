@@ -346,23 +346,22 @@ export async function submitJobApplication(rawFormData: FormData) {
     }
 
     // 6. Save to job_applications table
-    const { data: insertedData, error: dbError } = await supabase
+    const insertPayload = {
+      position_id: validated.position_id,
+      original_position_id: validated.position_id,
+      first_name: validated.first_name,
+      last_name: validated.last_name,
+      email: validated.email,
+      phone: validated.phone,
+      cover_letter: validated.cover_letter,
+      cv_path: cvPath,
+      position_title_tr: positionData.title_tr,
+      position_title_en: positionData.position_title_en || positionData.title_en,
+    };
+
+    const { error: dbError } = await supabase
       .from('job_applications')
-      .insert([
-        {
-          position_id: validated.position_id,
-          original_position_id: validated.position_id,
-          first_name: validated.first_name,
-          last_name: validated.last_name,
-          email: validated.email,
-          phone: validated.phone,
-          cover_letter: validated.cover_letter,
-          cv_path: cvPath,
-          position_title_tr: positionData.title_tr,
-          position_title_en: positionData.title_en,
-        }
-      ])
-      .select();
+      .insert([insertPayload]);
 
     if (dbError) {
       // Clean up uploaded file if DB insert fails
@@ -371,7 +370,7 @@ export async function submitJobApplication(rawFormData: FormData) {
       throw new Error(`Başvuru kaydedilemedi: ${dbError.message}`);
     }
 
-    const newValues = insertedData && insertedData[0] ? (insertedData[0] as Record<string, unknown>) : null;
+    const newValues = insertPayload as Record<string, unknown>;
 
     await writeAuditLog({
       action: AuditAction.SUBMIT_JOB_APPLICATION,

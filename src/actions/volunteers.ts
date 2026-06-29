@@ -55,17 +55,16 @@ export async function submitVolunteerForm(rawFormData: FormData) {
     const validated = volunteerSchema.parse(parsedData);
     const supabase = await createClient();
 
-    const { data, error: dbError } = await supabase
+    const { error: dbError } = await supabase
       .from('volunteers')
-      .insert([validated])
-      .select();
+      .insert([validated]);
 
     if (dbError) {
       console.error('Database insert error in volunteers:', dbError);
       throw new Error('Database insert failed');
     }
 
-    const newValues = data && data[0] ? (data[0] as Record<string, unknown>) : null;
+    const newValues = validated as Record<string, unknown>;
 
     await writeAuditLog({
       action: AuditAction.SUBMIT_VOLUNTEER_FORM,

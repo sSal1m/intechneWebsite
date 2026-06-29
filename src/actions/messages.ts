@@ -45,24 +45,21 @@ export async function submitContactForm(formData: {
     const validatedData = parseResult.data;
     const supabase = await createClient();
 
-    const { data, error } = await supabase
+    const newValues = {
+      first_name: validatedData.firstName,
+      last_name: validatedData.lastName,
+      email: validatedData.email,
+      phone: validatedData.phone || '',
+      subject: validatedData.subject || '',
+      message: validatedData.message,
+      kvkk_approved: validatedData.kvkk_approved || false,
+    };
+
+    const { error } = await supabase
       .from('messages')
-      .insert([
-        {
-          first_name: validatedData.firstName,
-          last_name: validatedData.lastName,
-          email: validatedData.email,
-          phone: validatedData.phone || '',
-          subject: validatedData.subject || '',
-          message: validatedData.message,
-          kvkk_approved: validatedData.kvkk_approved || false,
-        },
-      ])
-      .select();
+      .insert([newValues]);
 
     if (error) throw new Error(error.message);
-
-    const newValues = data && data[0] ? (data[0] as Record<string, unknown>) : null;
 
     await writeAuditLog({
       action: AuditAction.SUBMIT_CONTACT_FORM,
